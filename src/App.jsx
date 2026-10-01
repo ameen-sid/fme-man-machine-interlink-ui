@@ -1,10 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import './App.css';
-import OperatorsPage from './OperatorsPage';
+import MachineChecksheet from './pages/MachineChecksheet';
 import {
   Folder,
   Star,
-  Users2,
   HardHat,
   BadgePercent,
   FileSpreadsheet,
@@ -220,7 +218,6 @@ function getMachineDataForDate(machine, dateStr, shift) {
   const variance = ((Math.abs(hash) % 30) - 15) / 100; // -15% to +15% variance
 
   // Shift factors
-  const shiftMultiplier = shift === 'All' ? 3 : 1;
   const shiftFactor = shift === 'A' ? 1.05 : shift === 'B' ? 0.95 : shift === 'C' ? 0.90 : 2.9;
 
   let runtimeToday = Number((machine.base.runtime * (shift === 'All' ? 2.8 : 1) * (1 + variance * 0.4)).toFixed(1));
@@ -251,6 +248,7 @@ export default function App() {
   const [selectedShift, setSelectedShift] = useState('All');
   const [selectedDepartment, setSelectedDepartment] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isChecksheetActive, setIsChecksheetActive] = useState(false);
 
   // Format date for readable display like reference: "16-09-2026"
   const formattedDate = useMemo(() => {
@@ -338,94 +336,108 @@ export default function App() {
     const breakdownBenchmark = selectedShift === 'All' ? 5 : 3;
     const breakdownPercent = Math.min(100, Math.max(data.breakdownHours > 0 ? 14 : 0, (data.breakdownHours / breakdownBenchmark) * 100));
 
+    const statusBadge = machine.status === 'Running' 
+      ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+      : machine.status === 'Maintenance'
+        ? 'bg-rose-50 text-rose-700 border-rose-200'
+        : 'bg-slate-100 text-slate-600 border-slate-200';
+
+    const statusDot = machine.status === 'Running'
+      ? 'bg-emerald-500'
+      : machine.status === 'Maintenance'
+        ? 'bg-rose-500'
+        : 'bg-slate-400';
+
     return (
-      <div key={machine.id} className="machine-fme-card">
+      <div key={machine.id} className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col overflow-hidden hover:shadow-md transition-shadow">
         {/* Header */}
-        <div className="card-header-bar">
-          <div className="machine-title-box">
-            <div className="badge-row">
-              <span className={`type-badge ${isAuto ? 'auto' : 'manual'}`}>
+        <div className="p-4 px-5 border-b border-slate-100 flex items-start justify-between">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <span className={`text-[11px] font-bold py-0.5 px-2 rounded tracking-wide inline-flex items-center gap-1 ${
+                isAuto ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-800 border border-amber-200'
+              }`}>
                 {isAuto ? <Icons.Zap /> : <Icons.Wrench />}
                 {isAuto ? '4-BAR GRAPH (AUTOMATIC)' : '3-BAR GRAPH (MANUAL)'}
               </span>
-              <span className="machine-code-tag">{machine.id}</span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>• {machine.department}</span>
+              <span className="text-[11px] font-mono font-semibold text-slate-500 bg-slate-100 py-0.5 px-1.5 rounded">{machine.id}</span>
+              <span className="text-[11px] text-slate-400 font-semibold">• {machine.department}</span>
             </div>
-            <h3 className="machine-card-name">{machine.name}</h3>
-            <span className="machine-card-model">{machine.model}</span>
+            <h3 className="text-base font-bold text-slate-900 m-0 mt-0.5">{machine.name}</h3>
+            <span className="text-xs text-slate-500">{machine.model}</span>
           </div>
 
-          <div className={`card-status-pill ${machine.status.toLowerCase()}`}>
-            <span className="status-dot-circle"></span>
+          <div className={`inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-[11.5px] font-semibold border ${statusBadge}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${statusDot}`}></span>
             <span>{machine.status}</span>
           </div>
         </div>
 
         {/* Chart Stage */}
-        <div className="chart-body">
-          <div className="chart-stage">
+        <div className="p-4 px-5 pb-2.5 flex flex-col">
+          <div className="h-[200px] relative flex items-end pt-5 px-2.5 border-b border-slate-200">
             {/* Background Guidelines */}
-            <div className="stage-guidelines">
-              <div className="guide-row"><span>100%</span></div>
-              <div className="guide-row"><span>75%</span></div>
-              <div className="guide-row"><span>50%</span></div>
-              <div className="guide-row"><span>25%</span></div>
-              <div className="guide-row"><span>0</span></div>
+            <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+              <div className="w-full border-b border-dashed border-slate-200 h-0 flex items-center"><span className="text-[10px] text-slate-400 font-mono">100%</span></div>
+              <div className="w-full border-b border-dashed border-slate-200 h-0 flex items-center"><span className="text-[10px] text-slate-400 font-mono">75%</span></div>
+              <div className="w-full border-b border-dashed border-slate-200 h-0 flex items-center"><span className="text-[10px] text-slate-400 font-mono">50%</span></div>
+              <div className="w-full border-b border-dashed border-slate-200 h-0 flex items-center"><span className="text-[10px] text-slate-400 font-mono">25%</span></div>
+              <div className="w-full border-b border-dashed border-slate-200 h-0 flex items-center"><span className="text-[10px] text-slate-400 font-mono">0</span></div>
             </div>
 
             {/* Bar Cylinders Stage */}
-            <div className="bars-container">
+            <div className="relative w-full h-full flex items-end justify-around z-10">
               {/* Bar 1: Runtime */}
-              <div className="bar-col">
-                <span className="bar-val-bubble">{data.runtimeToday}h</span>
-                <div className="bar-cylinder">
+              <div className="flex flex-col items-center gap-1 h-full justify-end w-12">
+                <span className="text-[11px] font-bold text-blue-700 bg-blue-50 py-0.5 px-1 rounded shadow-xs">{data.runtimeToday}h</span>
+                <div className="w-6 h-[140px] bg-slate-100 rounded-t-md relative flex items-end overflow-hidden">
                   <div 
-                    className="bar-filled-part blue" 
+                    className="w-full bg-gradient-to-t from-blue-700 to-blue-500 rounded-t-md transition-all duration-300" 
                     style={{ height: `${runtimePercent}%` }}
                   />
                 </div>
-                <span className="bar-name-label">Runtime</span>
+                <span className="text-[10px] font-bold text-slate-600">Runtime</span>
               </div>
 
               {/* Bar 2: Production */}
-              <div className="bar-col">
-                <span className="bar-val-bubble">
+              <div className="flex flex-col items-center gap-1 h-full justify-end w-12">
+                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 py-0.5 px-1 rounded shadow-xs">
                   {data.totalProduction > 999 
                     ? `${(data.totalProduction / 1000).toFixed(1)}k` 
                     : data.totalProduction}
                 </span>
-                <div className="bar-cylinder">
+                <div className="w-6 h-[140px] bg-slate-100 rounded-t-md relative flex items-end overflow-hidden">
                   <div 
-                    className="bar-filled-part emerald" 
+                    className="w-full bg-gradient-to-t from-emerald-700 to-emerald-500 rounded-t-md transition-all duration-300" 
                     style={{ height: `${prodPercent}%` }}
                   />
                 </div>
-                <span className="bar-name-label">Production</span>
+                <span className="text-[10px] font-bold text-slate-600">Production</span>
               </div>
 
               {/* Bar 3: Output / Hr */}
-              <div className="bar-col">
-                <span className="bar-val-bubble">{data.hourOfProduction}/h</span>
-                <div className="bar-cylinder">
+              <div className="flex flex-col items-center gap-1 h-full justify-end w-12">
+                <span className="text-[11px] font-bold text-amber-700 bg-amber-50 py-0.5 px-1 rounded shadow-xs">{data.hourOfProduction}/h</span>
+                <div className="w-6 h-[140px] bg-slate-100 rounded-t-md relative flex items-end overflow-hidden">
                   <div 
-                    className="bar-filled-part amber" 
+                    className="w-full bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-md transition-all duration-300" 
                     style={{ height: `${hourProdPercent}%` }}
                   />
                 </div>
-                <span className="bar-name-label">Hr Output</span>
+                <span className="text-[10px] font-bold text-slate-600">Hr Output</span>
               </div>
 
               {/* Bar 4: Breakdown (Only for Automatic) */}
               {isAuto && (
-                <div className="bar-col">
-                  <span className="bar-val-bubble alert">{data.breakdownHours}h</span>
-                  <div className="bar-cylinder">
+                <div className="flex flex-col items-center gap-1 h-full justify-end w-12">
+                  <span className="text-[11px] font-bold text-rose-700 bg-rose-50 py-0.5 px-1 rounded shadow-xs">{data.breakdownHours}h</span>
+                  <div className="w-6 h-[140px] bg-slate-100 rounded-t-md relative flex items-end overflow-hidden">
                     <div 
-                      className="bar-filled-part rose" 
+                      className="w-full bg-gradient-to-t from-rose-700 to-rose-500 rounded-t-md transition-all duration-300" 
                       style={{ height: `${breakdownPercent}%` }}
                     />
                   </div>
-                  <span className="bar-name-label" style={{ color: 'var(--fme-rose)' }}>Breakdown</span>
+                  <span className="text-[10px] font-bold text-rose-600">Breakdown</span>
                 </div>
               )}
             </div>
@@ -433,27 +445,27 @@ export default function App() {
         </div>
 
         {/* Bottom Metadata Summary Table */}
-        <div className="card-footer-metrics">
-          <div className="footer-metric-cell">
-            <span className="f-metric-label">Runtime Today</span>
-            <span className="f-metric-val">{data.runtimeToday} hrs</span>
+        <div className="grid grid-cols-4 bg-slate-50 border-t border-slate-100 text-center py-2.5">
+          <div className="flex flex-col border-r border-slate-200">
+            <span className="text-[10px] font-bold text-slate-500 uppercase">Runtime Today</span>
+            <span className="text-xs font-bold text-slate-900">{data.runtimeToday} hrs</span>
           </div>
-          <div className="footer-metric-cell">
-            <span className="f-metric-label">Production</span>
-            <span className="f-metric-val">{data.totalProduction.toLocaleString()}</span>
+          <div className="flex flex-col border-r border-slate-200">
+            <span className="text-[10px] font-bold text-slate-500 uppercase">Production</span>
+            <span className="text-xs font-bold text-slate-900">{data.totalProduction.toLocaleString()}</span>
           </div>
-          <div className="footer-metric-cell">
-            <span className="f-metric-label">Hourly Rate</span>
-            <span className="f-metric-val">{data.hourOfProduction} u/h</span>
+          <div className="flex flex-col border-r border-slate-200">
+            <span className="text-[10px] font-bold text-slate-500 uppercase">Hourly Rate</span>
+            <span className="text-xs font-bold text-slate-900">{data.hourOfProduction} u/h</span>
           </div>
-          <div className="footer-metric-cell">
-            <span className="f-metric-label">Breakdown</span>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold text-slate-500 uppercase">Breakdown</span>
             {isAuto ? (
-              <span className={`f-metric-val ${data.breakdownHours > 1 ? 'danger' : ''}`}>
+              <span className={`text-xs font-bold ${data.breakdownHours > 1 ? 'text-rose-600' : 'text-slate-900'}`}>
                 {data.breakdownHours} hrs
               </span>
             ) : (
-              <span className="f-metric-val muted">N/A (Manual)</span>
+              <span className="text-xs font-medium text-slate-400">N/A</span>
             )}
           </div>
         </div>
@@ -462,198 +474,244 @@ export default function App() {
   };
 
   return (
-    <div className="app-shell">
-      {/* Left Sidebar */}
-      <aside className="app-sidebar">
-        <div className="sidebar-top">
-          {/* FME Brand Wordmark Logo */}
-          <div className="sidebar-logo-container">
-            <button className="sidebar-toggle-btn" title="Toggle sidebar">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="3" />
-                <path d="M9 3v18" />
-                <path d="m14 9-3 3 3 3" />
-              </svg>
-            </button>
-            <div className="fme-logo-badge">
-              <span className="fme-logo-text">
-                <span className="fme-f">F</span>
-                <span className="fme-m">m</span>
-                <span className="fme-e">e</span>
-              </span>
+    <div className="flex min-h-screen bg-slate-50 text-slate-800 w-full">
+      {/* Left Sidebar - hidden when checksheet is opened */}
+      {!isChecksheetActive && (
+        <aside className="w-64 min-w-[256px] h-screen sticky top-0 flex flex-col justify-between bg-white border-r border-slate-200 z-50 shadow-sm">
+          <div className="flex flex-col">
+            {/* FME Brand Wordmark Logo */}
+            <div className="flex items-center gap-3 p-4 border-b border-slate-100">
+              <button className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors" title="Toggle sidebar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="3" />
+                  <path d="M9 3v18" />
+                  <path d="m14 9-3 3 3 3" />
+                </svg>
+              </button>
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 rounded-lg shadow-sm">
+                <span className="text-white font-extrabold tracking-wider text-sm flex items-center">
+                  <span className="text-white">F</span>
+                  <span className="text-blue-200">m</span>
+                  <span className="text-amber-300">e</span>
+                </span>
+                <span className="text-[10px] font-bold text-blue-100 tracking-wider uppercase ml-1">MMI</span>
+              </div>
             </div>
+
+            {/* Navigation Links - Matching exact reference design */}
+            <nav className="flex flex-col gap-1 p-3">
+              <button 
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-all text-left" 
+                onClick={() => setActiveTab('dashboard')}
+              >
+                <Icons.ArrowLeft />
+                <span>Back to Main Menu</span>
+              </button>
+
+              <button 
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                  activeTab === 'dashboard' 
+                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+                onClick={() => setActiveTab('dashboard')}
+              >
+                <Icons.LayoutDashboard />
+                <span>Dashboard</span>
+              </button>
+
+              <button 
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                  activeTab === 'dojo-hiring' 
+                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+                onClick={() => setActiveTab('dojo-hiring')}
+              >
+                <HardHat size={17} />
+                <span>DOJO Hiring</span>
+              </button>
+
+              <button 
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                  activeTab === 'departments' 
+                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+                onClick={() => setActiveTab('departments')}
+              >
+                <Folder size={17} />
+                <span>Departments</span>
+              </button>
+
+              <button 
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                  activeTab === 'skill-evaluation' 
+                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+                onClick={() => setActiveTab('skill-evaluation')}
+              >
+                <Star size={17} />
+                <span>Skill Evaluation</span>
+              </button>
+
+              <button 
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                  activeTab === 'multi-skilling' 
+                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+                onClick={() => setActiveTab('multi-skilling')}
+              >
+                <BadgePercent size={17} />
+                <span>Multi Skilling</span>
+              </button>
+
+              <button 
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                  activeTab === 'machine-checksheet' 
+                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+                onClick={() => setActiveTab('machine-checksheet')}
+              >
+                <Icons.ClipboardList />
+                <span>Machine Checksheet</span>
+              </button>
+
+              <button 
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                  activeTab === 'contractors' 
+                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+                onClick={() => setActiveTab('contractors')}
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
+                </svg>
+                <span>Contractors</span>
+              </button>
+
+              <button 
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                  activeTab === 'designations' 
+                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+                onClick={() => setActiveTab('designations')}
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <circle cx="8" cy="12" r="2" />
+                  <path d="M14 9h4M14 15h4" />
+                </svg>
+                <span>Designations</span>
+              </button>
+
+              <button 
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                  activeTab === 'test-paper' 
+                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+                onClick={() => setActiveTab('test-paper')}
+              >
+                <FileSpreadsheet size={17} />
+                <span className="flex-1 text-left">Test Paper</span>
+                <ChevronDown size={14} className="opacity-60" />
+              </button>
+            </nav>
           </div>
 
-          {/* Navigation Links - Matching exact reference design */}
-          <nav className="sidebar-nav">
-            <button className="nav-item back-menu" onClick={() => setActiveTab('dashboard')}>
-              <Icons.ArrowLeft />
-              <span>Back to Main Menu</span>
+          <div className="p-3 border-t border-slate-100">
+            <button className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-all text-left">
+              <Icons.LogOut />
+              <span>Logout</span>
             </button>
-
-            <button 
-              className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dashboard')}
-            >
-              <Icons.LayoutDashboard />
-              <span>Dashboard</span>
-            </button>
-
-            <button 
-              className={`nav-item ${activeTab === 'dojo-hiring' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dojo-hiring')}
-            >
-              <HardHat size={17} />
-              <span>DOJO Hiring</span>
-            </button>
-
-            <button 
-              className={`nav-item ${activeTab === 'departments' ? 'active' : ''}`}
-              onClick={() => setActiveTab('departments')}
-            >
-              <Folder size={17} />
-              <span>Departments</span>
-            </button>
-
-            <button 
-              className={`nav-item ${activeTab === 'skill-evaluation' ? 'active' : ''}`}
-              onClick={() => setActiveTab('skill-evaluation')}
-            >
-              <Star size={17} />
-              <span>Skill Evaluation</span>
-            </button>
-
-            <button 
-              className={`nav-item ${activeTab === 'multi-skilling' ? 'active' : ''}`}
-              onClick={() => setActiveTab('multi-skilling')}
-            >
-              <BadgePercent size={17} />
-              <span>Multi Skilling</span>
-            </button>
-
-            <button 
-              className={`nav-item ${activeTab === 'machine-checksheet' ? 'active' : ''}`}
-              onClick={() => setActiveTab('machine-checksheet')}
-            >
-              <Icons.ClipboardList />
-              <span>Machine Checksheet</span>
-            </button>
-
-            <button 
-              className={`nav-item ${activeTab === 'contractors' ? 'active' : ''}`}
-              onClick={() => setActiveTab('contractors')}
-            >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
-              </svg>
-              <span>Contractors</span>
-            </button>
-
-            <button 
-              className={`nav-item ${activeTab === 'designations' ? 'active' : ''}`}
-              onClick={() => setActiveTab('designations')}
-            >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <circle cx="8" cy="12" r="2" />
-                <path d="M14 9h4M14 15h4" />
-              </svg>
-              <span>Designations</span>
-            </button>
-
-            <button 
-              className={`nav-item ${activeTab === 'test-paper' ? 'active' : ''}`}
-              onClick={() => setActiveTab('test-paper')}
-            >
-              <FileSpreadsheet size={17} />
-              <span style={{ flex: 1, textAlign: 'left' }}>Test Paper</span>
-              <ChevronDown size={14} style={{ opacity: 0.6 }} />
-            </button>
-          </nav>
-        </div>
-
-        <div className="sidebar-bottom">
-          <button className="nav-item logout">
-            <Icons.LogOut />
-            <span>Logout</span>
-          </button>
-        </div>
-      </aside>
+          </div>
+        </aside>
+      )}
 
       {/* Main Work Area */}
-      <div className="app-main">
-        {/* Top Header / Breadcrumbs Bar */}
-        <header className="top-header">
-          <div className="breadcrumb-area">
-            <span className="breadcrumb-home" onClick={() => setActiveTab('dashboard')}>
-              <Icons.Home />
-            </span>
-            <span className="breadcrumb-sep">&gt;</span>
-            <span className="breadcrumb-current">
-              {activeTab === 'machine-checksheet'
-                ? 'Machine Checksheet'
-                : activeTab === 'operators'
-                ? 'Operators'
-                : activeTab === 'dashboard'
-                ? 'Dashboard'
-                : activeTab.replace('-', ' ')}
-            </span>
-          </div>
-
-          <div className="top-header-right">
-            <button className="action-icon-btn" title="Change Language">
-              <Globe size={16} />
-              <span style={{ marginLeft: 5, fontSize: 12 }}>EN</span>
-            </button>
-            <button className="action-icon-btn" title="Download">
-              <Download size={16} />
-            </button>
-            <button className="action-icon-btn" title="Settings">
-              <Settings size={16} />
-            </button>
-            <button className="action-icon-btn" title="Notifications">
-              <Bell size={16} />
-              <span className="notification-dot"></span>
-            </button>
-            <div className="user-avatar-pill" title="User Profile - YY">
-              YY
-              <span className="user-avatar-dot"></span>
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top Header / Breadcrumbs Bar - hidden when checksheet is opened */}
+        {!isChecksheetActive && (
+          <header className="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 flex items-center justify-between px-6 shadow-sm">
+            <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+              <span className="cursor-pointer hover:text-blue-600 flex items-center" onClick={() => setActiveTab('dashboard')}>
+                <Icons.Home />
+              </span>
+              <span className="text-slate-300 font-bold">&gt;</span>
+              <span className="font-semibold text-slate-800 capitalize">
+                {activeTab === 'machine-checksheet'
+                  ? 'Machine Checksheet'
+                  : activeTab === 'operators'
+                  ? 'Operators'
+                  : activeTab === 'dashboard'
+                  ? 'Dashboard'
+                  : activeTab.replace('-', ' ')}
+              </span>
             </div>
-          </div>
-        </header>
+
+            <div className="flex items-center gap-2">
+              <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50" title="Change Language">
+                <Globe size={16} />
+                <span className="text-xs font-bold">EN</span>
+              </button>
+              <button className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors" title="Download">
+                <Download size={16} />
+              </button>
+              <button className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors" title="Settings">
+                <Settings size={16} />
+              </button>
+              <button className="relative p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors" title="Notifications">
+                <Bell size={16} />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500"></span>
+              </button>
+              <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 text-white font-bold text-xs shadow-sm cursor-pointer ml-1" title="User Profile - YY">
+                YY
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+              </div>
+            </div>
+          </header>
+        )}
 
         {/* Page Content */}
-        <main className="page-content">
+        <main className={isChecksheetActive ? 'w-full min-h-screen bg-slate-50' : 'flex-1 p-5 md:p-7 flex flex-col gap-6 w-full'}>
           {activeTab === 'machine-checksheet' || activeTab === 'operators' ? (
-            <OperatorsPage />
+            <MachineChecksheet onChecksheetStateChange={setIsChecksheetActive} />
           ) : (
             <>
           {/* Title and Top Actions */}
-          <div className="page-title-row">
-            <div className="page-title-group">
-              <h1>Daily MMI Machine Operations</h1>
-              <p>Operational date: <strong>{formattedDate}</strong> — Live telemetry data per selected day and shift</p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Daily MMI Machine Operations</h1>
+              <p className="text-xs font-medium text-slate-500">
+                Operational date: <strong className="text-slate-700 font-bold">{formattedDate}</strong> — Live telemetry data per selected day and shift
+              </p>
             </div>
-            <div className="header-action-buttons">
-              <span className="date-indicator-badge">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700">
                 <Icons.Calendar /> Date: {formattedDate}
               </span>
-              <button className="btn-primary-blue">
+              <button className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-800 hover:to-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all">
                 <Icons.Calendar /> Export Daily Log
               </button>
             </div>
           </div>
 
           {/* FME Standard Filter Toolbar with Date Selector */}
-          <div className="fme-filter-card">
-            <div className="filter-header-bar">
-              <div className="filter-header-title">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col gap-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-800 uppercase tracking-wider">
                 <Icons.Sliders />
                 <span>Single Day Filters & Controls</span>
               </div>
               <button 
-                className="btn-outline-action" 
+                className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors" 
                 onClick={() => {
                   setSelectedDate('2026-09-16');
                   setSelectedShift('All');
@@ -665,17 +723,17 @@ export default function App() {
               </button>
             </div>
 
-            <div className="filter-controls-row">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Date Filter Picker */}
-              <div className="filter-item">
-                <label className="filter-label">SELECT DATE</label>
-                <div className="clean-input-with-icon">
-                  <span className="input-icon">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">SELECT DATE</label>
+                <div className="relative flex items-center">
+                  <span className="absolute left-3 text-slate-400 pointer-events-none">
                     <Icons.Calendar />
                   </span>
                   <input 
                     type="date"
-                    className="clean-input date-input"
+                    className="w-full pl-9 pr-3 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
                   />
@@ -683,10 +741,10 @@ export default function App() {
               </div>
 
               {/* Shift Filter */}
-              <div className="filter-item">
-                <label className="filter-label">SHIFT SELECTION</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">SHIFT SELECTION</label>
                 <select 
-                  className="clean-select"
+                  className="w-full px-3 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
                   value={selectedShift}
                   onChange={(e) => setSelectedShift(e.target.value)}
                 >
@@ -698,10 +756,10 @@ export default function App() {
               </div>
 
               {/* Target Department Filter */}
-              <div className="filter-item">
-                <label className="filter-label">TARGET DEPARTMENT</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">TARGET DEPARTMENT</label>
                 <select 
-                  className="clean-select"
+                  className="w-full px-3 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
                   value={selectedDepartment}
                   onChange={(e) => setSelectedDepartment(e.target.value)}
                 >
@@ -716,16 +774,15 @@ export default function App() {
               </div>
 
               {/* Search Bar */}
-              <div className="filter-item" style={{ flex: 1, minWidth: 220 }}>
-                <label className="filter-label">SEARCH MACHINE</label>
-                <div className="clean-input-with-icon">
-                  <span className="input-icon">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">SEARCH MACHINE</label>
+                <div className="relative flex items-center">
+                  <span className="absolute left-3 text-slate-400 pointer-events-none">
                     <Icons.Search />
                   </span>
                   <input 
                     type="text"
-                    className="clean-input"
-                    style={{ width: '100%' }}
+                    className="w-full pl-9 pr-3 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
                     placeholder="Search Machine Name, ID, or Model..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -736,85 +793,85 @@ export default function App() {
           </div>
 
           {/* High-Level Single Day KPI Summary Overview */}
-          <div className="kpi-row">
-            <div className="kpi-card blue">
-              <div className="kpi-icon-box">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white border-l-4 border-l-blue-600 border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-4">
+              <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
                 <Icons.Clock />
               </div>
-              <div className="kpi-details">
-                <span className="kpi-label">TOTAL RUNTIME ({formattedDate})</span>
-                <div className="kpi-val-group">
-                  <span className="kpi-value">{summaryStats.totalRuntime}</span>
-                  <span className="kpi-unit">hrs</span>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">TOTAL RUNTIME ({formattedDate})</span>
+                <div className="flex items-baseline gap-1 mt-0.5">
+                  <span className="text-xl font-extrabold text-slate-900">{summaryStats.totalRuntime}</span>
+                  <span className="text-xs font-semibold text-slate-500">hrs</span>
                 </div>
-                <span className="kpi-sub">Total active runtime on selected date</span>
+                <span className="text-[11px] font-medium text-slate-400 mt-0.5">Total active runtime on selected date</span>
               </div>
             </div>
 
-            <div className="kpi-card emerald">
-              <div className="kpi-icon-box">
+            <div className="bg-white border-l-4 border-l-emerald-500 border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-4">
+              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
                 <Icons.Layers />
               </div>
-              <div className="kpi-details">
-                <span className="kpi-label">TOTAL PRODUCTION</span>
-                <div className="kpi-val-group">
-                  <span className="kpi-value">{summaryStats.totalProd}</span>
-                  <span className="kpi-unit">units</span>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">TOTAL PRODUCTION</span>
+                <div className="flex items-baseline gap-1 mt-0.5">
+                  <span className="text-xl font-extrabold text-slate-900">{summaryStats.totalProd}</span>
+                  <span className="text-xs font-semibold text-slate-500">units</span>
                 </div>
-                <span className="kpi-sub">Produced volume on {formattedDate}</span>
+                <span className="text-[11px] font-medium text-slate-400 mt-0.5">Produced volume on {formattedDate}</span>
               </div>
             </div>
 
-            <div className="kpi-card amber">
-              <div className="kpi-icon-box">
+            <div className="bg-white border-l-4 border-l-amber-500 border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-4">
+              <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
                 <Icons.TrendingUp />
               </div>
-              <div className="kpi-details">
-                <span className="kpi-label">AVG OUTPUT / HR</span>
-                <div className="kpi-val-group">
-                  <span className="kpi-value">{summaryStats.avgProductionRate}</span>
-                  <span className="kpi-unit">u/hr</span>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">AVG OUTPUT / HR</span>
+                <div className="flex items-baseline gap-1 mt-0.5">
+                  <span className="text-xl font-extrabold text-slate-900">{summaryStats.avgProductionRate}</span>
+                  <span className="text-xs font-semibold text-slate-500">u/hr</span>
                 </div>
-                <span className="kpi-sub">Normalized throughput for selected date</span>
+                <span className="text-[11px] font-medium text-slate-400 mt-0.5">Normalized throughput for selected date</span>
               </div>
             </div>
 
-            <div className="kpi-card rose">
-              <div className="kpi-icon-box">
+            <div className="bg-white border-l-4 border-l-rose-500 border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-4">
+              <div className="p-3 bg-rose-50 text-rose-600 rounded-xl">
                 <Icons.AlertTriangle />
               </div>
-              <div className="kpi-details">
-                <span className="kpi-label">BREAKDOWN DOWNTIME</span>
-                <div className="kpi-val-group">
-                  <span className="kpi-value">{summaryStats.totalBreakdown}</span>
-                  <span className="kpi-unit">hrs</span>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">BREAKDOWN DOWNTIME</span>
+                <div className="flex items-baseline gap-1 mt-0.5">
+                  <span className="text-xl font-extrabold text-slate-900">{summaryStats.totalBreakdown}</span>
+                  <span className="text-xs font-semibold text-slate-500">hrs</span>
                 </div>
-                <span className="kpi-sub">Automatic machines breakdown on date</span>
+                <span className="text-[11px] font-medium text-slate-400 mt-0.5">Automatic machines breakdown on date</span>
               </div>
             </div>
           </div>
 
           {/* Reference Color Legend Strip matching FME style */}
-          <div className="fme-legend-card">
-            <div className="legend-guide-title">
+          <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="font-bold text-slate-700">
               <span>Graph Bar Parameter References ({formattedDate}):</span>
             </div>
-            <div className="legend-chips-list">
-              <div className="legend-chip-item">
-                <span className="legend-color-dot" style={{ backgroundColor: '#2563eb' }}></span>
+            <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-600">
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-blue-600 inline-block shadow-sm"></span>
                 <span>Runtime (hrs)</span>
               </div>
-              <div className="legend-chip-item">
-                <span className="legend-color-dot" style={{ backgroundColor: '#10b981' }}></span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-emerald-500 inline-block shadow-sm"></span>
                 <span>Production (units)</span>
               </div>
-              <div className="legend-chip-item">
-                <span className="legend-color-dot" style={{ backgroundColor: '#f59e0b' }}></span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-amber-500 inline-block shadow-sm"></span>
                 <span>Hour Output Rate (u/h)</span>
               </div>
-              <div className="legend-chip-item">
-                <span className="legend-color-dot" style={{ backgroundColor: '#ef4444' }}></span>
-                <span>Breakdown (hrs) - <strong>Automatic Only</strong></span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-rose-500 inline-block shadow-sm"></span>
+                <span>Breakdown (hrs) - <strong className="text-slate-800 font-bold">Automatic Only</strong></span>
               </div>
             </div>
           </div>
@@ -822,28 +879,30 @@ export default function App() {
           {/* ======================================================== */}
           {/* SECTION 1: AUTOMATIC MACHINES (4-BAR GRAPHS) */}
           {/* ======================================================== */}
-          <div className="section-block">
-            <div className="section-header-banner auto-banner">
-              <div className="section-header-left">
-                <span className="category-icon-badge auto">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white px-5 py-3.5 rounded-xl shadow-sm">
+              <div className="flex items-center gap-3">
+                <span className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
                   <Icons.Zap />
                 </span>
                 <div>
-                  <h2 className="section-title">Automatic Machines (4-Bar Graphs)</h2>
-                  <p className="section-subtitle">
+                  <h2 className="text-base font-bold tracking-tight text-white">Automatic Machines (4-Bar Graphs)</h2>
+                  <p className="text-xs text-blue-100 font-medium">
                     Includes: 1. Runtime &bull; 2. Production &bull; 3. Hourly Output &bull; 4. Breakdown Downtime
                   </p>
                 </div>
               </div>
-              <span className="count-tag auto-tag">{automaticMachines.length} Machines</span>
+              <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold text-white border border-white/20">
+                {automaticMachines.length} Machines
+              </span>
             </div>
 
-            <div className="machines-grid">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {automaticMachines.length === 0 ? (
-                <div className="empty-data-state">
+                <div className="col-span-full bg-white border border-slate-200 rounded-xl p-12 text-center flex flex-col items-center justify-center gap-2 text-slate-400">
                   <Icons.AlertTriangle />
-                  <h3>No automatic machines match the criteria</h3>
-                  <p>Check your search query or department filter.</p>
+                  <h3 className="text-base font-bold text-slate-700">No automatic machines match the criteria</h3>
+                  <p className="text-xs text-slate-500">Check your search query or department filter.</p>
                 </div>
               ) : (
                 automaticMachines.map((machine) => renderMachineCard(machine))
@@ -854,28 +913,30 @@ export default function App() {
           {/* ======================================================== */}
           {/* SECTION 2: MANUAL MACHINES (3-BAR GRAPHS) */}
           {/* ======================================================== */}
-          <div className="section-block">
-            <div className="section-header-banner manual-banner">
-              <div className="section-header-left">
-                <span className="category-icon-badge manual">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white px-5 py-3.5 rounded-xl shadow-sm">
+              <div className="flex items-center gap-3">
+                <span className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
                   <Icons.Wrench />
                 </span>
                 <div>
-                  <h2 className="section-title">Manual Machines (3-Bar Graphs)</h2>
-                  <p className="section-subtitle">
+                  <h2 className="text-base font-bold tracking-tight text-white">Manual Machines (3-Bar Graphs)</h2>
+                  <p className="text-xs text-emerald-100 font-medium">
                     Includes: 1. Runtime &bull; 2. Production &bull; 3. Hourly Output (Breakdown not tracked)
                   </p>
                 </div>
               </div>
-              <span className="count-tag manual-tag">{manualMachines.length} Machines</span>
+              <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold text-white border border-white/20">
+                {manualMachines.length} Machines
+              </span>
             </div>
 
-            <div className="machines-grid">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {manualMachines.length === 0 ? (
-                <div className="empty-data-state">
+                <div className="col-span-full bg-white border border-slate-200 rounded-xl p-12 text-center flex flex-col items-center justify-center gap-2 text-slate-400">
                   <Icons.AlertTriangle />
-                  <h3>No manual machines match the criteria</h3>
-                  <p>Check your search query or department filter.</p>
+                  <h3 className="text-base font-bold text-slate-700">No manual machines match the criteria</h3>
+                  <p className="text-xs text-slate-500">Check your search query or department filter.</p>
                 </div>
               ) : (
                 manualMachines.map((machine) => renderMachineCard(machine))
