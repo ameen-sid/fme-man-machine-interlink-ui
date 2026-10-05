@@ -35,7 +35,7 @@ const OPERATIONAL_CHECKSHEETS = [
   {
     id: 'daily',
     name: 'Machine Daily checksheet',
-    shortDesc: 'Daily Machine Check Sheet & Abnormality Action (CHK-WH-MT-003 Rev 07 Alpha355)',
+    shortDesc: 'Daily Machine Check Sheet & Abnormality Action (CHK-WH-MT-003 Rev 07)',
     icon: CalendarCheck2,
     color: '#10b981',
     bg: '#d1fae5'
@@ -101,7 +101,7 @@ export default function OperationalChecksheets({
   onLogout
 }) {
   return (
-    <div className="flex flex-col gap-5 w-full">
+    <div className="flex flex-col gap-5 w-full ">
       {/* Header Bar */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
         <div className="flex flex-col gap-1">
@@ -149,9 +149,8 @@ export default function OperationalChecksheets({
           return (
             <div
               key={cs.id}
-              className={`bg-white border rounded-2xl p-5 flex flex-col justify-between cursor-pointer transition-all hover:-translate-y-1 hover:shadow-md ${
-                isSelected ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200 shadow-sm'
-              }`}
+              className={`bg-white border rounded-2xl p-5 flex flex-col justify-between cursor-pointer transition-all hover:-translate-y-1 hover:shadow-md ${isSelected ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200 shadow-sm'
+                }`}
               onClick={() => onSelectChecksheet && onSelectChecksheet(cs.name)}
             >
               <div className="flex items-center justify-between mb-4">

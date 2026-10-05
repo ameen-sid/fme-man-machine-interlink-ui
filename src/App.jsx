@@ -1,16 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import MachineChecksheet from './pages/MachineChecksheet';
 import {
-  Folder,
-  Star,
-  HardHat,
-  BadgePercent,
-  FileSpreadsheet,
   Globe,
   Bell,
   Settings,
   Download,
-  ChevronDown
+  PanelLeftClose,
+  PanelLeftOpen
 } from 'lucide-react';
 
 // SVG Icon Helpers matching FME portal style
@@ -249,6 +245,8 @@ export default function App() {
   const [selectedDepartment, setSelectedDepartment] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isChecksheetActive, setIsChecksheetActive] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [checksheetResetKey, setChecksheetResetKey] = useState(0);
 
   // Format date for readable display like reference: "16-09-2026"
   const formattedDate = useMemo(() => {
@@ -475,184 +473,122 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-800 w-full">
-      {/* Left Sidebar - hidden when checksheet is opened */}
+      {/* Left Sidebar - persistent & collapsible (hidden when checksheet is active for full page mode) */}
       {!isChecksheetActive && (
-        <aside className="w-64 min-w-[256px] h-screen sticky top-0 flex flex-col justify-between bg-white border-r border-slate-200 z-50 shadow-sm">
+        <aside
+          className={`${
+            isSidebarCollapsed ? 'w-20 min-w-[80px]' : 'w-64 min-w-[256px]'
+          } h-screen sticky top-0 flex flex-col justify-between bg-white border-r border-slate-200 z-50 shadow-sm transition-all duration-300 ease-in-out`}
+        >
           <div className="flex flex-col">
-            {/* FME Brand Wordmark Logo */}
-            <div className="flex items-center gap-3 p-4 border-b border-slate-100">
-              <button className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors" title="Toggle sidebar">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="3" />
-                  <path d="M9 3v18" />
-                  <path d="m14 9-3 3 3 3" />
-                </svg>
-              </button>
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 rounded-lg shadow-sm">
-                <span className="text-white font-extrabold tracking-wider text-sm flex items-center">
-                  <span className="text-white">F</span>
-                  <span className="text-blue-200">m</span>
-                  <span className="text-amber-300">e</span>
-                </span>
-                <span className="text-[10px] font-bold text-blue-100 tracking-wider uppercase ml-1">MMI</span>
+            {/* FME Brand Wordmark Logo & Toggle Button */}
+            {isSidebarCollapsed ? (
+              <div className="flex flex-col items-center gap-3 p-3 py-4 border-b border-slate-100">
+                <button
+                  onClick={() => setIsSidebarCollapsed(false)}
+                  className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors cursor-pointer"
+                  title="Expand sidebar"
+                >
+                  <PanelLeftOpen size={18} />
+                </button>
+                <div
+                  className="flex items-center justify-center w-11 h-8 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 rounded-lg shadow-sm"
+                  title="Furukawa Minda Electric"
+                >
+                  <span className="text-white font-extrabold tracking-wider text-xs">FME</span>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center justify-between p-4 border-b border-slate-100">
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 rounded-lg shadow-sm">
+                  <span className="text-white font-extrabold tracking-wider text-sm flex items-center">
+                    <span className="text-white">F</span>
+                    <span className="text-blue-200">m</span>
+                    <span className="text-amber-300">e</span>
+                  </span>
+                  <span className="text-[10px] font-bold text-blue-100 tracking-wider uppercase ml-1">MMI</span>
+                </div>
+                <button
+                  onClick={() => setIsSidebarCollapsed(true)}
+                  className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors cursor-pointer"
+                  title="Collapse sidebar"
+                >
+                  <PanelLeftClose size={18} />
+                </button>
+              </div>
+            )}
 
-            {/* Navigation Links - Matching exact reference design */}
+            {/* Navigation Links - ONLY Machine Checksheet */}
             <nav className="flex flex-col gap-1 p-3">
-              <button 
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-all text-left" 
-                onClick={() => setActiveTab('dashboard')}
-              >
-                <Icons.ArrowLeft />
-                <span>Back to Main Menu</span>
-              </button>
-
-              <button 
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
-                  activeTab === 'dashboard' 
-                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-                onClick={() => setActiveTab('dashboard')}
-              >
-                <Icons.LayoutDashboard />
-                <span>Dashboard</span>
-              </button>
-
-              <button 
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
-                  activeTab === 'dojo-hiring' 
-                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-                onClick={() => setActiveTab('dojo-hiring')}
-              >
-                <HardHat size={17} />
-                <span>DOJO Hiring</span>
-              </button>
-
-              <button 
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
-                  activeTab === 'departments' 
-                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-                onClick={() => setActiveTab('departments')}
-              >
-                <Folder size={17} />
-                <span>Departments</span>
-              </button>
-
-              <button 
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
-                  activeTab === 'skill-evaluation' 
-                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-                onClick={() => setActiveTab('skill-evaluation')}
-              >
-                <Star size={17} />
-                <span>Skill Evaluation</span>
-              </button>
-
-              <button 
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
-                  activeTab === 'multi-skilling' 
-                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-                onClick={() => setActiveTab('multi-skilling')}
-              >
-                <BadgePercent size={17} />
-                <span>Multi Skilling</span>
-              </button>
-
-              <button 
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
-                  activeTab === 'machine-checksheet' 
-                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-                onClick={() => setActiveTab('machine-checksheet')}
-              >
-                <Icons.ClipboardList />
-                <span>Machine Checksheet</span>
-              </button>
-
-              <button 
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
-                  activeTab === 'contractors' 
-                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-                onClick={() => setActiveTab('contractors')}
-              >
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
-                </svg>
-                <span>Contractors</span>
-              </button>
-
-              <button 
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
-                  activeTab === 'designations' 
-                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-                onClick={() => setActiveTab('designations')}
-              >
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <circle cx="8" cy="12" r="2" />
-                  <path d="M14 9h4M14 15h4" />
-                </svg>
-                <span>Designations</span>
-              </button>
-
-              <button 
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
-                  activeTab === 'test-paper' 
-                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md' 
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-                onClick={() => setActiveTab('test-paper')}
-              >
-                <FileSpreadsheet size={17} />
-                <span className="flex-1 text-left">Test Paper</span>
-                <ChevronDown size={14} className="opacity-60" />
-              </button>
+              {isSidebarCollapsed ? (
+                <button
+                  className="flex items-center justify-center w-11 h-11 mx-auto rounded-xl text-xs font-semibold bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20 transition-all cursor-pointer hover:brightness-110"
+                  onClick={() => {
+                    setActiveTab('machine-checksheet');
+                    setIsChecksheetActive(false);
+                    setChecksheetResetKey(prev => prev + 1);
+                  }}
+                  title="Machine Checksheet"
+                >
+                  <Icons.ClipboardList />
+                </button>
+              ) : (
+                <button
+                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20 transition-all text-left cursor-pointer hover:brightness-110"
+                  onClick={() => {
+                    setActiveTab('machine-checksheet');
+                    setIsChecksheetActive(false);
+                    setChecksheetResetKey(prev => prev + 1);
+                  }}
+                  title="Machine Checksheet"
+                >
+                  <Icons.ClipboardList />
+                  <span className="font-bold">Machine Checksheet</span>
+                </button>
+              )}
             </nav>
           </div>
 
+          {/* Footer Logout */}
           <div className="p-3 border-t border-slate-100">
-            <button className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-all text-left">
-              <Icons.LogOut />
-              <span>Logout</span>
-            </button>
+            {isSidebarCollapsed ? (
+              <button
+                className="flex items-center justify-center w-11 h-11 mx-auto rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-all cursor-pointer"
+                title="Logout"
+              >
+                <Icons.LogOut />
+              </button>
+            ) : (
+              <button className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-all text-left cursor-pointer">
+                <Icons.LogOut />
+                <span>Logout</span>
+              </button>
+            )}
           </div>
         </aside>
       )}
 
       {/* Main Work Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className={`flex-1 flex flex-col min-w-0 ${isChecksheetActive ? 'w-full' : ''}`}>
         {/* Top Header / Breadcrumbs Bar - hidden when checksheet is opened */}
         {!isChecksheetActive && (
           <header className="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 flex items-center justify-between px-6 shadow-sm">
             <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-              <span className="cursor-pointer hover:text-blue-600 flex items-center" onClick={() => setActiveTab('dashboard')}>
+              <button
+                type="button"
+                className="cursor-pointer hover:text-blue-600 flex items-center bg-transparent border-none p-0 text-slate-500"
+                onClick={() => {
+                  setActiveTab('machine-checksheet');
+                  setIsChecksheetActive(false);
+                  setChecksheetResetKey(prev => prev + 1);
+                }}
+                title="Go to Machine Checksheet Overview"
+              >
                 <Icons.Home />
-              </span>
+              </button>
               <span className="text-slate-300 font-bold">&gt;</span>
-              <span className="font-semibold text-slate-800 capitalize">
-                {activeTab === 'machine-checksheet'
-                  ? 'Machine Checksheet'
-                  : activeTab === 'operators'
-                  ? 'Operators'
-                  : activeTab === 'dashboard'
-                  ? 'Dashboard'
-                  : activeTab.replace('-', ' ')}
+              <span className="font-semibold text-slate-800">
+                Machine Checksheet
               </span>
             </div>
 
@@ -681,9 +617,7 @@ export default function App() {
 
         {/* Page Content */}
         <main className={isChecksheetActive ? 'w-full min-h-screen bg-slate-50' : 'flex-1 p-5 md:p-7 flex flex-col gap-6 w-full'}>
-          {activeTab === 'machine-checksheet' || activeTab === 'operators' ? (
-            <MachineChecksheet onChecksheetStateChange={setIsChecksheetActive} />
-          ) : (
+          {activeTab === 'dashboard' ? (
             <>
           {/* Title and Top Actions */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -944,6 +878,11 @@ export default function App() {
             </div>
           </div>
           </>
+          ) : (
+            <MachineChecksheet 
+              key={checksheetResetKey}
+              onChecksheetStateChange={setIsChecksheetActive} 
+            />
           )}
         </main>
       </div>

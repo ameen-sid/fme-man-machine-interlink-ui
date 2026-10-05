@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { 
-  ShieldAlert, 
-  Save, 
-  RotateCcw, 
-  Plus, 
-  Eye, 
-  Camera, 
-  Cpu, 
-  Layers 
+import {
+  ShieldAlert,
+  Save,
+  RotateCcw,
+  Plus,
+  Eye,
+  Camera,
+  Cpu,
+  Layers,
+  Upload,
+  X,
+  Trash2,
+  Image as ImageIcon
 } from 'lucide-react';
 
 // Master initial items directly from user's provided Poka-Yoke format
@@ -211,64 +215,105 @@ export default function PokayokeChecksheet({ machine, onClose }) {
     }
   };
 
-  // Render photo mock icon & thumbnail based on user image type
-  const renderPhotoCard = (type) => {
-    switch (type) {
-      case 'pika':
-        return (
-          <div className="border border-slate-300 rounded bg-white p-1 flex flex-col items-center gap-1">
-            <div className="w-[76px] h-[52px] rounded flex items-center justify-center text-[9px] font-extrabold text-white bg-gradient-to-br from-sky-600 to-sky-700">
-              <Layers size={18} />
+  const [photoPreview, setPhotoPreview] = useState(null);
+
+  const handlePhotoUpload = (itemIdx, file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      setItems(prev => {
+        const copy = [...prev];
+        copy[itemIdx] = { ...copy[itemIdx], customPhoto: dataUrl };
+        return copy;
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemovePhoto = (itemIdx, e) => {
+    e.stopPropagation();
+    setItems(prev => {
+      const copy = [...prev];
+      copy[itemIdx] = { ...copy[itemIdx], customPhoto: null };
+      return copy;
+    });
+  };
+
+  // Render photo card with upload, view, change, and remove functionality
+  const renderPhotoCard = (item, itemIdx) => {
+    const fileInputId = `photo-upload-${item.id}`;
+
+    if (item.customPhoto) {
+      return (
+        <div className="border border-slate-300 rounded bg-white p-1 flex flex-col items-center gap-1 group relative">
+          <input
+            id={fileInputId}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files?.[0]) handlePhotoUpload(itemIdx, e.target.files[0]);
+            }}
+          />
+          <div
+            className="w-[76px] h-[52px] rounded overflow-hidden relative cursor-pointer group shadow-sm bg-slate-100"
+            onClick={() => setPhotoPreview({ url: item.customPhoto, title: item.pokayokeName, process: item.process })}
+            title="Click to view photo full size"
+          >
+            <img src={item.customPhoto} alt={item.pokayokeName} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-1 transition-opacity">
+              <span className="p-1 rounded-full bg-white/90 text-slate-900 shadow">
+                <Eye size={12} />
+              </span>
             </div>
-            <span className="text-[9px] text-slate-500 font-bold">Pika System</span>
           </div>
-        );
-      case 'cfm':
-        return (
-          <div className="border border-slate-300 rounded bg-white p-1 flex flex-col items-center gap-1">
-            <div className="w-[76px] h-[52px] rounded flex items-center justify-center text-[9px] font-extrabold text-white bg-gradient-to-br from-slate-900 to-slate-700">
-              <Cpu size={18} />
-            </div>
-            <span className="text-[9px] text-slate-500 font-bold">CFM Screen</span>
+          <div className="flex items-center gap-1.5 justify-center w-full">
+            <label
+              htmlFor={fileInputId}
+              className="text-[9px] font-extrabold text-blue-600 hover:text-blue-800 cursor-pointer"
+              title="Change Photo"
+            >
+              Change
+            </label>
+            <span className="text-slate-300">•</span>
+            <button
+              type="button"
+              onClick={(e) => handleRemovePhoto(itemIdx, e)}
+              className="text-[9px] font-extrabold text-rose-500 hover:text-rose-700 bg-transparent border-none p-0 cursor-pointer"
+              title="Remove Photo"
+            >
+              Delete
+            </button>
           </div>
-        );
-      case 'camera':
-        return (
-          <div className="border border-slate-300 rounded bg-white p-1 flex flex-col items-center gap-1">
-            <div className="w-[76px] h-[52px] rounded flex items-center justify-center text-[9px] font-extrabold text-white bg-gradient-to-br from-emerald-600 to-emerald-800">
-              <Camera size={18} />
-            </div>
-            <span className="text-[9px] text-slate-500 font-bold">Vision Jig</span>
-          </div>
-        );
-      case 'sensor':
-        return (
-          <div className="border border-slate-300 rounded bg-white p-1 flex flex-col items-center gap-1">
-            <div className="w-[76px] h-[52px] rounded flex items-center justify-center text-[9px] font-extrabold text-white bg-gradient-to-br from-amber-600 to-amber-700">
-              <Eye size={18} />
-            </div>
-            <span className="text-[9px] text-slate-500 font-bold">Ferrule Jig</span>
-          </div>
-        );
-      case 'temp':
-        return (
-          <div className="border border-slate-300 rounded bg-white p-1 flex flex-col items-center gap-1">
-            <div className="w-[76px] h-[52px] rounded flex items-center justify-center text-xs font-bold text-red-500 font-mono bg-gray-900 border border-gray-700">
-              <span>300°C</span>
-            </div>
-            <span className="text-[9px] text-slate-500 font-bold">Temp Sensor</span>
-          </div>
-        );
-      default:
-        return (
-          <div className="border border-slate-300 rounded bg-white p-1 flex flex-col items-center gap-1">
-            <div className="w-[76px] h-[52px] rounded flex items-center justify-center text-[9px] font-extrabold text-white bg-gradient-to-br from-slate-900 to-slate-700">
-              <ShieldAlert size={18} />
-            </div>
-            <span className="text-[9px] text-slate-500 font-bold">Pokayoke</span>
-          </div>
-        );
+        </div>
+      );
     }
+
+    return (
+      <div className="border border-dashed border-slate-300 hover:border-blue-500 rounded bg-white hover:bg-blue-50/40 p-1 flex flex-col items-center gap-1 transition-all">
+        <input
+          id={fileInputId}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            if (e.target.files?.[0]) handlePhotoUpload(itemIdx, e.target.files[0]);
+          }}
+        />
+        <label
+          htmlFor={fileInputId}
+          className="w-[76px] h-[52px] rounded flex flex-col items-center justify-center cursor-pointer bg-slate-50 hover:bg-blue-50 border border-slate-200 text-slate-600 hover:text-blue-600 transition-all gap-0.5"
+          title="Click to add or upload photo"
+        >
+          <Camera size={16} className="text-blue-600" />
+          <span className="text-[9px] font-extrabold text-blue-700">+ Add Photo</span>
+        </label>
+        <span className="text-[8.5px] text-slate-500 font-bold truncate max-w-[76px]">
+          {item.photoType === 'pika' ? 'Pika System' : item.photoType === 'cfm' ? 'CFM Screen' : item.photoType === 'camera' ? 'Vision Jig' : item.photoType === 'sensor' ? 'Ferrule Jig' : item.photoType === 'temp' ? 'Temp Sensor' : 'Pokayoke'}
+        </span>
+      </div>
+    );
   };
 
   const daysList = Array.from({ length: 20 }, (_, i) => i + 1);
@@ -301,22 +346,22 @@ export default function PokayokeChecksheet({ machine, onClose }) {
               {savedToast}
             </div>
           )}
-          <button 
+          <button
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
             onClick={handleSave}
           >
             <Save size={15} />
             <span>Save Record</span>
           </button>
-          <button 
+          <button
             className="inline-flex items-center gap-1.5 p-2 rounded-lg text-xs font-bold cursor-pointer transition-all bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-600"
-            onClick={handleReset} 
+            onClick={handleReset}
             title="Reset table"
           >
             <RotateCcw size={15} />
           </button>
           {onClose && (
-            <button 
+            <button
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-rose-600"
               onClick={onClose}
             >
@@ -346,24 +391,24 @@ export default function PokayokeChecksheet({ machine, onClose }) {
           <div className="grid grid-cols-4 bg-slate-900 gap-px">
             <div className="bg-white flex items-center p-1.5 px-2.5 text-xs gap-1.5">
               <span className="font-extrabold text-slate-900 whitespace-nowrap">MACHINE / STATION:</span>
-              <input 
-                className="border-none bg-transparent w-full text-xs font-bold text-blue-800 outline-none" 
+              <input
+                className="border-none bg-transparent w-full text-xs font-bold text-blue-800 outline-none"
                 value={headerInfo.station}
                 onChange={(e) => setHeaderInfo({ ...headerInfo, station: e.target.value })}
               />
             </div>
             <div className="bg-white flex items-center p-1.5 px-2.5 text-xs gap-1.5">
               <span className="font-extrabold text-slate-900 whitespace-nowrap">LINE / PROCESS:</span>
-              <input 
-                className="border-none bg-transparent w-full text-xs font-bold text-blue-800 outline-none" 
+              <input
+                className="border-none bg-transparent w-full text-xs font-bold text-blue-800 outline-none"
                 value={headerInfo.line}
                 onChange={(e) => setHeaderInfo({ ...headerInfo, line: e.target.value })}
               />
             </div>
             <div className="bg-white flex items-center p-1.5 px-2.5 text-xs gap-1.5">
               <span className="font-extrabold text-slate-900 whitespace-nowrap">MONTH & YEAR:</span>
-              <input 
-                className="border-none bg-transparent w-full text-xs font-bold text-blue-800 outline-none" 
+              <input
+                className="border-none bg-transparent w-full text-xs font-bold text-blue-800 outline-none"
                 value={headerInfo.monthYear}
                 onChange={(e) => setHeaderInfo({ ...headerInfo, monthYear: e.target.value })}
               />
@@ -382,9 +427,9 @@ export default function PokayokeChecksheet({ machine, onClose }) {
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-extrabold bg-emerald-100 text-emerald-700 border border-emerald-300">OK = Pokayoke Active / Pass</span>
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-extrabold bg-rose-100 text-rose-700 border border-rose-300">NG = Pokayoke Bypass / Fail</span>
           </div>
-          <span className="text-[11px] text-slate-500 italic">
+          {/* <span className="text-[11px] text-slate-500 italic">
             ↔ Scroll horizontally to inspect days 1 to 20
-          </span>
+          </span> */}
         </div>
 
         {/* Master Pokayoke Grid */}
@@ -410,7 +455,7 @@ export default function PokayokeChecksheet({ machine, onClose }) {
               <tr>
                 {daysList.map(d => (
                   <th key={d} className="border border-slate-900 text-[9.5px] font-bold text-slate-600 text-center bg-slate-50 py-0.5">
-                    Status<br/>OK/NG
+                    Status<br />OK/NG
                   </th>
                 ))}
               </tr>
@@ -426,7 +471,7 @@ export default function PokayokeChecksheet({ machine, onClose }) {
                       <td rowSpan={2} className="border border-slate-900 font-bold p-1.5 px-2 align-middle">{item.process}</td>
                       <td rowSpan={2} className="border border-slate-900 font-extrabold text-blue-800 p-1.5 px-2 align-middle">{item.pokayokeName}</td>
                       <td rowSpan={2} className="border border-slate-900 p-1 text-center w-[90px] min-w-[90px] bg-slate-50 align-middle">
-                        {renderPhotoCard(item.photoType)}
+                        {renderPhotoCard(item, itemIdx)}
                       </td>
                       <td rowSpan={2} className="border border-slate-900 text-[10.5px] leading-snug text-slate-800 max-w-[280px] p-1.5 px-2 align-middle">
                         <div className="whitespace-pre-line">{item.checkingMethod}</div>
@@ -482,11 +527,11 @@ export default function PokayokeChecksheet({ machine, onClose }) {
                 <td colSpan={21} className="border border-slate-900 p-1.5 px-2.5">
                   <div className="flex items-center gap-2 text-[11px]">
                     <span>Signature / Name:</span>
-                    <input 
-                      type="text" 
-                      className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[11px] font-bold text-slate-900 outline-none w-48" 
-                      value={checkedByLeader} 
-                      onChange={(e) => setCheckedByLeader(e.target.value)} 
+                    <input
+                      type="text"
+                      className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[11px] font-bold text-slate-900 outline-none w-48"
+                      value={checkedByLeader}
+                      onChange={(e) => setCheckedByLeader(e.target.value)}
                     />
                   </div>
                 </td>
@@ -496,11 +541,11 @@ export default function PokayokeChecksheet({ machine, onClose }) {
                 <td colSpan={21} className="border border-slate-900 p-1.5 px-2.5">
                   <div className="flex items-center gap-2 text-[11px]">
                     <span>Signature / Name:</span>
-                    <input 
-                      type="text" 
-                      className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[11px] font-bold text-slate-900 outline-none w-48" 
-                      value={verifiedByIncharge} 
-                      onChange={(e) => setVerifiedByIncharge(e.target.value)} 
+                    <input
+                      type="text"
+                      className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[11px] font-bold text-slate-900 outline-none w-48"
+                      value={verifiedByIncharge}
+                      onChange={(e) => setVerifiedByIncharge(e.target.value)}
                     />
                   </div>
                 </td>
@@ -515,7 +560,7 @@ export default function PokayokeChecksheet({ machine, onClose }) {
             <h4 className="text-xs font-black text-slate-900 m-0 uppercase tracking-wide">
               Poka Yoke Observation & Corrective Action (CAPA)
             </h4>
-            <button 
+            <button
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-600"
               onClick={handleAddObservation}
             >
@@ -540,55 +585,55 @@ export default function PokayokeChecksheet({ machine, onClose }) {
               {observations.map((obs, oIdx) => (
                 <tr key={obs.id}>
                   <td className="border border-slate-900 p-1.5 align-middle">
-                    <input 
-                      type="date" 
-                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50" 
-                      value={obs.date} 
-                      onChange={(e) => handleObsChange(oIdx, 'date', e.target.value)} 
+                    <input
+                      type="date"
+                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50"
+                      value={obs.date}
+                      onChange={(e) => handleObsChange(oIdx, 'date', e.target.value)}
                     />
                   </td>
                   <td className="border border-slate-900 p-1.5 align-middle">
-                    <input 
-                      type="text" 
-                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50" 
-                      placeholder="e.g. CFM sensor detected loose contact" 
-                      value={obs.observation} 
-                      onChange={(e) => handleObsChange(oIdx, 'observation', e.target.value)} 
+                    <input
+                      type="text"
+                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50"
+                      placeholder="e.g. CFM sensor detected loose contact"
+                      value={obs.observation}
+                      onChange={(e) => handleObsChange(oIdx, 'observation', e.target.value)}
                     />
                   </td>
                   <td className="border border-slate-900 p-1.5 align-middle">
-                    <input 
-                      type="text" 
-                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50" 
-                      placeholder="e.g. Cable wear / alignment shift" 
-                      value={obs.rootCause} 
-                      onChange={(e) => handleObsChange(oIdx, 'rootCause', e.target.value)} 
+                    <input
+                      type="text"
+                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50"
+                      placeholder="e.g. Cable wear / alignment shift"
+                      value={obs.rootCause}
+                      onChange={(e) => handleObsChange(oIdx, 'rootCause', e.target.value)}
                     />
                   </td>
                   <td className="border border-slate-900 p-1.5 align-middle">
-                    <input 
-                      type="text" 
-                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50" 
-                      placeholder="e.g. Replaced cable and recalibrated" 
-                      value={obs.actionPlan} 
-                      onChange={(e) => handleObsChange(oIdx, 'actionPlan', e.target.value)} 
+                    <input
+                      type="text"
+                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50"
+                      placeholder="e.g. Replaced cable and recalibrated"
+                      value={obs.actionPlan}
+                      onChange={(e) => handleObsChange(oIdx, 'actionPlan', e.target.value)}
                     />
                   </td>
                   <td className="border border-slate-900 p-1.5 align-middle">
-                    <input 
-                      type="text" 
-                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50" 
-                      placeholder="e.g. Shift Incharge" 
-                      value={obs.responsibility} 
-                      onChange={(e) => handleObsChange(oIdx, 'responsibility', e.target.value)} 
+                    <input
+                      type="text"
+                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50"
+                      placeholder="e.g. Shift Incharge"
+                      value={obs.responsibility}
+                      onChange={(e) => handleObsChange(oIdx, 'responsibility', e.target.value)}
                     />
                   </td>
                   <td className="border border-slate-900 p-1.5 align-middle">
-                    <input 
-                      type="date" 
-                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50" 
-                      value={obs.targetDate} 
-                      onChange={(e) => handleObsChange(oIdx, 'targetDate', e.target.value)} 
+                    <input
+                      type="date"
+                      className="w-full border-none bg-transparent text-[11px] font-sans text-slate-900 outline-none focus:bg-slate-50"
+                      value={obs.targetDate}
+                      onChange={(e) => handleObsChange(oIdx, 'targetDate', e.target.value)}
                     />
                   </td>
                   <td className="border border-slate-900 p-1.5 align-middle">
@@ -617,6 +662,42 @@ export default function PokayokeChecksheet({ machine, onClose }) {
           <span>FURUKAWA MINDA ELECTRIC PVT. LTD. — QUALITY ASSURANCE</span>
         </div>
       </div>
+      {/* Photo Preview Modal */}
+      {photoPreview && (
+        <div 
+          className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+          onClick={() => setPhotoPreview(null)}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-3 px-4 border-b border-slate-100 bg-slate-50">
+              <div>
+                <h4 className="font-extrabold text-sm text-slate-900 m-0">{photoPreview.title}</h4>
+                <p className="text-xs text-slate-500 m-0">{photoPreview.process}</p>
+              </div>
+              <button 
+                onClick={() => setPhotoPreview(null)}
+                className="p-1 rounded-lg hover:bg-slate-200 text-slate-500 bg-transparent border-none cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-3 bg-slate-950 flex items-center justify-center max-h-[70vh]">
+              <img src={photoPreview.url} alt="Poka Yoke Preview" className="max-h-[65vh] max-w-full object-contain rounded" />
+            </div>
+            <div className="p-3 bg-white flex justify-end">
+              <button
+                onClick={() => setPhotoPreview(null)}
+                className="px-4 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

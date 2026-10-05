@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  CalendarCheck2, 
-  Save, 
+import {
+  CalendarCheck2,
+  Save,
   RotateCcw,
   Plus
 } from 'lucide-react';
@@ -241,7 +241,10 @@ function createEmptyGrid(points) {
   points.forEach(p => {
     grid[p.id] = {};
     for (let d = 1; d <= 31; d++) {
-      grid[p.id][d] = { A: '', B: '', C: '' };
+      grid[p.id][d] = {};
+      SHIFTS.forEach(s => {
+        grid[p.id][d][s] = '';
+      });
     }
   });
   return grid;
@@ -266,11 +269,12 @@ const INITIAL_ABNORMALITY_ROWS = [
 
 export default function DailyChecksheet({ machine, onClose }) {
   const [docMeta, setDocMeta] = useState({
-    docNo: 'CHK-WH-MT-003',
-    revNo: '07',
-    date: '15.09.2023',
-    machineName: machine?.name || 'Alpha355',
-    machineNo: machine?.id ? String(machine.id) : ''
+    docNo: 'CHK-VH-MT-002',
+    revNo: '13',
+    date: '1.07.2026',
+    modelName: 'TRD-301',
+    machineName: machine?.name || 'C&C 05',
+    machineNo: machine?.id ? String(machine.id) : '5'
   });
 
   // Empty grids (no prefilled values)
@@ -387,22 +391,22 @@ export default function DailyChecksheet({ machine, onClose }) {
               {savedToast}
             </div>
           )}
-          <button 
+          <button
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
             onClick={handleSave}
           >
             <Save size={15} />
             <span>Save Record</span>
           </button>
-          <button 
+          <button
             className="inline-flex items-center gap-1.5 p-2 rounded-lg text-xs font-bold cursor-pointer transition-all bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-600"
-            onClick={handleReset} 
+            onClick={handleReset}
             title="Reset table"
           >
             <RotateCcw size={15} />
           </button>
           {onClose && (
-            <button 
+            <button
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-rose-600"
               onClick={onClose}
             >
@@ -414,45 +418,50 @@ export default function DailyChecksheet({ machine, onClose }) {
 
       {/* Sheet Card */}
       <div className="bg-white border-[1.5px] border-slate-900 shadow-md rounded overflow-hidden">
-        {/* Header container */}
-        <div className="border-b-2 border-slate-900">
-          <div className="flex items-center justify-between px-4 py-2 border-b-[1.5px] border-slate-900 bg-slate-50">
-            <span className="text-sm font-extrabold text-slate-900 tracking-wider">FURUKAWA MINDA ELECTRIC PVT. LTD.</span>
-            <div className="flex flex-col items-end text-[11px] font-bold text-slate-700 leading-tight">
-              <span>Doc No.: <strong>{docMeta.docNo}</strong></span>
-              <span>REV: <strong>{docMeta.revNo}</strong></span>
-              <span>DATE: <strong>{docMeta.date}</strong></span>
-            </div>
-          </div>
-          <div className="text-center text-base font-black text-slate-900 py-2 tracking-widest bg-slate-100 border-b-[1.5px] border-slate-900 uppercase">
-            DAILY MACHINE CHECK SHEET
+        {/* Company Header - Top Right (as in Screenshot 2) */}
+        <div className="flex justify-end px-3 pt-2 pb-0.5 bg-white">
+          <span className="text-[12px] font-black tracking-wider text-black uppercase font-sans">
+            FURUKAWA MINDA ELECTRIC PVT. LTD.
+          </span>
+        </div>
+
+        {/* Top Header Box (Exact replica of Screenshot 1 & 2) */}
+        <div className="border-t-[1.5px] border-b-[1.5px] border-black bg-white flex items-stretch">
+          {/* Left Title: DAILY CHECK SHEET */}
+          <div className="flex-1 flex items-center px-4 py-3 bg-white">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-black uppercase m-0 font-sans">
+              DAILY CHECK SHEET
+            </h1>
           </div>
 
-          <div className="grid grid-cols-4 bg-slate-900 gap-px">
-            <div className="bg-white flex items-center px-2.5 py-1.5 text-xs gap-1.5">
-              <span className="font-extrabold text-slate-900 whitespace-nowrap">Machine Name:</span>
+          {/* Right Meta Box: Doc No, REV, DATE */}
+          <div className="w-64 min-w-[240px] border-l-[1.5px] border-black flex flex-col justify-center bg-white text-[11px] font-bold text-black font-sans">
+            <div className="border-b-[1.5px] border-black px-2.5 py-1 flex items-center">
+              <span className="whitespace-nowrap font-bold text-black text-[11px]">Doc No.:-&gt;</span>
               <input
-                className="border-none bg-transparent w-full text-xs font-bold text-blue-800 outline-none"
-                value={docMeta.machineName}
-                onChange={(e) => setDocMeta({ ...docMeta, machineName: e.target.value })}
+                type="text"
+                className="border-none bg-transparent font-bold text-black outline-none w-full ml-1 focus:bg-yellow-50 px-0.5 text-xs"
+                value={docMeta.docNo}
+                onChange={(e) => setDocMeta({ ...docMeta, docNo: e.target.value })}
               />
             </div>
-            <div className="bg-white flex items-center px-2.5 py-1.5 text-xs gap-1.5">
-              <span className="font-extrabold text-slate-900 whitespace-nowrap">Machine No:</span>
+            <div className="border-b-[1.5px] border-black px-2.5 py-1 flex items-center">
+              <span className="whitespace-nowrap font-bold text-black text-[11px]">REV: -</span>
               <input
-                className="border-none bg-transparent w-full text-xs font-bold text-blue-800 outline-none"
-                placeholder="Enter M/C No."
-                value={docMeta.machineNo}
-                onChange={(e) => setDocMeta({ ...docMeta, machineNo: e.target.value })}
+                type="text"
+                className="border-none bg-transparent font-bold text-black outline-none w-full ml-1 focus:bg-yellow-50 px-0.5 text-xs"
+                value={docMeta.revNo}
+                onChange={(e) => setDocMeta({ ...docMeta, revNo: e.target.value })}
               />
             </div>
-            <div className="bg-white flex items-center px-2.5 py-1.5 text-xs gap-1.5">
-              <span className="font-extrabold text-slate-900 whitespace-nowrap">Inspection Month:</span>
-              <span className="font-extrabold text-blue-800">Current Month</span>
-            </div>
-            <div className="bg-white flex items-center px-2.5 py-1.5 text-xs gap-1.5">
-              <span className="font-extrabold text-slate-900 whitespace-nowrap">Frequency:</span>
-              <span className="font-extrabold text-emerald-600">Shift Start (D) & Weekly (W)</span>
+            <div className="px-2.5 py-1 flex items-center">
+              <span className="whitespace-nowrap font-bold text-black text-[11px]">DATE: -</span>
+              <input
+                type="text"
+                className="border-none bg-transparent font-bold text-black outline-none w-full ml-1 focus:bg-yellow-50 px-0.5 text-xs"
+                value={docMeta.date}
+                onChange={(e) => setDocMeta({ ...docMeta, date: e.target.value })}
+              />
             </div>
           </div>
         </div>
@@ -460,87 +469,172 @@ export default function DailyChecksheet({ machine, onClose }) {
         {/* ========================================================= */}
         {/* Table 1: STARTUP CHECK POINTS (SHIFT CONFIRMATION) */}
         {/* ========================================================= */}
-        <div className="w-full overflow-x-auto border-b-[1.5px] border-slate-900">
-          <table className="w-full border-collapse text-[10.5px] min-w-[2200px]">
+        <div className="w-full overflow-x-auto border-b-[1.5px] border-black">
+          <table className="w-full border-collapse text-[10.5px] min-w-[1500px]">
             <thead>
-              <tr>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={3} style={{ width: '220px' }}>
-                  STARTUP CHECK POINTS<br/>(SHIFT CONFIRMATION)
+              {/* Row 1: TRD-301 and Releated with m/c operations Banner */}
+              <tr className="border-b-[1.5px] border-black bg-[#bfbfbf]">
+                <th
+                  className="border border-black p-1.5 text-left pl-3 font-black text-xs text-black uppercase"
+                  style={{ width: '220px' }}
+                >
+                  TRD-301
                 </th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={3} style={{ width: '100px' }}>
-                  Resp.<br/>(Who)
+                <th
+                  colSpan={37}
+                  className="border border-black p-1.5 text-center font-black italic text-xs tracking-wider text-black"
+                >
+                  Releated with m/c operations
                 </th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={3} style={{ width: '140px' }}>
-                  Check Value<br/>STD VALUE
+              </tr>
+
+              {/* Row 2: START UP CHECK POINTS, Resp., Check Value, Method, FREQ, Shift, Daily Status */}
+              <tr className="border-b border-black bg-white">
+                <th
+                  className="border border-black p-1 text-center font-black text-[10px] text-black bg-white leading-tight"
+                  style={{ width: '220px' }}
+                >
+                  START UP CHECK POINTS<br />[ SHIFT CONFIRMATION ]
                 </th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={3} style={{ width: '90px' }}>
-                  Method<br/>Measuring Method
+                <th
+                  className="border border-black p-1 text-center font-bold text-[10px] text-black bg-white"
+                  style={{ width: '85px' }}
+                >
+                  Resp.
                 </th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" colSpan={3} style={{ width: '60px' }}>
+                <th
+                  className="border border-black p-1 text-center font-bold text-[10px] text-black bg-white"
+                  style={{ width: '120px' }}
+                >
+                  Check Value
+                </th>
+                <th
+                  className="border border-black p-1 text-center font-bold text-[10px] text-black bg-white"
+                  style={{ width: '95px' }}
+                >
+                  Method
+                </th>
+                <th
+                  colSpan={2}
+                  className="border border-black p-1 text-center font-bold text-[10px] text-black bg-white"
+                  style={{ width: '48px' }}
+                >
                   FREQ
                 </th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" colSpan={93}>
-                  Daily Status (1 to 31)
+                <th
+                  rowSpan={2}
+                  className="border border-black p-0.5 text-center font-bold text-[9px] text-black bg-white w-6 leading-tight align-middle"
+                >
+                  Shif<br />t
+                </th>
+                <th
+                  colSpan={31}
+                  className="border border-black p-1 text-center font-bold text-[10px] text-black bg-white"
+                >
+                  Daily Status
                 </th>
               </tr>
-              <tr>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={2} style={{ width: '20px' }}>D</th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={2} style={{ width: '20px' }}>W</th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={2} style={{ width: '20px' }}>S</th>
-                {DAYS_31.map(d => (
-                  <th key={d} colSpan={3} className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" style={{ width: '48px' }}>
+
+              {/* Row 3: ACTIVITY, Who, STD VALUE, Measuring Method, D, W, 1..31 */}
+              <tr className="border-b-[1.5px] border-black">
+                <th className="border border-black p-1 text-center font-black text-[10px] text-black bg-[#bfbfbf]">
+                  ACTIVITY
+                </th>
+                <th className="border border-black p-1 text-center font-black text-[10px] text-black bg-[#bfbfbf]">
+                  Who
+                </th>
+                <th className="border border-black p-1 text-center font-black text-[10px] text-black bg-[#bfbfbf]">
+                  STD VALUE
+                </th>
+                <th className="border border-black p-1 text-center font-black text-[10px] text-black bg-[#bfbfbf]">
+                  Measuring Method
+                </th>
+                <th className="border border-black p-0.5 text-center font-black text-[10px] text-black bg-white w-6">
+                  D
+                </th>
+                <th className="border border-black p-0.5 text-center font-black text-[10px] text-black bg-white w-6">
+                  W
+                </th>
+                {DAYS_31.map((d) => (
+                  <th
+                    key={d}
+                    className="border border-black p-0.5 text-center font-black text-[10px] text-black bg-white w-8 min-w-[28px]"
+                  >
                     {d}
                   </th>
-                ))}
-              </tr>
-              <tr>
-                {DAYS_31.map(d => (
-                  <React.Fragment key={d}>
-                    <th className="border border-slate-900 text-center font-extrabold text-[9.5px] w-5 text-blue-700 bg-slate-50">A</th>
-                    <th className="border border-slate-900 text-center font-extrabold text-[9.5px] w-5 text-amber-700 bg-slate-50">B</th>
-                    <th className="border border-slate-900 text-center font-extrabold text-[9.5px] w-5 text-purple-700 bg-slate-50">C</th>
-                  </React.Fragment>
                 ))}
               </tr>
             </thead>
 
             <tbody>
               {INITIAL_OPERATOR_POINTS.map((pt) => (
-                <tr key={pt.id}>
-                  <td className="border border-slate-900 p-1 text-left pl-1.5 font-bold align-middle">
-                    <div>{pt.point}</div>
-                    <span className="text-[9.5px] text-slate-500 block">{pt.hindi}</span>
-                  </td>
-                  <td className="border border-slate-900 p-1 text-center text-[10px] align-middle">{pt.resp}</td>
-                  <td className="border border-slate-900 p-1 text-[10px] font-bold text-slate-900 whitespace-pre-line align-middle">{pt.stdValue}</td>
-                  <td className="border border-slate-900 p-1 text-center text-[10px] align-middle">{pt.method}</td>
-                  <td className="border border-slate-900 p-1 text-center text-xs font-black text-emerald-600 align-middle">√</td>
-                  <td className="border border-slate-900 p-1 align-middle"></td>
-                  <td className="border border-slate-900 p-1 align-middle"></td>
-                  {DAYS_31.map(d => (
-                    <React.Fragment key={d}>
-                      {SHIFTS.map(s => {
-                        const val = operatorGrid[pt.id]?.[d]?.[s] || '';
-                        return (
-                          <td key={s} className="border border-slate-900 p-0 align-middle">
-                            <input
-                              className={`w-full h-5 border-none bg-transparent text-center text-[10px] outline-none focus:bg-blue-50 ${getCellBgClass(val)}`}
-                              value={val}
-                              placeholder=""
-                              onChange={(e) => handleCellChange(setOperatorGrid, pt.id, d, s, e.target.value.toUpperCase())}
-                            />
-                          </td>
-                        );
-                      })}
-                    </React.Fragment>
-                  ))}
-                </tr>
+                <React.Fragment key={pt.id}>
+                  {/* Row for Shift A */}
+                  <tr>
+                    <td rowSpan={3} className="border border-slate-900 p-1 text-left pl-1.5 font-bold align-middle">
+                      <div>{pt.point}</div>
+                      <span className="text-[9.5px] text-slate-500 block">{pt.hindi}</span>
+                    </td>
+                    <td rowSpan={3} className="border border-slate-900 p-1 text-center text-[10px] align-middle">{pt.resp}</td>
+                    <td rowSpan={3} className="border border-slate-900 p-1 text-[10px] font-bold text-slate-900 whitespace-pre-line align-middle">{pt.stdValue}</td>
+                    <td rowSpan={3} className="border border-slate-900 p-1 text-center text-[10px] align-middle">{pt.method}</td>
+                    <td rowSpan={3} className="border border-slate-900 p-1 text-center text-xs font-black text-emerald-600 align-middle">√</td>
+                    <td rowSpan={3} className="border border-slate-900 p-1 align-middle"></td>
+                    <td className="border border-slate-900 text-center font-extrabold text-[9.5px] bg-slate-50 text-blue-700 w-6">A</td>
+                    {DAYS_31.map(d => {
+                      const val = operatorGrid[pt.id]?.[d]?.A || '';
+                      return (
+                        <td key={d} className="border border-slate-900 p-0 align-middle w-8 min-w-[28px] h-6 bg-white">
+                          <input
+                            className={`w-full h-full border-none bg-transparent text-center text-[10px] font-bold outline-none focus:bg-blue-100 ${getCellBgClass(val)}`}
+                            value={val}
+                            onChange={(e) => handleCellChange(setOperatorGrid, pt.id, d, 'A', e.target.value.toUpperCase())}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Row for Shift B */}
+                  <tr>
+                    <td className="border border-slate-900 text-center font-extrabold text-[9.5px] bg-slate-50 text-amber-700 w-6">B</td>
+                    {DAYS_31.map(d => {
+                      const val = operatorGrid[pt.id]?.[d]?.B || '';
+                      return (
+                        <td key={d} className="border border-slate-900 p-0 align-middle w-8 min-w-[28px] h-6 bg-white">
+                          <input
+                            className={`w-full h-full border-none bg-transparent text-center text-[10px] font-bold outline-none focus:bg-amber-100 ${getCellBgClass(val)}`}
+                            value={val}
+                            onChange={(e) => handleCellChange(setOperatorGrid, pt.id, d, 'B', e.target.value.toUpperCase())}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Row for Shift C */}
+                  <tr>
+                    <td className="border border-slate-900 text-center font-extrabold text-[9.5px] bg-slate-50 text-purple-700 w-6">C</td>
+                    {DAYS_31.map(d => {
+                      const val = operatorGrid[pt.id]?.[d]?.C || '';
+                      return (
+                        <td key={d} className="border border-slate-900 p-0 align-middle w-8 min-w-[28px] h-6 bg-white">
+                          <input
+                            className={`w-full h-full border-none bg-transparent text-center text-[10px] font-bold outline-none focus:bg-purple-100 ${getCellBgClass(val)}`}
+                            value={val}
+                            onChange={(e) => handleCellChange(setOperatorGrid, pt.id, d, 'C', e.target.value.toUpperCase())}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+                </React.Fragment>
               ))}
 
               {/* Operator Sign-off rows */}
               <tr className="bg-slate-50 font-bold text-[10.5px]">
                 <td colSpan={7} className="border border-slate-900 p-1 text-right font-extrabold">Filled By (M/C Operator Sign) (A Shift)</td>
-                <td colSpan={93} className="border border-slate-900 p-1 text-left pl-2">
+                <td colSpan={31} className="border border-slate-900 p-1 text-left pl-2">
                   <input
                     type="text"
                     className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[10.5px] font-bold outline-none w-60"
@@ -552,7 +646,7 @@ export default function DailyChecksheet({ machine, onClose }) {
               </tr>
               <tr className="bg-slate-50 font-bold text-[10.5px]">
                 <td colSpan={7} className="border border-slate-900 p-1 text-right font-extrabold">Filled By (M/C Operator Sign) (B Shift)</td>
-                <td colSpan={93} className="border border-slate-900 p-1 text-left pl-2">
+                <td colSpan={31} className="border border-slate-900 p-1 text-left pl-2">
                   <input
                     type="text"
                     className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[10.5px] font-bold outline-none w-60"
@@ -564,7 +658,7 @@ export default function DailyChecksheet({ machine, onClose }) {
               </tr>
               <tr className="bg-slate-50 font-bold text-[10.5px]">
                 <td colSpan={7} className="border border-slate-900 p-1 text-right font-extrabold">Filled By (M/C Operator Sign) (C Shift)</td>
-                <td colSpan={93} className="border border-slate-900 p-1 text-left pl-2">
+                <td colSpan={31} className="border border-slate-900 p-1 text-left pl-2">
                   <input
                     type="text"
                     className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[10.5px] font-bold outline-none w-60"
@@ -576,7 +670,7 @@ export default function DailyChecksheet({ machine, onClose }) {
               </tr>
               <tr className="bg-slate-50 font-bold text-[10.5px]">
                 <td colSpan={7} className="border border-slate-900 p-1 text-right font-extrabold">Supervisor - Production (Sign)</td>
-                <td colSpan={93} className="border border-slate-900 p-1 text-left pl-2">
+                <td colSpan={31} className="border border-slate-900 p-1 text-left pl-2">
                   <input
                     type="text"
                     className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[10.5px] font-bold outline-none w-60"
@@ -599,20 +693,22 @@ export default function DailyChecksheet({ machine, onClose }) {
         {/* Table 2: RELEATED WITH M/C MAINTENANCE */}
         {/* ========================================================= */}
         <div className="w-full overflow-x-auto border-b-[1.5px] border-slate-900">
-          <table className="w-full border-collapse text-[10.5px] min-w-[2200px]">
+          <table className="w-full border-collapse text-[10.5px] min-w-[1500px]">
             <thead>
               <tr>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" style={{ width: '220px' }}>MAINTENANCE CHECK POINTS</th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" style={{ width: '100px' }}>Resp.</th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" style={{ width: '140px' }}>STD VALUE</th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" style={{ width: '90px' }}>Measuring Method</th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" style={{ width: '20px' }}>D</th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" style={{ width: '20px' }}>W</th>
-                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" style={{ width: '20px' }}>S</th>
+                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={2} style={{ width: '220px' }}>MAINTENANCE CHECK POINTS</th>
+                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={2} style={{ width: '90px' }}>Resp.</th>
+                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={2} style={{ width: '130px' }}>STD VALUE</th>
+                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={2} style={{ width: '90px' }}>Measuring Method</th>
+                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" colSpan={3}>FREQ</th>
+                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" colSpan={31}>Daily Status (1 to 31)</th>
+              </tr>
+              <tr>
+                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle w-6">D</th>
+                <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle w-6">W</th>
+                <th className="border border-slate-900 p-1 bg-slate-200 font-extrabold text-slate-900 text-center text-[10px] align-middle w-6">S</th>
                 {DAYS_31.map(d => (
-                  <th key={d} colSpan={3} className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle">
-                    {d}
-                  </th>
+                  <th key={d} className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle w-8 min-w-[28px]">{d}</th>
                 ))}
               </tr>
             </thead>
@@ -620,40 +716,73 @@ export default function DailyChecksheet({ machine, onClose }) {
             <tbody>
               {/* Daily Shift Maintenance Points (4 items) */}
               {INITIAL_MAINT_SHIFT_POINTS.map((pt) => (
-                <tr key={pt.id}>
-                  <td className="border border-slate-900 p-1 text-left pl-1.5 font-bold align-middle">
-                    <div>{pt.point}</div>
-                    <span className="text-[9.5px] text-slate-500 block">{pt.hindi}</span>
-                  </td>
-                  <td className="border border-slate-900 p-1 text-center text-[10px] align-middle">{pt.resp}</td>
-                  <td className="border border-slate-900 p-1 text-[10px] font-bold text-slate-900 whitespace-pre-line align-middle">{pt.stdValue}</td>
-                  <td className="border border-slate-900 p-1 text-center text-[10px] align-middle">{pt.method}</td>
-                  <td className="border border-slate-900 p-1 text-center text-xs font-black text-emerald-600 align-middle">√</td>
-                  <td className="border border-slate-900 p-1 align-middle"></td>
-                  <td className="border border-slate-900 p-1 align-middle"></td>
-                  {DAYS_31.map(d => (
-                    <React.Fragment key={d}>
-                      {SHIFTS.map(s => {
-                        const val = maintShiftGrid[pt.id]?.[d]?.[s] || '';
-                        return (
-                          <td key={s} className="border border-slate-900 p-0 align-middle">
-                            <input
-                              className={`w-full h-5 border-none bg-transparent text-center text-[10px] outline-none focus:bg-blue-50 ${getCellBgClass(val)}`}
-                              value={val}
-                              onChange={(e) => handleCellChange(setMaintShiftGrid, pt.id, d, s, e.target.value.toUpperCase())}
-                            />
-                          </td>
-                        );
-                      })}
-                    </React.Fragment>
-                  ))}
-                </tr>
+                <React.Fragment key={pt.id}>
+                  {/* Row for Shift A */}
+                  <tr>
+                    <td rowSpan={3} className="border border-slate-900 p-1 text-left pl-1.5 font-bold align-middle">
+                      <div>{pt.point}</div>
+                      <span className="text-[9.5px] text-slate-500 block">{pt.hindi}</span>
+                    </td>
+                    <td rowSpan={3} className="border border-slate-900 p-1 text-center text-[10px] align-middle">{pt.resp}</td>
+                    <td rowSpan={3} className="border border-slate-900 p-1 text-[10px] font-bold text-slate-900 whitespace-pre-line align-middle">{pt.stdValue}</td>
+                    <td rowSpan={3} className="border border-slate-900 p-1 text-center text-[10px] align-middle">{pt.method}</td>
+                    <td rowSpan={3} className="border border-slate-900 p-1 text-center text-xs font-black text-emerald-600 align-middle">√</td>
+                    <td rowSpan={3} className="border border-slate-900 p-1 align-middle"></td>
+                    <td className="border border-slate-900 text-center font-extrabold text-[9.5px] bg-slate-50 text-blue-700 w-6">A</td>
+                    {DAYS_31.map(d => {
+                      const val = maintShiftGrid[pt.id]?.[d]?.A || '';
+                      return (
+                        <td key={d} className="border border-slate-900 p-0 align-middle w-8 min-w-[28px] h-6 bg-white">
+                          <input
+                            className={`w-full h-full border-none bg-transparent text-center text-[10px] font-bold outline-none focus:bg-blue-100 ${getCellBgClass(val)}`}
+                            value={val}
+                            onChange={(e) => handleCellChange(setMaintShiftGrid, pt.id, d, 'A', e.target.value.toUpperCase())}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Row for Shift B */}
+                  <tr>
+                    <td className="border border-slate-900 text-center font-extrabold text-[9.5px] bg-slate-50 text-amber-700 w-6">B</td>
+                    {DAYS_31.map(d => {
+                      const val = maintShiftGrid[pt.id]?.[d]?.B || '';
+                      return (
+                        <td key={d} className="border border-slate-900 p-0 align-middle w-8 min-w-[28px] h-6 bg-white">
+                          <input
+                            className={`w-full h-full border-none bg-transparent text-center text-[10px] font-bold outline-none focus:bg-amber-100 ${getCellBgClass(val)}`}
+                            value={val}
+                            onChange={(e) => handleCellChange(setMaintShiftGrid, pt.id, d, 'B', e.target.value.toUpperCase())}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Row for Shift C */}
+                  <tr>
+                    <td className="border border-slate-900 text-center font-extrabold text-[9.5px] bg-slate-50 text-purple-700 w-6">C</td>
+                    {DAYS_31.map(d => {
+                      const val = maintShiftGrid[pt.id]?.[d]?.C || '';
+                      return (
+                        <td key={d} className="border border-slate-900 p-0 align-middle w-8 min-w-[28px] h-6 bg-white">
+                          <input
+                            className={`w-full h-full border-none bg-transparent text-center text-[10px] font-bold outline-none focus:bg-purple-100 ${getCellBgClass(val)}`}
+                            value={val}
+                            onChange={(e) => handleCellChange(setMaintShiftGrid, pt.id, d, 'C', e.target.value.toUpperCase())}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+                </React.Fragment>
               ))}
 
               {/* Maintenance Associates Sign-off */}
               <tr className="bg-slate-50 font-bold text-[10.5px]">
                 <td colSpan={7} className="border border-slate-900 p-1 text-right font-extrabold">Checked & Corrected By (Maint. Assocites Sign) (A Shift)</td>
-                <td colSpan={93} className="border border-slate-900 p-1 text-left pl-2">
+                <td colSpan={31} className="border border-slate-900 p-1 text-left pl-2">
                   <input
                     type="text"
                     className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[10.5px] font-bold outline-none w-60"
@@ -665,7 +794,7 @@ export default function DailyChecksheet({ machine, onClose }) {
               </tr>
               <tr className="bg-slate-50 font-bold text-[10.5px]">
                 <td colSpan={7} className="border border-slate-900 p-1 text-right font-extrabold">Checked & Corrected By (Maint. Assocites Sign) (B Shift)</td>
-                <td colSpan={93} className="border border-slate-900 p-1 text-left pl-2">
+                <td colSpan={31} className="border border-slate-900 p-1 text-left pl-2">
                   <input
                     type="text"
                     className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[10.5px] font-bold outline-none w-60"
@@ -677,7 +806,7 @@ export default function DailyChecksheet({ machine, onClose }) {
               </tr>
               <tr className="bg-slate-50 font-bold text-[10.5px]">
                 <td colSpan={7} className="border border-slate-900 p-1 text-right font-extrabold">Checked & Corrected By (Maint. Assocites Sign) (C Shift)</td>
-                <td colSpan={93} className="border border-slate-900 p-1 text-left pl-2">
+                <td colSpan={31} className="border border-slate-900 p-1 text-left pl-2">
                   <input
                     type="text"
                     className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[10.5px] font-bold outline-none w-60"
@@ -700,13 +829,13 @@ export default function DailyChecksheet({ machine, onClose }) {
                   <td className="border border-slate-900 p-1 text-center text-[10px] align-middle">{pt.method}</td>
                   <td className="border border-slate-900 p-1 align-middle"></td>
                   <td className="border border-slate-900 p-1 text-center text-xs font-black text-emerald-600 align-middle">√</td>
-                  <td className="border border-slate-900 p-1 align-middle"></td>
+                  <td className="border border-slate-900 text-center font-bold text-[9px] text-slate-400 bg-slate-50">-</td>
                   {DAYS_31.map(d => {
                     const val = maintWeeklyGrid[pt.id]?.[d] || '';
                     return (
-                      <td key={d} colSpan={3} className="border border-slate-900 p-0 align-middle">
+                      <td key={d} className="border border-slate-900 p-0 align-middle w-8 min-w-[28px] h-6 bg-white">
                         <input
-                          className={`w-full h-5 border-none bg-transparent text-center text-[10px] outline-none focus:bg-blue-50 ${getCellBgClass(val)}`}
+                          className={`w-full h-full border-none bg-transparent text-center text-[10px] font-bold outline-none focus:bg-blue-100 ${getCellBgClass(val)}`}
                           value={val}
                           onChange={(e) => handleWeeklyCellChange(pt.id, d, e.target.value.toUpperCase())}
                         />
@@ -719,7 +848,7 @@ export default function DailyChecksheet({ machine, onClose }) {
               {/* Final Maintenance Signatures */}
               <tr className="bg-slate-50 font-bold text-[10.5px]">
                 <td colSpan={7} className="border border-slate-900 p-1 text-right font-extrabold">Technician - Maintenance (Sign)</td>
-                <td colSpan={93} className="border border-slate-900 p-1 text-left pl-2">
+                <td colSpan={31} className="border border-slate-900 p-1 text-left pl-2">
                   <input
                     type="text"
                     className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[10.5px] font-bold outline-none w-60"
@@ -731,7 +860,7 @@ export default function DailyChecksheet({ machine, onClose }) {
               </tr>
               <tr className="bg-slate-50 font-bold text-[10.5px]">
                 <td colSpan={7} className="border border-slate-900 p-1 text-right font-extrabold">Supervisor - Maintenance (Sign)</td>
-                <td colSpan={93} className="border border-slate-900 p-1 text-left pl-2">
+                <td colSpan={31} className="border border-slate-900 p-1 text-left pl-2">
                   <input
                     type="text"
                     className="border border-slate-300 bg-white px-2 py-0.5 rounded text-[10.5px] font-bold outline-none w-60"
@@ -747,11 +876,11 @@ export default function DailyChecksheet({ machine, onClose }) {
 
         {/* Legend instructions strip */}
         <div className="p-2 px-3.5 bg-slate-50 border-b-[1.5px] border-slate-900 text-[10px] text-slate-700 leading-relaxed">
-          <strong>* Checking Frequency of daily /Shift:</strong> Shift Start &nbsp;|&nbsp; 
-          <strong>* Checking Frequency of Weekly:</strong> First day of week<br/>
-          <strong>[LEGANDS]:</strong> 1) PUT (√) FOR OK CONDITION &nbsp;|&nbsp; 
-          2) PUT (X) FOR NOT OK CONDITION &nbsp;|&nbsp; 
-          3) PUT VALUE WHERE VALUE IS MENTION &nbsp;|&nbsp; 
+          <strong>* Checking Frequency of daily /Shift:</strong> Shift Start &nbsp;|&nbsp;
+          <strong>* Checking Frequency of Weekly:</strong> First day of week<br />
+          <strong>[LEGANDS]:</strong> 1) PUT (√) FOR OK CONDITION &nbsp;|&nbsp;
+          2) PUT (X) FOR NOT OK CONDITION &nbsp;|&nbsp;
+          3) PUT VALUE WHERE VALUE IS MENTION &nbsp;|&nbsp;
           4) TAKE NECESSARY ACTION AND ENCIRCLE ON THE CROSS MARK (⊗) AND FILL THE COUNTERACTION SHEET.
         </div>
 
@@ -763,7 +892,7 @@ export default function DailyChecksheet({ machine, onClose }) {
             <h4 className="text-sm font-black tracking-wider text-slate-900 m-0 uppercase">
               Abnormality Observation & Action Sheet
             </h4>
-            <button 
+            <button
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-600"
               onClick={handleAddAbnormalityRow}
             >

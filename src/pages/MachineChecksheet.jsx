@@ -1,11 +1,28 @@
 import React, { useState } from 'react';
-import MachinePmChecksheet from './alpha_355/MachinePmChecksheet';
-import InspectionReportSheet from './alpha_355/InspectionReportSheet';
-import PokayokeChecksheet from './alpha_355/PokayokeChecksheet';
-import InstrumentChecksheet from './alpha_355/InstrumentChecksheet';
-import DailyChecksheet from './alpha_355/DailyChecksheet';
-import FiveSChecksheet from './alpha_355/FiveSChecksheet';
+import MachinePmChecksheet from './Cnc/AutoCrimping/Alpha355/MachinePmChecksheet';
+import InspectionReportSheet from './Cnc/AutoCrimping/Alpha355/InspectionReportSheet';
+import PokayokeChecksheet from './Cnc/AutoCrimping/Alpha355/PokayokeChecksheet';
+import InstrumentChecksheet from './Cnc/AutoCrimping/Alpha355/InstrumentChecksheet';
+import DailyChecksheet from './Cnc/AutoCrimping/Alpha355/DailyChecksheet';
+import FiveSChecksheet from './Cnc/AutoCrimping/Alpha355/FiveSChecksheet';
+import Trd301MachinePmChecksheet from './Cnc/AutoCrimping/TRD301/MachinePmChecksheet';
+import Trd301InspectionReportSheet from './Cnc/AutoCrimping/TRD301/InspectionReportSheet';
+import Trd301PokayokeChecksheet from './Cnc/AutoCrimping/TRD301/PokayokeChecksheet';
+import Trd301InstrumentChecksheet from './Cnc/AutoCrimping/TRD301/InstrumentChecksheet';
+import Trd301DailyChecksheet from './Cnc/AutoCrimping/TRD301/DailyChecksheet';
+import Trd301FiveSChecksheet from './Cnc/AutoCrimping/TRD301/FiveSChecksheet';
 import OperationalChecksheets from './OperationalChecksheets';
+import CnCMachinesOverview from './Cnc/AutoCrimping/CnCMachinesOverview';
+import AutoCrimpingOverview from './Cnc/AutoCrimping/AutoCrimpingOverview';
+import ManualCrimpingOverview from './Cnc/ManualCrimping/ManualCrimpingOverview';
+import JointCrimpingOverview from './Cnc/JointCrimping/JointCrimpingOverview';
+import RegistanceWeldingOverview from './Cnc/RegistanceWelding/RegistanceWeldingOverview';
+import TwistingOverview from './Cnc/Twisting/TwistingOverview';
+import BlueTapingOverview from './Cnc/BlueTaping/BlueTapingOverview';
+import HeadSinkingOverview from './Cnc/HeadSinking/HeadSinkingOverview';
+import AssemblyOverview from './Assembly/AssemblyOverview';
+import SrcOverview from './Src/SrcOverview';
+import { getMachineModel } from './Cnc/AutoCrimping/machineModels';
 import {
   ChevronDown,
   ChevronRight,
@@ -13,7 +30,6 @@ import {
   Boxes,
   Building2,
   MapPin,
-  ArrowLeft,
   Factory,
   CheckCircle2,
   BarChart3,
@@ -26,71 +42,10 @@ import {
   Clock
 } from 'lucide-react';
 
-// Machine Model Mapping as specified
-// Model: Machine Numbers
-// G_252: 20, 21, 22
-// G_253: 02, 04, 11, 12, 15, 16, 17, 18
-// Alpha_355: 01, 03
-// TRD_301: 05, 06, 07, 08, 09, 10
-// TRD_411F: 14, 24, 23, 29, 19
-// JAN: 25
-// G_448: 26, 27, 28, 30, 31, 32
-const MACHINE_MODEL_MAP = {
-  // Alpha_355: 01, 03
-  1: 'Alpha_355',
-  3: 'Alpha_355',
-
-  // G_253: 02, 04, 11, 12, 15, 16, 17, 18
-  2: 'G_253',
-  4: 'G_253',
-  11: 'G_253',
-  12: 'G_253',
-  15: 'G_253',
-  16: 'G_253',
-  17: 'G_253',
-  18: 'G_253',
-
-  // TRD_301: 05, 06, 07, 08, 09, 10
-  5: 'TRD_301',
-  6: 'TRD_301',
-  7: 'TRD_301',
-  8: 'TRD_301',
-  9: 'TRD_301',
-  10: 'TRD_301',
-
-  // TRD_411F: 14, 24, 23, 29, 19
-  14: 'TRD_411F',
-  19: 'TRD_411F',
-  23: 'TRD_411F',
-  24: 'TRD_411F',
-  29: 'TRD_411F',
-
-  // G_252: 20, 21, 22
-  20: 'G_252',
-  21: 'G_252',
-  22: 'G_252',
-
-  // JAN: 25
-  25: 'JAN',
-
-  // G_448: 26, 27, 28, 30, 31, 32
-  26: 'G_448',
-  27: 'G_448',
-  28: 'G_448',
-  30: 'G_448',
-  31: 'G_448',
-  32: 'G_448'
-};
-
-function getMachineModel(machineId) {
-  const idNum = Number(machineId);
-  return MACHINE_MODEL_MAP[idNum] || `Model ${machineId}`;
-}
-
 export default function MachineChecksheet({ onChecksheetStateChange }) {
   const [activeTab, setActiveTab] = useState('Auto Crimping');
-  const [selectedUnitLocation, setSelectedUnitLocation] = useState('Bawal'); // Default 'Bawal' to directly show C&C machines
-  const [selectedSubDept, setSelectedSubDept] = useState('CNC'); // Default 'CNC' section
+  const [selectedUnitLocation, setSelectedUnitLocation] = useState(''); // Initial unselected so Select Unit UI is shown first
+  const [selectedSubDept, setSelectedSubDept] = useState(''); // Initial unselected so sections are shown after unit selection
   const [selectedMachine, setSelectedMachine] = useState(null); // null | { id: number, name: string }
   const [selectedChecksheet, setSelectedChecksheetState] = useState(null); // null | string
 
@@ -100,6 +55,14 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
       onChecksheetStateChange(Boolean(val));
     }
   };
+
+  const isTrd301 = Boolean(
+    selectedMachine && (
+      getMachineModel(selectedMachine.id) === 'TRD_301' ||
+      selectedMachine.model === 'TRD_301' ||
+      [5, 6, 7, 8, 9, 10].includes(Number(selectedMachine.id))
+    )
+  );
 
   // Login Modal State for Operator & Quality Inspector Card Numbers
   const [pendingMachine, setPendingMachine] = useState(null);
@@ -335,8 +298,7 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
       {/* Operators Main Content Area */}
       {/* ========================================================= */}
       <div className={`flex flex-col gap-5 flex-1 min-w-0 ${selectedSubDept ? 'w-full' : ''}`}>
-        {/* If a page is selected (CNC, Assembly, SRC), show Back Button & Banner */}
-        {selectedSubDept ? (
+        {/* {selectedSubDept ? (
           <div className="flex items-center justify-between bg-white p-3 px-4 rounded-2xl border border-slate-200 shadow-sm">
             <div className="flex items-center gap-2">
               {selectedChecksheet ? (
@@ -394,7 +356,7 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
               )}
             </div>
           </div>
-        ) : null}
+        ) : null} */}
 
         {/* If unit or section is NOT selected, do not show tabs or card data */}
         {!selectedUnitLocation || !selectedSubDept ? (
@@ -417,8 +379,8 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
           </div>
         ) : (
           <>
-            {/* Tab Switcher: 7 Operations Tabs (Hidden when checksheet is open for clean full page) */}
-            {!selectedChecksheet && (
+            {/* Tab Switcher: 7 Operations Tabs (Hidden when checksheet is open or section is not CNC) */}
+            {!selectedChecksheet && selectedSubDept === 'CNC' && (
               <div className="inline-flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-full max-w-full overflow-x-auto whitespace-nowrap">
                 {[
                   'Auto Crimping',
@@ -431,11 +393,10 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
                 ].map((tabName) => (
                   <button
                     key={tabName}
-                    className={`border-none py-2 px-4 rounded-full text-xs font-semibold cursor-pointer inline-flex items-center gap-2 whitespace-nowrap transition-all ${
-                      activeTab === tabName
+                    className={`border-none py-2 px-4 rounded-full text-xs font-semibold cursor-pointer inline-flex items-center gap-2 whitespace-nowrap transition-all ${activeTab === tabName
                         ? 'bg-white text-slate-900 shadow-sm font-bold'
                         : 'bg-transparent text-slate-500 hover:text-slate-900'
-                    }`}
+                      }`}
                     onClick={() => {
                       setActiveTab(tabName);
                       setSelectedMachine(null);
@@ -962,54 +923,96 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
                       </div>
                     </div>
                   </div>
-                ) : selectedChecksheet === 'Machine PM checksheet' && (selectedMachine.id === 1 || selectedMachine.id === 3 || selectedMachine.name === 'C&C 01' || selectedMachine.name === 'C&C 03') ? (
+                ) : selectedChecksheet === 'Machine PM checksheet' ? (
                   /* ======================================================== */
-                  /* Dedicated Furukawa Minda Electric PM Checksheet for C&C 01 & C&C 03 */
+                  /* Machine PM Checksheet (TRD301 vs Alpha355) */
                   /* ======================================================== */
-                  <MachinePmChecksheet
-                    machine={selectedMachine}
-                    onClose={() => setSelectedChecksheet(null)}
-                  />
-                ) : selectedChecksheet === 'Inspection report' && (selectedMachine.id === 1 || selectedMachine.id === 3 || selectedMachine.name === 'C&C 01' || selectedMachine.name === 'C&C 03') ? (
+                  isTrd301 ? (
+                    <Trd301MachinePmChecksheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  ) : (
+                    <MachinePmChecksheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  )
+                ) : selectedChecksheet === 'Inspection report' ? (
                   /* ======================================================== */
-                  /* Dedicated Daily Record of Cutting & Crimping (FRM-QC-PS-244) for C&C 01 & C&C 03 */
+                  /* Inspection Report Sheet (TRD301 vs Alpha355) */
                   /* ======================================================== */
-                  <InspectionReportSheet
-                    machine={selectedMachine}
-                    onClose={() => setSelectedChecksheet(null)}
-                  />
+                  isTrd301 ? (
+                    <Trd301InspectionReportSheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  ) : (
+                    <InspectionReportSheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  )
                 ) : selectedChecksheet === 'Machine Pokayoke checksheet' ? (
                   /* ======================================================== */
-                  /* Dedicated Poka-Yoke Daily Verification Checksheet (FFM-WH-QA-096) */
+                  /* Pokayoke Checksheet (TRD301 vs Alpha355) */
                   /* ======================================================== */
-                  <PokayokeChecksheet
-                    machine={selectedMachine}
-                    onClose={() => setSelectedChecksheet(null)}
-                  />
+                  isTrd301 ? (
+                    <Trd301PokayokeChecksheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  ) : (
+                    <PokayokeChecksheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  )
                 ) : selectedChecksheet === 'Machine Instrument checksheet' ? (
                   /* ======================================================== */
-                  /* Dedicated Instrument Check Sheet (FRM-WH-QA-046) */
+                  /* Instrument Checksheet (TRD301 vs Alpha355) */
                   /* ======================================================== */
-                  <InstrumentChecksheet
-                    machine={selectedMachine}
-                    onClose={() => setSelectedChecksheet(null)}
-                  />
+                  isTrd301 ? (
+                    <Trd301InstrumentChecksheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  ) : (
+                    <InstrumentChecksheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  )
                 ) : selectedChecksheet === 'Machine Daily checksheet' ? (
                   /* ======================================================== */
-                  /* Dedicated Daily Machine Check Sheet (CHK-WH-MT-003) */
+                  /* Daily Machine Checksheet (TRD301 vs Alpha355) */
                   /* ======================================================== */
-                  <DailyChecksheet
-                    machine={selectedMachine}
-                    onClose={() => setSelectedChecksheet(null)}
-                  />
+                  isTrd301 ? (
+                    <Trd301DailyChecksheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  ) : (
+                    <DailyChecksheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  )
                 ) : selectedChecksheet === 'Machine 5S checksheet' ? (
                   /* ======================================================== */
-                  /* Dedicated 5S Check Sheet (CHK-5S-03) */
+                  /* 5S Checksheet (TRD301 vs Alpha355) */
                   /* ======================================================== */
-                  <FiveSChecksheet
-                    machine={selectedMachine}
-                    onClose={() => setSelectedChecksheet(null)}
-                  />
+                  isTrd301 ? (
+                    <Trd301FiveSChecksheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  ) : (
+                    <FiveSChecksheet
+                      machine={selectedMachine}
+                      onClose={() => setSelectedChecksheet(null)}
+                    />
+                  )
                 ) : selectedChecksheet ? (
                   <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
                     <div className="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -1089,113 +1092,61 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
                   </div>
                 ) : null}
               </div>
-            ) : activeTab === 'Auto Crimping' && selectedSubDept === 'CNC' ? (
-              /* C&C 1 to C&C 32 KPI Cards Grid */
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white border border-slate-200 rounded-2xl p-4 px-5 shadow-sm gap-3">
-                  <div>
-                    <h3 className="text-base font-black text-slate-900 m-0">C&C Machines Overview</h3>
-                    <p className="text-xs text-slate-500 m-0">Real-time status, health, and output monitoring for C&C 1 to C&C 32 ({selectedUnitLocation} Plant)</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 py-1 px-3 rounded-full">● 27 Running</span>
-                    <span className="text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 py-1 px-3 rounded-full">● 3 Idle / Stopped</span>
-                    <span className="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 py-1 px-3 rounded-full">● 1 Maint.</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 w-full">
-                  {Array.from({ length: 32 }, (_, i) => i + 1)
-                    .filter((machineNum) => machineNum !== 13)
-                    .map((machineNum) => {
-                      const machineName = `C&C ${String(machineNum).padStart(2, '0')}`;
-                      // Status variations:
-                      // 1. Running: Green full card background
-                      // 2. Stopped / Idle: Red full card background
-                      // 3. Maintenance: Yellow full card background
-                      const isMaintenance = machineNum === 17;
-                      const isIdleOrStopped = machineNum === 8 || machineNum === 24;
-                      const statusText = isMaintenance ? 'Maintenance' : isIdleOrStopped ? 'Idle / Stopped' : 'Running';
-
-                      const theme = isMaintenance
-                        ? {
-                            cardBg: 'bg-amber-50 hover:bg-amber-100/70 border-amber-300',
-                            badge: 'bg-amber-200/80 text-amber-900 border border-amber-400',
-                            iconBg: 'bg-amber-200/80 text-amber-900',
-                            pill: 'bg-amber-200 text-amber-950 border border-amber-400',
-                            dot: 'bg-amber-600',
-                            divider: 'border-amber-200/80'
-                          }
-                        : isIdleOrStopped
-                          ? {
-                              cardBg: 'bg-rose-50 hover:bg-rose-100/70 border-rose-300',
-                              badge: 'bg-rose-200/80 text-rose-900 border border-rose-400',
-                              iconBg: 'bg-rose-200/80 text-rose-900',
-                              pill: 'bg-rose-200 text-rose-950 border border-rose-400',
-                              dot: 'bg-rose-600',
-                              divider: 'border-rose-200/80'
-                            }
-                          : {
-                              cardBg: 'bg-emerald-50 hover:bg-emerald-100/70 border-emerald-300',
-                              badge: 'bg-emerald-200/80 text-emerald-900 border border-emerald-400',
-                              iconBg: 'bg-emerald-200/80 text-emerald-900',
-                              pill: 'bg-emerald-200 text-emerald-950 border border-emerald-400',
-                              dot: 'bg-emerald-600',
-                              divider: 'border-emerald-200/80'
-                            };
-
-                      // Metrics
-                      const output = 120 + ((machineNum * 37) % 180);
-
-                      return (
-                        <div
-                          key={machineNum}
-                          className={`rounded-2xl p-5 sm:p-6 flex flex-col justify-between border cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg min-h-[175px] shadow-sm ${theme.cardBg}`}
-                          onClick={() => handleMachineCardClick({ id: machineNum, name: machineName })}
-                          title={`Click to open checksheets for ${machineName}`}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <div className="text-base font-extrabold text-slate-900 tracking-tight">{machineName}</div>
-                              <div className="text-xs font-bold text-slate-600 mt-0.5">({getMachineModel(machineNum)})</div>
-                            </div>
-                            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${theme.iconBg}`}>
-                              <Cpu size={18} />
-                            </div>
-                          </div>
-
-                          <div className="my-3">
-                            <span className="text-3xl font-black text-slate-900">{output}</span>
-                            <span className="text-sm font-bold text-slate-600"> pcs/hr</span>
-                          </div>
-
-                          <div className={`flex items-center justify-end text-xs pt-3 border-t ${theme.divider}`}>
-                            <span className={`text-[11px] font-bold py-1 px-3 rounded-full flex items-center gap-1.5 ${theme.pill}`}>
-                              <span className={`w-2 h-2 rounded-full ${theme.dot}`}></span>
-                              {statusText}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
-              </div>
-            ) : (
-              /* View for other operations tabs or sections */
-              <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
-                <div className="flex flex-col gap-2">
-                  <div className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 bg-blue-50 py-1 px-3 rounded-full w-max">
-                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-                    <span>{selectedUnitLocation} Unit</span>
-                    <span className="text-blue-300">• {selectedSubDept} Section</span>
-                  </div>
-                  <h2 className="text-2xl font-black text-slate-900 m-0">{activeTab}</h2>
-                  <p className="text-sm text-slate-500 m-0 max-w-2xl leading-relaxed">
-                    Machine Checksheet parameters, real-time inspection criteria and operational logs for <strong>{activeTab}</strong> in {selectedSubDept} Section ({selectedUnitLocation} Plant).
-                  </p>
-                </div>
-              </div>
-            )}
+            ) : selectedSubDept === 'CNC' ? (
+              activeTab === 'Auto Crimping' ? (
+                selectedUnitLocation === 'Bawal' ? (
+                  <CnCMachinesOverview
+                    selectedUnitLocation={selectedUnitLocation}
+                    onSelectMachine={handleMachineCardClick}
+                  />
+                ) : (
+                  <AutoCrimpingOverview
+                    selectedUnitLocation={selectedUnitLocation}
+                    selectedSubDept={selectedSubDept}
+                  />
+                )
+              ) : activeTab === 'Manual Crimping' ? (
+                <ManualCrimpingOverview
+                  selectedUnitLocation={selectedUnitLocation}
+                  selectedSubDept={selectedSubDept}
+                />
+              ) : activeTab === 'Joint Crimping' ? (
+                <JointCrimpingOverview
+                  selectedUnitLocation={selectedUnitLocation}
+                  selectedSubDept={selectedSubDept}
+                />
+              ) : activeTab === 'Registance Welding' ? (
+                <RegistanceWeldingOverview
+                  selectedUnitLocation={selectedUnitLocation}
+                  selectedSubDept={selectedSubDept}
+                />
+              ) : activeTab === 'Twisting' ? (
+                <TwistingOverview
+                  selectedUnitLocation={selectedUnitLocation}
+                  selectedSubDept={selectedSubDept}
+                />
+              ) : activeTab === 'Blue Taping' ? (
+                <BlueTapingOverview
+                  selectedUnitLocation={selectedUnitLocation}
+                  selectedSubDept={selectedSubDept}
+                />
+              ) : activeTab === 'Head Sinking' ? (
+                <HeadSinkingOverview
+                  selectedUnitLocation={selectedUnitLocation}
+                  selectedSubDept={selectedSubDept}
+                />
+              ) : null
+            ) : selectedSubDept === 'Assembly' ? (
+              <AssemblyOverview
+                selectedUnitLocation={selectedUnitLocation}
+                selectedSubDept={selectedSubDept}
+              />
+            ) : selectedSubDept === 'SRC' ? (
+              <SrcOverview
+                selectedUnitLocation={selectedUnitLocation}
+                selectedSubDept={selectedSubDept}
+              />
+            ) : null}
           </>
         )}
       </div>

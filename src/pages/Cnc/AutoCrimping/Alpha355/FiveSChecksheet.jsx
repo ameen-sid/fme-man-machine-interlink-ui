@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  ClipboardCheck, 
-  Save, 
+import {
+  ClipboardCheck,
+  Save,
   RotateCcw,
   Eye,
   PenTool,
@@ -275,7 +275,9 @@ function createEmptyGrid() {
         A_start: '',
         A_end: '',
         B_start: '',
-        B_end: ''
+        B_end: '',
+        C_start: '',
+        C_end: ''
       };
     }
   });
@@ -301,16 +303,49 @@ export default function FiveSChecksheet({ machine, onClose }) {
   });
 
   const [signOffs, setSignOffs] = useState(() => {
-    const obj = { opA: {}, opB: {}, sup: {} };
+    const obj = { opA: {}, opB: {}, opC: {}, sup: {} };
     for (let d = 1; d <= 15; d++) {
       obj.opA[d] = '';
       obj.opB[d] = '';
+      obj.opC[d] = '';
       obj.sup[d] = '';
     }
     return obj;
   });
 
   const [savedToast, setSavedToast] = useState('');
+  const [itemPhotos, setItemPhotos] = useState({});
+  const [howPhotos, setHowPhotos] = useState({});
+
+  const handlePhotoUpload = (itemId, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        setItemPhotos(prev => ({
+          ...prev,
+          [itemId]: event.target.result
+        }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleHowPhotoUpload = (itemId, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        setHowPhotos(prev => ({
+          ...prev,
+          [itemId]: event.target.result
+        }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleCellChange = (itemId, day, key, val) => {
     setGridData(prev => {
@@ -342,6 +377,8 @@ export default function FiveSChecksheet({ machine, onClose }) {
   const handleReset = () => {
     if (window.confirm('Reset all values in this 5S Check Sheet?')) {
       setGridData(createEmptyGrid());
+      setItemPhotos({});
+      setHowPhotos({});
     }
   };
 
@@ -427,22 +464,22 @@ export default function FiveSChecksheet({ machine, onClose }) {
               {savedToast}
             </div>
           )}
-          <button 
+          <button
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer"
             onClick={handleSave}
           >
             <Save size={15} />
             <span>Save Record</span>
           </button>
-          <button 
+          <button
             className="inline-flex items-center px-2.5 py-2 rounded-lg text-xs font-bold bg-slate-50 hover:bg-slate-200 border border-slate-300 text-slate-600 transition-colors cursor-pointer"
-            onClick={handleReset} 
+            onClick={handleReset}
             title="Reset values"
           >
             <RotateCcw size={15} />
           </button>
           {onClose && (
-            <button 
+            <button
               className="inline-flex items-center px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 hover:bg-rose-100 border border-slate-200 hover:border-rose-300 text-rose-600 transition-colors cursor-pointer"
               onClick={onClose}
             >
@@ -463,19 +500,19 @@ export default function FiveSChecksheet({ machine, onClose }) {
         <div className="flex items-center justify-between border-b-2 border-slate-900 bg-slate-50 px-3.5 py-1.5">
           <div className="text-sm font-black text-slate-900 flex items-center gap-2">
             <span>M/C:</span>
-            <input 
-              className="border border-slate-300 bg-white px-2 py-0.5 rounded text-xs font-bold text-blue-700 outline-none" 
-              value={docMeta.mcName} 
-              onChange={(e) => setDocMeta({ ...docMeta, mcName: e.target.value })} 
+            <input
+              className="border border-slate-300 bg-white px-2 py-0.5 rounded text-xs font-bold text-blue-700 outline-none"
+              value={docMeta.mcName}
+              onChange={(e) => setDocMeta({ ...docMeta, mcName: e.target.value })}
             />
           </div>
           <div className="flex items-center gap-2 text-xs font-extrabold text-slate-900">
             <span>MONTH:-</span>
-            <input 
-              className="border border-slate-300 bg-white px-2 py-0.5 rounded text-xs font-bold text-blue-700 outline-none w-44" 
-              placeholder="e.g. September 2026" 
-              value={docMeta.month} 
-              onChange={(e) => setDocMeta({ ...docMeta, month: e.target.value })} 
+            <input
+              className="border border-slate-300 bg-white px-2 py-0.5 rounded text-xs font-bold text-blue-700 outline-none w-44"
+              placeholder="e.g. September 2026"
+              value={docMeta.month}
+              onChange={(e) => setDocMeta({ ...docMeta, month: e.target.value })}
             />
           </div>
         </div>
@@ -490,7 +527,7 @@ export default function FiveSChecksheet({ machine, onClose }) {
                 <th className="border border-slate-900 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] p-1 w-28" rowSpan={2}>LOCATION</th>
                 <th className="border border-slate-900 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] p-1 w-20" rowSpan={2}>PHOTO</th>
                 <th className="border border-slate-900 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] p-1 w-44" rowSpan={2}>WHAT</th>
-                <th className="border border-slate-900 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] p-1 w-12" rowSpan={2}>HOW</th>
+                <th className="border border-slate-900 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] p-1 w-20 min-w-[80px] max-w-[80px]" rowSpan={2}>HOW</th>
                 <th className="border border-slate-900 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] p-1 w-16" rowSpan={2}>WHO</th>
                 <th className="border border-slate-900 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] p-1 w-16" rowSpan={2}>FREQ.</th>
                 <th className="border border-slate-900 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] p-1 w-11" rowSpan={2}>TIME</th>
@@ -522,46 +559,106 @@ export default function FiveSChecksheet({ machine, onClose }) {
 
                   {/* Shift A Row */}
                   <tr>
-                    <td rowSpan={2} className="border border-slate-900 bg-slate-50 font-black text-center text-[11px] text-slate-900 p-1">{item.sType}</td>
-                    <td rowSpan={2} className="border border-slate-900 font-extrabold text-center text-[11px] p-1">{item.sNo}</td>
-                    <td rowSpan={2} className="border border-slate-900 font-bold pl-1.5 text-[10.5px]">{item.location}</td>
-                    <td rowSpan={2} className="border border-slate-900 p-1 text-center bg-slate-50/50">
-                      <div className="border border-slate-300 rounded bg-white p-1 flex flex-col items-center gap-0.5">
-                        <div className="w-16 h-10 rounded flex items-center justify-center text-[8.5px] font-black text-white" style={{ backgroundColor: item.photoBg }}>
-                          <span className="p-0.5 text-center">Photo</span>
-                        </div>
-                        <span className="text-[7.5px] font-extrabold px-1 py-0.5 rounded border border-slate-300 bg-slate-100 text-slate-900 uppercase">
+                    <td rowSpan={3} className="border border-slate-900 bg-slate-50 font-black text-center text-[11px] text-slate-900 p-1">{item.sType}</td>
+                    <td rowSpan={3} className="border border-slate-900 font-extrabold text-center text-[11px] p-1">{item.sNo}</td>
+                    <td rowSpan={3} className="border border-slate-900 font-bold pl-1.5 text-[10.5px]">{item.location}</td>
+                    <td rowSpan={3} className="border border-slate-900 text-center bg-slate-50/50">
+                      <div className="rounded bg-white flex flex-col items-center gap-0.5">
+                        <label
+                          className="relative w-40 h-40 rounded flex items-center justify-center text-[8px] font-black text-white cursor-pointer overflow-hidden group shadow-sm transition-all hover:brightness-105"
+                          style={{ backgroundColor: itemPhotos[item.id] ? '#0f172a' : item.photoBg }}
+                          title={itemPhotos[item.id] ? 'Click to change photo' : 'Click to choose photo from gallery'}
+                        >
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handlePhotoUpload(item.id, e)}
+                          />
+                          {itemPhotos[item.id] ? (
+                            <>
+                              <img
+                                src={itemPhotos[item.id]}
+                                alt={item.what || '5S Photo'}
+                                className="w-full h-full object-cover rounded"
+                              />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[8px] font-bold text-white transition-opacity">
+                                Change
+                              </div>
+                            </>
+                          ) : (
+                            <span className="p-0.5 text-center select-none">Photo</span>
+                          )}
+                        </label>
+                        <span className="text-[7px] font-extrabold px-1 py-0.5 rounded border border-slate-300 bg-slate-100 text-slate-900 uppercase">
                           {item.badge}
                         </span>
                       </div>
                     </td>
-                    <td rowSpan={2} className="border border-slate-900 text-[10px] font-bold text-slate-800 whitespace-pre-line p-1.5 leading-snug">{item.what}</td>
-                    <td rowSpan={2} className="border border-slate-900 text-center p-1 bg-white">{renderHowIcon(item.how)}</td>
-                    <td rowSpan={2} className="border border-slate-900 text-center text-[9.5px] font-bold p-1">{item.who}</td>
-                    <td rowSpan={2} className="border border-slate-900 text-center text-[9px] font-extrabold p-1">{item.freq}</td>
-                    <td rowSpan={2} className="border border-slate-900 text-center text-[9.5px] font-extrabold p-1">{item.time}</td>
-                    <td rowSpan={2} className="border border-slate-900 text-center text-[9px] font-bold p-1 leading-tight text-slate-700">
-                      (SHIFT START)<br/>/<br/>(SHIFT END)
+                    <td rowSpan={3} className="border border-slate-900 text-[10px] font-bold text-slate-800 whitespace-pre-line p-1.5 leading-snug">{item.what}</td>
+                    <td
+                      rowSpan={3}
+                      className="border border-slate-900 text-center bg-white align-middle w-20 min-w-[80px] max-w-[80px] h-20 p-0 relative overflow-hidden"
+                    >
+                      <label
+                        className="w-full h-full flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden select-none"
+                        title={howPhotos[item.id] ? 'Click to change HOW photo' : 'Click to add photo from gallery'}
+                      >
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleHowPhotoUpload(item.id, e)}
+                        />
+                        {howPhotos[item.id] ? (
+                          <div className="w-full h-full relative">
+                            <img
+                              src={howPhotos[item.id]}
+                              alt="HOW method"
+                              className="w-full h-full object-cover block"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[8.5px] font-bold text-white transition-opacity">
+                              Change
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center gap-0.5 p-1 w-full h-full group-hover:scale-105 transition-transform">
+                            {renderHowIcon(item.how)}
+                            <span className="text-[7.5px] font-semibold text-slate-400 group-hover:text-blue-600 transition-colors">
+                              + Photo
+                            </span>
+                          </div>
+                        )}
+                      </label>
                     </td>
-                    <td rowSpan={2} className="border border-slate-900 text-center text-[9.5px] font-bold p-1">{item.resp}</td>
+                    <td rowSpan={3} className="border border-slate-900 text-center text-[9.5px] font-bold p-1">{item.who}</td>
+                    <td rowSpan={3} className="border border-slate-900 text-center text-[9px] font-extrabold p-1">{item.freq}</td>
+                    <td rowSpan={3} className="border border-slate-900 text-center text-[9.5px] font-extrabold p-1">{item.time}</td>
+                    <td rowSpan={3} className="border border-slate-900 text-center text-[9px] font-bold p-1 leading-tight text-slate-700">
+                      (SHIFT START)<br />/<br />(SHIFT END)
+                    </td>
+                    <td rowSpan={3} className="border border-slate-900 text-center text-[9.5px] font-bold p-1">{item.resp}</td>
                     <td className="border border-slate-900 text-center font-extrabold text-[9.5px] bg-slate-50 text-blue-700 w-6">A</td>
 
-                    {/* Shift A 15 days with diagonal split (Start / End) */}
+                    {/* Shift A 15 days with diagonal split / (Start in top-left / End in bottom-right) */}
                     {DAYS_15.map(d => {
                       const startVal = gridData[item.id]?.[d]?.A_start || '';
                       const endVal = gridData[item.id]?.[d]?.A_end || '';
                       return (
-                        <td key={d} className="border border-slate-900 relative w-8 h-6 p-0 bg-[linear-gradient(to_top_right,transparent_calc(50%-0.75px),#0f172a_calc(50%-0.75px),#0f172a_calc(50%+0.75px),transparent_calc(50%+0.75px))]">
-                          <div className="absolute top-0 left-0.5 w-1/2 h-1/2 flex items-center justify-center" title="Shift A - Start">
+                        <td key={d} className="border border-slate-900 relative w-8 min-w-[32px] h-7 p-0 bg-white overflow-hidden">
+                          <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                            <line x1="0" y1="100%" x2="100%" y2="0" stroke="#0f172a" strokeWidth="1.2" />
+                          </svg>
+                          <div className="absolute top-0 left-0 w-[52%] h-[52%] flex items-center justify-center pointer-events-auto" title="Shift A - Start">
                             <input
-                              className="w-3.5 h-3.5 border-none bg-transparent text-center text-[8.5px] font-black outline-none cursor-pointer focus:bg-blue-50 focus:rounded"
+                              className="w-full h-full border-none bg-transparent text-center text-[9px] font-black text-slate-900 outline-none cursor-pointer focus:bg-blue-100/90 focus:rounded"
                               value={startVal}
                               onChange={(e) => handleCellChange(item.id, d, 'A_start', e.target.value.toUpperCase())}
                             />
                           </div>
-                          <div className="absolute bottom-0 right-0.5 w-1/2 h-1/2 flex items-center justify-center" title="Shift A - End">
+                          <div className="absolute bottom-0 right-0 w-[52%] h-[52%] flex items-center justify-center pointer-events-auto" title="Shift A - End">
                             <input
-                              className="w-3.5 h-3.5 border-none bg-transparent text-center text-[8.5px] font-black outline-none cursor-pointer focus:bg-blue-50 focus:rounded"
+                              className="w-full h-full border-none bg-transparent text-center text-[9px] font-black text-slate-900 outline-none cursor-pointer focus:bg-blue-100/90 focus:rounded"
                               value={endVal}
                               onChange={(e) => handleCellChange(item.id, d, 'A_end', e.target.value.toUpperCase())}
                             />
@@ -578,19 +675,52 @@ export default function FiveSChecksheet({ machine, onClose }) {
                       const startVal = gridData[item.id]?.[d]?.B_start || '';
                       const endVal = gridData[item.id]?.[d]?.B_end || '';
                       return (
-                        <td key={d} className="border border-slate-900 relative w-8 h-6 p-0 bg-[linear-gradient(to_top_right,transparent_calc(50%-0.75px),#0f172a_calc(50%-0.75px),#0f172a_calc(50%+0.75px),transparent_calc(50%+0.75px))]">
-                          <div className="absolute top-0 left-0.5 w-1/2 h-1/2 flex items-center justify-center" title="Shift B - Start">
+                        <td key={d} className="border border-slate-900 relative w-8 min-w-[32px] h-7 p-0 bg-white overflow-hidden">
+                          <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                            <line x1="0" y1="100%" x2="100%" y2="0" stroke="#0f172a" strokeWidth="1.2" />
+                          </svg>
+                          <div className="absolute top-0 left-0 w-[52%] h-[52%] flex items-center justify-center pointer-events-auto" title="Shift B - Start">
                             <input
-                              className="w-3.5 h-3.5 border-none bg-transparent text-center text-[8.5px] font-black outline-none cursor-pointer focus:bg-blue-50 focus:rounded"
+                              className="w-full h-full border-none bg-transparent text-center text-[9px] font-black text-slate-900 outline-none cursor-pointer focus:bg-amber-100/90 focus:rounded"
                               value={startVal}
                               onChange={(e) => handleCellChange(item.id, d, 'B_start', e.target.value.toUpperCase())}
                             />
                           </div>
-                          <div className="absolute bottom-0 right-0.5 w-1/2 h-1/2 flex items-center justify-center" title="Shift B - End">
+                          <div className="absolute bottom-0 right-0 w-[52%] h-[52%] flex items-center justify-center pointer-events-auto" title="Shift B - End">
                             <input
-                              className="w-3.5 h-3.5 border-none bg-transparent text-center text-[8.5px] font-black outline-none cursor-pointer focus:bg-blue-50 focus:rounded"
+                              className="w-full h-full border-none bg-transparent text-center text-[9px] font-black text-slate-900 outline-none cursor-pointer focus:bg-amber-100/90 focus:rounded"
                               value={endVal}
                               onChange={(e) => handleCellChange(item.id, d, 'B_end', e.target.value.toUpperCase())}
+                            />
+                          </div>
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Shift C Row */}
+                  <tr>
+                    <td className="border border-slate-900 text-center font-extrabold text-[9.5px] bg-slate-50 text-indigo-700 w-6">C</td>
+                    {DAYS_15.map(d => {
+                      const startVal = gridData[item.id]?.[d]?.C_start || '';
+                      const endVal = gridData[item.id]?.[d]?.C_end || '';
+                      return (
+                        <td key={d} className="border border-slate-900 relative w-8 min-w-[32px] h-7 p-0 bg-white overflow-hidden">
+                          <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                            <line x1="0" y1="100%" x2="100%" y2="0" stroke="#0f172a" strokeWidth="1.2" />
+                          </svg>
+                          <div className="absolute top-0 left-0 w-[52%] h-[52%] flex items-center justify-center pointer-events-auto" title="Shift C - Start">
+                            <input
+                              className="w-full h-full border-none bg-transparent text-center text-[9px] font-black text-slate-900 outline-none cursor-pointer focus:bg-indigo-100/90 focus:rounded"
+                              value={startVal}
+                              onChange={(e) => handleCellChange(item.id, d, 'C_start', e.target.value.toUpperCase())}
+                            />
+                          </div>
+                          <div className="absolute bottom-0 right-0 w-[52%] h-[52%] flex items-center justify-center pointer-events-auto" title="Shift C - End">
+                            <input
+                              className="w-full h-full border-none bg-transparent text-center text-[9px] font-black text-slate-900 outline-none cursor-pointer focus:bg-indigo-100/90 focus:rounded"
+                              value={endVal}
+                              onChange={(e) => handleCellChange(item.id, d, 'C_end', e.target.value.toUpperCase())}
                             />
                           </div>
                         </td>
@@ -620,7 +750,7 @@ export default function FiveSChecksheet({ machine, onClose }) {
               {/* Instructions Row */}
               <tr className="border border-slate-900 bg-slate-50 font-bold text-[10.5px]">
                 <td colSpan={12} className="border border-slate-900 text-left pl-2 text-[10px] p-1.5">
-                  PUT ( √ ) FOR <strong className="text-slate-900 font-black">OK</strong> & (X) FOR <strong className="text-slate-900 font-black">NG</strong> &nbsp;|&nbsp; 
+                  PUT ( √ ) FOR <strong className="text-slate-900 font-black">OK</strong> & (X) FOR <strong className="text-slate-900 font-black">NG</strong> &nbsp;|&nbsp;
                   <span className="text-slate-600">CLEANING TIME FOR MAIN OPERATOR: 10 MIN</span>
                 </td>
                 <td colSpan={15} className="border border-slate-900 text-center font-extrabold text-emerald-700 p-1.5">
@@ -651,6 +781,19 @@ export default function FiveSChecksheet({ machine, onClose }) {
                       placeholder="Sign"
                       value={signOffs.opB[d] || ''}
                       onChange={(e) => handleSignChange('opB', d, e.target.value)}
+                    />
+                  </td>
+                ))}
+              </tr>
+              <tr className="border border-slate-900 bg-slate-50 font-bold text-[10.5px]">
+                <td colSpan={12} className="border border-slate-900 text-right font-extrabold pr-2 p-1">M/C OPERATOR (C)</td>
+                {DAYS_15.map(d => (
+                  <td key={d} className="border border-slate-900 p-0">
+                    <input
+                      className="w-full text-center border-none bg-transparent text-[10px] font-bold p-1 outline-none"
+                      placeholder="Sign"
+                      value={signOffs.opC[d] || ''}
+                      onChange={(e) => handleSignChange('opC', d, e.target.value)}
                     />
                   </td>
                 ))}
