@@ -12,7 +12,8 @@ import {
   BarChart3,
   FileSpreadsheet,
   AlertOctagon,
-  Wrench
+  Wrench,
+  ArrowLeft
 } from 'lucide-react';
 
 const OPERATIONAL_CHECKSHEETS = [
@@ -98,25 +99,45 @@ export default function OperationalChecksheets({
   activeSession,
   selectedChecksheet,
   onSelectChecksheet,
-  onLogout
+  onLogout,
+  onBack
 }) {
   return (
-    <div className="flex flex-col gap-5 w-full ">
+    <div className="flex flex-col gap-5 w-full">
       {/* Header Bar */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
-        <div className="flex flex-col gap-1">
-          <div className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 bg-blue-50 py-1 px-3 rounded-full w-max">
-            <Cpu size={15} />
-            <span>{selectedMachine?.name || 'Machine'} — ({machineModel || 'Alpha_355'})</span>
-            <span className="text-slate-300">•</span>
-            <span>{activeTab}</span>
-            <span className="text-slate-300">•</span>
-            <span>{selectedUnitLocation} Unit</span>
+        <div className="flex items-center gap-3">
+          {onBack && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 text-xs font-bold py-2 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-all shadow-sm shrink-0"
+              onClick={onBack}
+              title="Back to Machines Overview"
+            >
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </button>
+          )}
+          <div className="flex flex-col gap-1">
+            <div className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 bg-blue-50 py-1 px-3 rounded-full w-max flex-wrap">
+              <Cpu size={15} />
+              <span>{selectedMachine?.name || 'Machine'}</span>
+              {machineModel && (
+                <>
+                  <span className="text-slate-300">•</span>
+                  <span>{machineModel}</span>
+                </>
+              )}
+              <span className="text-slate-300">•</span>
+              <span>{activeTab}</span>
+              <span className="text-slate-300">•</span>
+              <span>{selectedUnitLocation} Unit</span>
+            </div>
+            <h2 className="text-xl font-black text-slate-900 m-0 mt-1">Operational Checksheets</h2>
+            <p className="text-xs text-slate-500 m-0">
+              Select a checksheet below to open and record inspection values for <strong>{selectedMachine?.name}</strong> in full screen.
+            </p>
           </div>
-          <h2 className="text-xl font-black text-slate-900 m-0 mt-1">Operational Checksheets</h2>
-          <p className="text-xs text-slate-500 m-0">
-            Select a checksheet below to open and record inspection values for <strong>{selectedMachine?.name}</strong> in full screen.
-          </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {activeSession && (
@@ -166,12 +187,12 @@ export default function OperationalChecksheets({
               <div className="flex flex-col gap-1.5 mb-4">
                 <div className="flex items-center justify-between gap-1.5">
                   <h4 className="text-sm font-bold text-slate-900 m-0">{cs.name}</h4>
-                  {cs.id === 'pm' && (selectedMachine?.id === 1 || selectedMachine?.id === 3) && (
+                  {cs.id === 'pm' && (
                     <span className="text-[10px] font-extrabold text-purple-700 bg-purple-50 py-0.5 px-1.5 rounded border border-purple-200">
-                      Alpha-355 Format
+                      CHK-WH-MT-043
                     </span>
                   )}
-                  {cs.id === 'inspection_report' && (selectedMachine?.id === 1 || selectedMachine?.id === 3) && (
+                  {cs.id === 'inspection_report' && (
                     <span className="text-[10px] font-extrabold text-indigo-700 bg-indigo-50 py-0.5 px-1.5 rounded border border-indigo-200">
                       FRM-QC-PS-244
                     </span>
@@ -198,19 +219,7 @@ export default function OperationalChecksheets({
                   )}
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed m-0">
-                  {cs.id === 'pm' && (selectedMachine?.id === 1 || selectedMachine?.id === 3)
-                    ? 'Monthly & Periodic PM Check Sheet (Furukawa Minda Electric CHK-WH-MT-043 Rev 19)'
-                    : cs.id === 'inspection_report' && (selectedMachine?.id === 1 || selectedMachine?.id === 3)
-                      ? 'Daily Record of Cutting and Crimping Operation (FRM-QC-PS-244 Rev 01.07.2024)'
-                      : cs.id === 'pokayoke'
-                        ? 'Poka-Yoke Daily Verification & Inspection Sheet (FFM-WH-QA-096 Shift A & B)'
-                        : cs.id === 'instrument'
-                          ? 'Instrument Check Sheet - Plunger, Blade Micrometer & Scale (FRM-WH-QA-046 Shifts A,B,C)'
-                          : cs.id === 'daily'
-                            ? 'Daily Machine Check Sheet & Abnormality Action (CHK-WH-MT-003 Rev 07 Alpha355)'
-                            : cs.id === '5s'
-                              ? '5S Check Point - Sort, Set, Shine, Standardize & Sustain (CHK-5S-03 Rev 01)'
-                              : cs.shortDesc}
+                  {cs.shortDesc}
                 </p>
               </div>
 

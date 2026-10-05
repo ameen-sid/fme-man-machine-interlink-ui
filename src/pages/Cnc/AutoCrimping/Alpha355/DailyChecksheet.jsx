@@ -3,7 +3,8 @@ import {
   CalendarCheck2, 
   Save, 
   RotateCcw,
-  Plus
+  Plus,
+  ArrowLeft
 } from 'lucide-react';
 
 // Part 1: Operator Startup Check Points (Shift Confirmation) - 10 Points
@@ -271,10 +272,10 @@ export default function DailyChecksheet({ machine, onClose }) {
   const [docMeta, setDocMeta] = useState({
     docNo: 'CHK-WH-MT-003',
     revNo: '07',
-    date: '15.09.2023',
-    modelName: 'Alpha355',
-    machineName: machine?.name || 'C&C 01',
-    machineNo: machine?.id ? String(machine.id) : '1'
+    date: '',
+    modelName: machine?.model || '',
+    machineName: machine?.name || '',
+    machineNo: machine?.id ? String(machine.id) : ''
   });
 
   // Empty grids (no prefilled values)
@@ -372,15 +373,26 @@ export default function DailyChecksheet({ machine, onClose }) {
   return (
     <div className="flex flex-col gap-4 w-full bg-slate-50 transition-all duration-200">
       {/* Floating Action Bar */}
-      <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-3 px-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between bg-white border border-slate-200 rounded-xl p-3 px-4 shadow-sm gap-3">
         <div className="flex items-center gap-3">
-          <CalendarCheck2 size={18} className="text-emerald-500 bg-emerald-50 p-2 rounded-lg w-9 h-9 box-content" />
+          {onClose && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 text-xs font-bold py-2 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-all shadow-sm"
+              onClick={onClose}
+              title="Back to Checksheets Menu"
+            >
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </button>
+          )}
+          <CalendarCheck2 size={18} className="text-emerald-500 bg-emerald-50 p-2 rounded-lg w-9 h-9 box-content shrink-0" />
           <div>
             <h3 className="text-sm font-extrabold text-slate-900 tracking-tight m-0">
               FURUKAWA MINDA ELECTRIC PVT. LTD. — DAILY MACHINE CHECK SHEET
             </h3>
             <span className="text-[11.5px] text-slate-500 font-medium">
-              Format: <strong>{docMeta.docNo}</strong> • Rev: <strong>{docMeta.revNo}</strong> • Machine: <strong>{docMeta.machineName}</strong>
+              Format: <strong>{docMeta.docNo}</strong> • Rev: <strong>{docMeta.revNo}</strong> • Machine: <strong>{docMeta.machineName || 'Machine'}</strong>
             </span>
           </div>
         </div>

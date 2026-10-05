@@ -5,12 +5,6 @@ import PokayokeChecksheet from './Cnc/AutoCrimping/Alpha355/PokayokeChecksheet';
 import InstrumentChecksheet from './Cnc/AutoCrimping/Alpha355/InstrumentChecksheet';
 import DailyChecksheet from './Cnc/AutoCrimping/Alpha355/DailyChecksheet';
 import FiveSChecksheet from './Cnc/AutoCrimping/Alpha355/FiveSChecksheet';
-import Trd301MachinePmChecksheet from './Cnc/AutoCrimping/TRD301/MachinePmChecksheet';
-import Trd301InspectionReportSheet from './Cnc/AutoCrimping/TRD301/InspectionReportSheet';
-import Trd301PokayokeChecksheet from './Cnc/AutoCrimping/TRD301/PokayokeChecksheet';
-import Trd301InstrumentChecksheet from './Cnc/AutoCrimping/TRD301/InstrumentChecksheet';
-import Trd301DailyChecksheet from './Cnc/AutoCrimping/TRD301/DailyChecksheet';
-import Trd301FiveSChecksheet from './Cnc/AutoCrimping/TRD301/FiveSChecksheet';
 import OperationalChecksheets from './OperationalChecksheets';
 import CnCMachinesOverview from './Cnc/AutoCrimping/CnCMachinesOverview';
 import AutoCrimpingOverview from './Cnc/AutoCrimping/AutoCrimpingOverview';
@@ -39,7 +33,8 @@ import {
   X,
   CreditCard,
   Users,
-  Clock
+  Clock,
+  ArrowLeft
 } from 'lucide-react';
 
 export default function MachineChecksheet({ onChecksheetStateChange }) {
@@ -55,14 +50,6 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
       onChecksheetStateChange(Boolean(val));
     }
   };
-
-  const isTrd301 = Boolean(
-    selectedMachine && (
-      getMachineModel(selectedMachine.id) === 'TRD_301' ||
-      selectedMachine.model === 'TRD_301' ||
-      [5, 6, 7, 8, 9, 10].includes(Number(selectedMachine.id))
-    )
-  );
 
   // Login Modal State for Operator & Quality Inspector Card Numbers
   const [pendingMachine, setPendingMachine] = useState(null);
@@ -298,12 +285,13 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
       {/* Operators Main Content Area */}
       {/* ========================================================= */}
       <div className={`flex flex-col gap-5 flex-1 min-w-0 ${selectedSubDept ? 'w-full' : ''}`}>
-        {/* {selectedSubDept ? (
-          <div className="flex items-center justify-between bg-white p-3 px-4 rounded-2xl border border-slate-200 shadow-sm">
+        {selectedSubDept ? (
+          <div className="flex flex-wrap items-center justify-between bg-white p-3 px-4 rounded-2xl border border-slate-200 shadow-sm gap-3">
             <div className="flex items-center gap-2">
               {selectedChecksheet ? (
                 <button
-                  className="inline-flex items-center gap-2 py-2 px-4 rounded-full border border-slate-200 bg-white text-slate-800 text-[13px] font-bold cursor-pointer hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all shadow-sm"
+                  type="button"
+                  className="inline-flex items-center gap-2 py-2 px-4 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-xs font-bold cursor-pointer hover:bg-blue-100 transition-all shadow-sm"
                   onClick={() => setSelectedChecksheet(null)}
                   title="Back to Checksheets Menu"
                 >
@@ -312,7 +300,8 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
                 </button>
               ) : selectedMachine ? (
                 <button
-                  className="inline-flex items-center gap-2 py-2 px-4 rounded-full border border-slate-200 bg-white text-slate-800 text-[13px] font-bold cursor-pointer hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all shadow-sm"
+                  type="button"
+                  className="inline-flex items-center gap-2 py-2 px-4 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-xs font-bold cursor-pointer hover:bg-blue-100 transition-all shadow-sm"
                   onClick={() => {
                     setSelectedMachine(null);
                     setSelectedChecksheet(null);
@@ -324,13 +313,14 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
                 </button>
               ) : (
                 <button
-                  className="inline-flex items-center gap-2 py-2 px-4 rounded-full border border-slate-200 bg-white text-slate-800 text-[13px] font-bold cursor-pointer hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all shadow-sm"
+                  type="button"
+                  className="inline-flex items-center gap-2 py-2 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 text-xs font-bold cursor-pointer hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all shadow-sm"
                   onClick={() => {
                     setSelectedSubDept('');
                     setSelectedMachine(null);
                     setSelectedChecksheet(null);
                   }}
-                  title="Back to Units"
+                  title="Back to Unit Selection"
                 >
                   <ArrowLeft size={16} />
                   <span>Back to Units</span>
@@ -338,14 +328,42 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
               )}
             </div>
 
-            <div className="flex items-center gap-2 bg-slate-100 py-1.5 px-3.5 rounded-full text-[12.5px]">
-              <span className="text-slate-500 font-semibold">{selectedUnitLocation} Unit</span>
+            <div className="flex items-center gap-2 bg-slate-100 py-1.5 px-3.5 rounded-full text-xs font-medium flex-wrap">
+              <button
+                type="button"
+                className="text-slate-500 font-semibold hover:text-blue-600 bg-transparent border-none p-0 cursor-pointer"
+                onClick={() => {
+                  setSelectedSubDept('');
+                  setSelectedMachine(null);
+                  setSelectedChecksheet(null);
+                }}
+                title="Change Unit"
+              >
+                {selectedUnitLocation} Unit
+              </button>
               <span className="text-slate-400">/</span>
-              <span className="text-blue-600 font-bold">{selectedSubDept} Section</span>
+              <button
+                type="button"
+                className="text-blue-600 font-bold hover:underline bg-transparent border-none p-0 cursor-pointer"
+                onClick={() => {
+                  setSelectedMachine(null);
+                  setSelectedChecksheet(null);
+                }}
+                title="View Section"
+              >
+                {selectedSubDept} Section
+              </button>
               {selectedMachine && (
                 <>
                   <span className="text-slate-400">/</span>
-                  <span className="text-slate-900 font-bold">{selectedMachine.name}</span>
+                  <button
+                    type="button"
+                    className="text-slate-900 font-bold hover:underline bg-transparent border-none p-0 cursor-pointer"
+                    onClick={() => setSelectedChecksheet(null)}
+                    title="View Machine Checksheets"
+                  >
+                    {selectedMachine.name}
+                  </button>
                 </>
               )}
               {selectedChecksheet && (
@@ -356,7 +374,7 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
               )}
             </div>
           </div>
-        ) : null} */}
+        ) : null}
 
         {/* If unit or section is NOT selected, do not show tabs or card data */}
         {!selectedUnitLocation || !selectedSubDept ? (
@@ -925,94 +943,52 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
                   </div>
                 ) : selectedChecksheet === 'Machine PM checksheet' ? (
                   /* ======================================================== */
-                  /* Machine PM Checksheet (TRD301 vs Alpha355) */
+                  /* Machine PM Checksheet (Blank Template for all machines) */
                   /* ======================================================== */
-                  isTrd301 ? (
-                    <Trd301MachinePmChecksheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  ) : (
-                    <MachinePmChecksheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  )
+                  <MachinePmChecksheet
+                    machine={selectedMachine}
+                    onClose={() => setSelectedChecksheet(null)}
+                  />
                 ) : selectedChecksheet === 'Inspection report' ? (
                   /* ======================================================== */
-                  /* Inspection Report Sheet (TRD301 vs Alpha355) */
+                  /* Inspection Report Sheet (Blank Template for all machines) */
                   /* ======================================================== */
-                  isTrd301 ? (
-                    <Trd301InspectionReportSheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  ) : (
-                    <InspectionReportSheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  )
+                  <InspectionReportSheet
+                    machine={selectedMachine}
+                    onClose={() => setSelectedChecksheet(null)}
+                  />
                 ) : selectedChecksheet === 'Machine Pokayoke checksheet' ? (
                   /* ======================================================== */
-                  /* Pokayoke Checksheet (TRD301 vs Alpha355) */
+                  /* Pokayoke Checksheet (Blank Template for all machines) */
                   /* ======================================================== */
-                  isTrd301 ? (
-                    <Trd301PokayokeChecksheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  ) : (
-                    <PokayokeChecksheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  )
+                  <PokayokeChecksheet
+                    machine={selectedMachine}
+                    onClose={() => setSelectedChecksheet(null)}
+                  />
                 ) : selectedChecksheet === 'Machine Instrument checksheet' ? (
                   /* ======================================================== */
-                  /* Instrument Checksheet (TRD301 vs Alpha355) */
+                  /* Instrument Checksheet (Blank Template for all machines) */
                   /* ======================================================== */
-                  isTrd301 ? (
-                    <Trd301InstrumentChecksheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  ) : (
-                    <InstrumentChecksheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  )
+                  <InstrumentChecksheet
+                    machine={selectedMachine}
+                    onClose={() => setSelectedChecksheet(null)}
+                  />
                 ) : selectedChecksheet === 'Machine Daily checksheet' ? (
                   /* ======================================================== */
-                  /* Daily Machine Checksheet (TRD301 vs Alpha355) */
+                  /* Daily Machine Checksheet (Blank Template for all machines) */
                   /* ======================================================== */
-                  isTrd301 ? (
-                    <Trd301DailyChecksheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  ) : (
-                    <DailyChecksheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  )
+                  <DailyChecksheet
+                    machine={selectedMachine}
+                    onClose={() => setSelectedChecksheet(null)}
+                  />
                 ) : selectedChecksheet === 'Machine 5S checksheet' ? (
                   /* ======================================================== */
-                  /* 5S Checksheet (TRD301 vs Alpha355) */
+                  /* 5S Checksheet (Blank Template for all machines) */
                   /* ======================================================== */
-                  isTrd301 ? (
-                    <Trd301FiveSChecksheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  ) : (
-                    <FiveSChecksheet
-                      machine={selectedMachine}
-                      onClose={() => setSelectedChecksheet(null)}
-                    />
-                  )
+                  <FiveSChecksheet
+                    machine={selectedMachine}
+                    onClose={() => setSelectedChecksheet(null)}
+                  />
                 ) : selectedChecksheet ? (
                   <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
                     <div className="flex items-center justify-between pb-3 border-b border-slate-100">

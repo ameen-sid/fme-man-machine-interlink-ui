@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import {
   Gauge,
   Save,
-  RotateCcw
+  RotateCcw,
+  ArrowLeft
 } from 'lucide-react';
 
 // Instrument 1: Plunger Micrometer (7 points)
@@ -68,11 +69,11 @@ export default function InstrumentChecksheet({ machine, onClose }) {
   const [docInfo, setDocInfo] = useState({
     docNo: 'FRM-WH-QA-046',
     revNo: '04',
-    revDate: '12.01.22',
-    issueDate: '15.03.09',
-    page: 'Page 7 of 13',
+    revDate: '',
+    issueDate: '',
+    page: 'Page 1 of 1',
     month: '',
-    location: machine?.department || ''
+    location: machine?.name || ''
   });
 
   // Section 1: Plunger Micrometer state
@@ -192,9 +193,20 @@ export default function InstrumentChecksheet({ machine, onClose }) {
   return (
     <div className="flex flex-col gap-4 w-full bg-slate-50 transition-all duration-200">
       {/* Floating Action Control Bar */}
-      <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-3 px-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between bg-white border border-slate-200 rounded-xl p-3 px-4 shadow-sm gap-3">
         <div className="flex items-center gap-3">
-          <Gauge size={18} className="text-orange-600 bg-orange-50 p-2 rounded-lg w-9 h-9 box-content" />
+          {onClose && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 text-xs font-bold py-2 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-all shadow-sm"
+              onClick={onClose}
+              title="Back to Checksheets Menu"
+            >
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </button>
+          )}
+          <Gauge size={18} className="text-orange-600 bg-orange-50 p-2 rounded-lg w-9 h-9 box-content shrink-0" />
           <div>
             <h3 className="text-sm font-extrabold text-slate-900 tracking-tight m-0">
               FURUKAWA MINDA ELECTRIC PVT. LTD. — INSTRUMENT CHECK SHEET

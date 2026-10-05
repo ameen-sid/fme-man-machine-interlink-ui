@@ -9,7 +9,8 @@ import {
   Trash2,
   Printer,
   CheckCircle2,
-  Maximize2
+  Maximize2,
+  ArrowLeft
 } from 'lucide-react';
 
 // Master sections directly from FURUKAWA MINDA ELECTRIC PVT. LTD. sheet
@@ -532,16 +533,16 @@ const INITIAL_PERIODIC_CHECKS = {
 export default function MachinePmChecksheet({ machine, onClose }) {
   // Machine header details matching screenshots
   const [headerInfo, setHeaderInfo] = useState({
-    mcName: 'ALPHA - 355   CUT & CRIMP MACHINE',
-    srNo: machine?.id === 1 ? 'CC-01-FME-2024' : 'CC-03-FME-2023',
-    mcDisplayNo: machine?.name || 'C&C 01',
-    installationDate: '15-08-2022',
-    year: '2026',
-    date: '01.04.2026',
+    mcName: machine?.model ? `${machine.model} CUT & CRIMP MACHINE` : (machine?.name ? `${machine.name} CUT & CRIMP MACHINE` : 'CUT & CRIMP MACHINE'),
+    srNo: machine?.id ? `CC-${String(machine.id).padStart(2, '0')}` : '',
+    mcDisplayNo: machine?.name || '',
+    installationDate: '',
+    year: String(new Date().getFullYear()),
+    date: '',
     docNo: 'CHK-WH-MT-043',
     rev: '19',
-    preparedBy: 'NAVEEN',
-    approvedBy: 'SARWAR YADAV'
+    preparedBy: '',
+    approvedBy: ''
   });
 
   // PM columns (1 to 12 counter columns as shown in screenshot 2)
@@ -742,11 +743,22 @@ export default function MachinePmChecksheet({ machine, onClose }) {
   return (
     <div className="flex flex-col gap-3 w-full animate-fadeIn font-sans pb-10">
       {/* Top Floating Control Bar */}
-      <div className="flex flex-wrap items-center justify-between bg-white border border-slate-200 rounded-xl p-3 px-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between bg-white border border-slate-200 rounded-xl p-3 px-4 shadow-sm gap-3">
         <div className="flex items-center gap-3">
-          <Wrench size={20} className="text-blue-700 bg-blue-50 p-2 rounded-lg w-10 h-10" />
+          {onClose && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 text-xs font-bold py-2 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-all shadow-sm"
+              onClick={onClose}
+              title="Back to Checksheets Menu"
+            >
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </button>
+          )}
+          <Wrench size={20} className="text-blue-700 bg-blue-50 p-2 rounded-lg w-10 h-10 shrink-0" />
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h3 className="text-sm font-extrabold text-slate-900 tracking-tight m-0 uppercase">
                 MONTHLY AND PERIODIC PREVENTIVE CHECK SHEET
               </h3>
@@ -755,7 +767,7 @@ export default function MachinePmChecksheet({ machine, onClose }) {
               </span>
             </div>
             <p className="text-[11.5px] text-slate-500 font-medium m-0">
-              Alpha 355 Preventive Maintenance
+              {machine?.name ? `${machine.name} Preventive Maintenance` : 'Machine Preventive Maintenance Checksheet'}
             </p>
           </div>
         </div>
@@ -1132,8 +1144,26 @@ export default function MachinePmChecksheet({ machine, onClose }) {
               <span>* Base Format: CHK-WH-MT-043 Rev.19</span>
             </div>
             <div className="flex items-center gap-4 font-bold text-slate-900">
-              <span>Prepared By: {headerInfo.preparedBy}</span>
-              <span>Approved By: {headerInfo.approvedBy}</span>
+              <label className="flex items-center gap-1">
+                <span>Prepared By:</span>
+                <input
+                  type="text"
+                  placeholder="Enter name"
+                  value={headerInfo.preparedBy}
+                  onChange={(e) => setHeaderInfo({ ...headerInfo, preparedBy: e.target.value })}
+                  className="border-b border-black outline-none px-1 text-xs font-semibold bg-transparent w-28"
+                />
+              </label>
+              <label className="flex items-center gap-1">
+                <span>Approved By:</span>
+                <input
+                  type="text"
+                  placeholder="Enter name"
+                  value={headerInfo.approvedBy}
+                  onChange={(e) => setHeaderInfo({ ...headerInfo, approvedBy: e.target.value })}
+                  className="border-b border-black outline-none px-1 text-xs font-semibold bg-transparent w-28"
+                />
+              </label>
             </div>
           </div>
 

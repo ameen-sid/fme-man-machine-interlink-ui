@@ -6,7 +6,8 @@ import {
   Trash2,
   Printer,
   FileSpreadsheet,
-  CheckCircle2
+  CheckCircle2,
+  ArrowLeft
 } from 'lucide-react';
 
 const createEmptyRecord = (id) => ({
@@ -73,15 +74,15 @@ const INITIAL_ROWS = [
 export default function InspectionReportSheet({ machine, onClose }) {
   // Sheet Header Information matching Screenshot 1 & 2
   const [headerInfo, setHeaderInfo] = useState({
-    machineName: machine?.name || 'Alpha 355',
+    machineName: machine?.name || '',
     operatorName: '',
     inspectorName: '',
-    date: new Date().toISOString().split('T')[0],
-    shift: 'Shift 1',
+    date: '',
+    shift: '',
     docNo: 'FRM-WH-PE-244',
-    rev06Date: '01.07.2026',
+    rev06Date: '',
     baseFormatNo: 'OSM– 10CB110 Form 1',
-    rev13Date: '08-03-2024'
+    rev13Date: ''
   });
 
   const [records, setRecords] = useState(INITIAL_ROWS);
@@ -125,11 +126,22 @@ export default function InspectionReportSheet({ machine, onClose }) {
   return (
     <div className="flex flex-col gap-3 w-full animate-fadeIn font-sans pb-10">
       {/* Top Floating Control Bar */}
-      <div className="flex flex-wrap items-center justify-between bg-white border border-slate-200 rounded-xl p-3 px-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between bg-white border border-slate-200 rounded-xl p-3 px-4 shadow-sm gap-3">
         <div className="flex items-center gap-3">
-          <FileSpreadsheet size={20} className="text-emerald-700 bg-emerald-50 p-2 rounded-lg w-10 h-10" />
+          {onClose && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 text-xs font-bold py-2 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-all shadow-sm"
+              onClick={onClose}
+              title="Back to Checksheets Menu"
+            >
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </button>
+          )}
+          <FileSpreadsheet size={20} className="text-emerald-700 bg-emerald-50 p-2 rounded-lg w-10 h-10 shrink-0" />
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h3 className="text-sm font-extrabold text-slate-900 tracking-tight m-0 uppercase">
                 DAILY RECORD OF CUTTING AND CRIMPING OPERATION
               </h3>
@@ -138,7 +150,7 @@ export default function InspectionReportSheet({ machine, onClose }) {
               </span>
             </div>
             <p className="text-[11.5px] text-slate-500 font-medium m-0">
-              Inspection Report Checksheet
+              {machine?.name ? `${machine.name} Inspection Report` : 'Inspection Report Checksheet'}
             </p>
           </div>
         </div>

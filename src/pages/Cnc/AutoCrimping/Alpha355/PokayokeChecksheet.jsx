@@ -11,7 +11,8 @@ import {
   Upload,
   X,
   Trash2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  ArrowLeft
 } from 'lucide-react';
 
 // Master initial items directly from user's provided Poka-Yoke format
@@ -24,7 +25,7 @@ const INITIAL_POKAYOKE_ITEMS = [
     photoType: 'pika',
     checkingMethod: 'Check the part presence sensor, select the model and remove the required material from pika-pika system on the process after that model should not pass.',
     shifts: {
-      A: Array(20).fill('OK'),
+      A: Array(20).fill(''),
       B: Array(20).fill('')
     }
   },
@@ -36,8 +37,8 @@ const INITIAL_POKAYOKE_ITEMS = [
     photoType: 'cfm',
     checkingMethod: '• Checked by increasing or decreasing conductors, in running setup, CFM will give Error.\n• For less/More crimping height, CFM will give Error.\n• Finger lock condition check.\n• Error circuit should be cut by Chopper cutter.',
     shifts: {
-      A: Array(20).fill('OK'),
-      B: Array(20).fill('OK')
+      A: Array(20).fill(''),
+      B: Array(20).fill('')
     }
   },
   {
@@ -48,7 +49,7 @@ const INITIAL_POKAYOKE_ITEMS = [
     photoType: 'camera',
     checkingMethod: 'Insert the wrong dimension dummy sample in Jig, Camera vision detect this wrong dimention.',
     shifts: {
-      A: Array(20).fill('OK'),
+      A: Array(20).fill(''),
       B: Array(20).fill('')
     }
   },
@@ -60,7 +61,7 @@ const INITIAL_POKAYOKE_ITEMS = [
     photoType: 'camera',
     checkingMethod: 'Insert the wrong dimension dummy sample in Jig, Camera vision detect this wrong dimention.',
     shifts: {
-      A: Array(20).fill('OK'),
+      A: Array(20).fill(''),
       B: Array(20).fill('')
     }
   },
@@ -72,8 +73,8 @@ const INITIAL_POKAYOKE_ITEMS = [
     photoType: 'sensor',
     checkingMethod: '• To check the Inner Ferrule presence sensor, remove the inner ferrule from the sample wire and then insert it into the jig the sensor should then not pass.',
     shifts: {
-      A: Array(20).fill('OK'),
-      B: Array(20).fill('OK')
+      A: Array(20).fill(''),
+      B: Array(20).fill('')
     }
   },
   {
@@ -84,8 +85,8 @@ const INITIAL_POKAYOKE_ITEMS = [
     photoType: 'sensor',
     checkingMethod: '• To check the Outer Ferrule presence sensor, remove the Outer ferrule from the sample wire and then insert it into the jig the sensor should then not pass.',
     shifts: {
-      A: Array(20).fill('OK'),
-      B: Array(20).fill('OK')
+      A: Array(20).fill(''),
+      B: Array(20).fill('')
     }
   },
   {
@@ -96,7 +97,7 @@ const INITIAL_POKAYOKE_ITEMS = [
     photoType: 'cfm',
     checkingMethod: '• Checked by increasing or decreasing conductors, in running setup, CFM will give Error.\n• For less/More crimping height, CFM will give Error.\n• Finger lock condition check.\n• Error circuit should be cut by Chopper cutter.',
     shifts: {
-      A: Array(20).fill('OK'),
+      A: Array(20).fill(''),
       B: Array(20).fill('')
     }
   },
@@ -108,7 +109,7 @@ const INITIAL_POKAYOKE_ITEMS = [
     photoType: 'cfm',
     checkingMethod: '• Checked by increasing or decreasing conductors, in running setup, CFM will give Error.\n• For less/More crimping height, CFM will give Error.\n• Finger lock condition check.',
     shifts: {
-      A: Array(20).fill('OK'),
+      A: Array(20).fill(''),
       B: Array(20).fill('')
     }
   },
@@ -120,7 +121,7 @@ const INITIAL_POKAYOKE_ITEMS = [
     photoType: 'cfm',
     checkingMethod: '• Checked by increasing or decreasing conductors, in running setup, CFM will give Error.\n• For less/More crimping height, CFM will give Error.\n• Finger lock condition check.',
     shifts: {
-      A: Array(20).fill('OK'),
+      A: Array(20).fill(''),
       B: Array(20).fill('')
     }
   },
@@ -132,7 +133,7 @@ const INITIAL_POKAYOKE_ITEMS = [
     photoType: 'temp',
     checkingMethod: '• IN SCREEN (VISUAL): Temp should be set 300°C ± 5°C.\n• To check, if the temperature is less the standard, insert the slider, after that slider should be automatically come out.',
     shifts: {
-      A: Array(20).fill('OK'),
+      A: Array(20).fill(''),
       B: Array(20).fill('')
     }
   },
@@ -144,14 +145,14 @@ const INITIAL_POKAYOKE_ITEMS = [
     photoType: 'temp',
     checkingMethod: '• IN SCREEN (VISUAL): Temp should be set 300°C ± 5°C.\n• To check, if the temperature is less the standard, insert the slider, after that slider should be automatically come out.',
     shifts: {
-      A: Array(20).fill('OK'),
+      A: Array(20).fill(''),
       B: Array(20).fill('')
     }
   }
 ];
 
 const INITIAL_OBSERVATIONS = [
-  { id: 1, date: '2026-09-02', observation: 'CFM error triggered due to conductor count mismatch', rootCause: 'Operator loaded wrong core count', actionPlan: 'Retrained operator on core count check standard', responsibility: 'Shift Leader', targetDate: '2026-09-03', reviewStatus: 'Closed' },
+  { id: 1, date: '', observation: '', rootCause: '', actionPlan: '', responsibility: '', targetDate: '', reviewStatus: '' },
   { id: 2, date: '', observation: '', rootCause: '', actionPlan: '', responsibility: '', targetDate: '', reviewStatus: '' }
 ];
 
@@ -159,16 +160,16 @@ export default function PokayokeChecksheet({ machine, onClose }) {
   const [items, setItems] = useState(INITIAL_POKAYOKE_ITEMS);
   const [observations, setObservations] = useState(INITIAL_OBSERVATIONS);
   const [savedToast, setSavedToast] = useState('');
-  const [checkedByLeader, setCheckedByLeader] = useState('Anil Kumar');
-  const [verifiedByIncharge, setVerifiedByIncharge] = useState('Sunil Verma');
+  const [checkedByLeader, setCheckedByLeader] = useState('');
+  const [verifiedByIncharge, setVerifiedByIncharge] = useState('');
 
   const [headerInfo, setHeaderInfo] = useState({
     docNo: 'FFM-WH-QA-096',
-    revDate: '01.06.26',
-    issueDate: '01.06.26',
-    station: machine?.name || 'C&C 01',
-    line: 'Assembly Line #02',
-    monthYear: 'September 2026'
+    revDate: '',
+    issueDate: '',
+    station: machine?.name || '',
+    line: '',
+    monthYear: ''
   });
 
   const handleStatusChange = (itemIdx, shift, dayIdx, value) => {
@@ -327,15 +328,26 @@ export default function PokayokeChecksheet({ machine, onClose }) {
   return (
     <div className="flex flex-col gap-4 w-full bg-slate-50 transition-all duration-200">
       {/* Top Floating Control Bar */}
-      <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-3 px-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between bg-white border border-slate-200 rounded-xl p-3 px-4 shadow-sm gap-3">
         <div className="flex items-center gap-3">
-          <ShieldAlert size={18} className="text-rose-600 bg-rose-50 p-2 rounded-lg w-9 h-9 box-content" />
+          {onClose && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 text-xs font-bold py-2 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-all shadow-sm"
+              onClick={onClose}
+              title="Back to Checksheets Menu"
+            >
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </button>
+          )}
+          <ShieldAlert size={18} className="text-rose-600 bg-rose-50 p-2 rounded-lg w-9 h-9 box-content shrink-0" />
           <div>
             <h3 className="text-sm font-extrabold text-slate-900 tracking-tight m-0">
               FURUKAWA MINDA ELECTRIC PVT. LTD. — POKA-YOKE CHECKSHEET
             </h3>
             <span className="text-[11.5px] text-slate-500 font-medium">
-              Format: <strong>{headerInfo.docNo}</strong> • Station: <strong>{headerInfo.station}</strong> • Verification Frequency: Daily Shifts (A & B)
+              Format: <strong>{headerInfo.docNo || 'FFM-WH-QA-096'}</strong> • Station: <strong>{headerInfo.station || machine?.name || 'Machine'}</strong> • Verification Frequency: Daily Shifts (A & B)
             </span>
           </div>
         </div>

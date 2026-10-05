@@ -6,7 +6,8 @@ import {
   Eye,
   PenTool,
   Sparkles,
-  Scissors
+  Scissors,
+  ArrowLeft
 } from 'lucide-react';
 
 // Master 5S Rows according to provided sheets
@@ -288,8 +289,8 @@ export default function FiveSChecksheet({ machine, onClose }) {
   const [docMeta, setDocMeta] = useState({
     chkNo: 'CHK-5S-03',
     revNo: '01',
-    revDate: '16 AUG. 2017',
-    mcName: machine?.name || 'Alpha355',
+    revDate: '',
+    mcName: machine?.name || '',
     month: ''
   });
 
@@ -445,15 +446,26 @@ export default function FiveSChecksheet({ machine, onClose }) {
   return (
     <div className="flex flex-col gap-4 w-full bg-slate-50 animate-fadeIn">
       {/* Top Floating Control Bar */}
-      <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-sky-100 text-sky-600 rounded-lg">
+          {onClose && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 text-xs font-bold py-2 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-all shadow-sm"
+              onClick={onClose}
+              title="Back to Checksheets Menu"
+            >
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </button>
+          )}
+          <div className="p-2 bg-sky-100 text-sky-600 rounded-lg shrink-0">
             <ClipboardCheck size={20} />
           </div>
           <div>
-            <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">FURUKAWA MINDA ELECTRIC PVT. LTD. — 5S CHECK POINT</h3>
+            <h3 className="text-sm font-extrabold text-slate-900 tracking-tight m-0">FURUKAWA MINDA ELECTRIC PVT. LTD. — 5S CHECK POINT</h3>
             <span className="text-xs text-slate-500 font-medium">
-              CHK NO: <strong className="text-slate-800">{docMeta.chkNo}</strong> • REV: <strong className="text-slate-800">{docMeta.revNo}</strong> • M/C: <strong className="text-slate-800">{docMeta.mcName}</strong>
+              CHK NO: <strong className="text-slate-800">{docMeta.chkNo}</strong> • REV: <strong className="text-slate-800">{docMeta.revNo}</strong> • M/C: <strong className="text-slate-800">{docMeta.mcName || 'Machine'}</strong>
             </span>
           </div>
         </div>
