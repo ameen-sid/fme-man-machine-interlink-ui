@@ -1,9 +1,4 @@
-import React from 'react';
-
-export default function RegistanceWeldingOverview({
-  selectedUnitLocation = 'Bawal',
-  selectedSubDept = 'CNC'
-}) {
+export default function RegistanceWeldingOverview({ selectedUnitLocation = 'Bawal', selectedSubDept = 'CNC' }) {
   return (
     <div className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-10 shadow-sm">
       <div className="flex flex-col gap-3">

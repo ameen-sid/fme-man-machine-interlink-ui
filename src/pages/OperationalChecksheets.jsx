@@ -1,20 +1,4 @@
-import React from 'react';
-import {
-  Cpu,
-  UserCheck,
-  LogOut,
-  ChevronRight,
-  Users,
-  ClipboardCheck,
-  CalendarCheck2,
-  Gauge,
-  ShieldAlert,
-  BarChart3,
-  FileSpreadsheet,
-  AlertOctagon,
-  Wrench,
-  ArrowLeft
-} from 'lucide-react';
+import { Cpu, UserCheck, LogOut, ChevronRight, Users, ClipboardCheck, CalendarCheck2, Gauge, ShieldAlert, BarChart3, FileSpreadsheet, AlertOctagon, Wrench, ArrowLeft } from 'lucide-react';
 
 const OPERATIONAL_CHECKSHEETS = [
   {
@@ -162,15 +146,15 @@ export default function OperationalChecksheets({
         </div>
       </div>
 
-      {/* Checksheets Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Checksheets Cards Grid - 4 cards in single row on desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {OPERATIONAL_CHECKSHEETS.map((cs, idx) => {
           const CsIcon = cs.icon;
           const isSelected = selectedChecksheet === cs.name;
           return (
             <div
               key={cs.id}
-              className={`bg-white border rounded-2xl p-5 flex flex-col justify-between cursor-pointer transition-all hover:-translate-y-1 hover:shadow-md ${isSelected ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200 shadow-sm'
+              className={`bg-white border rounded-2xl p-4 sm:p-5 flex flex-col justify-between cursor-pointer transition-all hover:-translate-y-1 hover:shadow-md ${isSelected ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200 shadow-sm'
                 }`}
               onClick={() => onSelectChecksheet && onSelectChecksheet(cs.name)}
             >
@@ -185,8 +169,8 @@ export default function OperationalChecksheets({
               </div>
 
               <div className="flex flex-col gap-1.5 mb-4">
-                <div className="flex items-center justify-between gap-1.5">
-                  <h4 className="text-sm font-bold text-slate-900 m-0">{cs.name}</h4>
+                <div className="flex items-start justify-between gap-1.5 flex-wrap">
+                  <h4 className="text-sm font-bold text-slate-900 m-0 leading-snug">{cs.name}</h4>
                   {cs.id === 'pm' && (
                     <span className="text-[10px] font-extrabold text-purple-700 bg-purple-50 py-0.5 px-1.5 rounded border border-purple-200">
                       CHK-WH-MT-043

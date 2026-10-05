@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-  CalendarCheck2,
-  Save,
-  RotateCcw,
-  Plus
-} from 'lucide-react';
+import { CalendarCheck2, Save, RotateCcw, Plus } from 'lucide-react';
 
 // Part 1: Operator Startup Check Points (Shift Confirmation) - 10 Points
 const INITIAL_OPERATOR_POINTS = [

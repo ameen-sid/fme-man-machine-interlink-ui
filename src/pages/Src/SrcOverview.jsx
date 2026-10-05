@@ -1,9 +1,4 @@
-import React from 'react';
-
-export default function SrcOverview({
-  selectedUnitLocation = 'Bawal',
-  selectedSubDept = 'SRC'
-}) {
+export default function SrcOverview({ selectedUnitLocation = 'Bawal', selectedSubDept = 'SRC' }) {
   return (
     <div className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-10 shadow-sm">
       <div className="flex flex-col gap-3">

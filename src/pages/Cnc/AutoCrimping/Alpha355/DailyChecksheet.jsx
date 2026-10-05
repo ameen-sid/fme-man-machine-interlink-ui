@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  CalendarCheck2, 
-  Save, 
-  RotateCcw,
-  Plus,
-  ArrowLeft
-} from 'lucide-react';
+import { CalendarCheck2, Save, RotateCcw, Plus, ArrowLeft } from 'lucide-react';
 
 // Part 1: Operator Startup Check Points (Shift Confirmation) - 10 Points
 const INITIAL_OPERATOR_POINTS = [
@@ -403,22 +397,22 @@ export default function DailyChecksheet({ machine, onClose }) {
               {savedToast}
             </div>
           )}
-          <button 
+          <button
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
             onClick={handleSave}
           >
             <Save size={15} />
             <span>Save Record</span>
           </button>
-          <button 
+          <button
             className="inline-flex items-center gap-1.5 p-2 rounded-lg text-xs font-bold cursor-pointer transition-all bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-600"
-            onClick={handleReset} 
+            onClick={handleReset}
             title="Reset table"
           >
             <RotateCcw size={15} />
           </button>
           {onClose && (
-            <button 
+            <button
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-rose-600"
               onClick={onClose}
             >
@@ -543,16 +537,16 @@ export default function DailyChecksheet({ machine, onClose }) {
             <thead>
               <tr>
                 <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={2} style={{ width: '220px' }}>
-                  STARTUP CHECK POINTS<br/>(SHIFT CONFIRMATION)
+                  STARTUP CHECK POINTS<br />(SHIFT CONFIRMATION)
                 </th>
                 <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={2} style={{ width: '90px' }}>
-                  Resp.<br/>(Who)
+                  Resp.<br />(Who)
                 </th>
                 <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={2} style={{ width: '130px' }}>
-                  Check Value<br/>STD VALUE
+                  Check Value<br />STD VALUE
                 </th>
                 <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" rowSpan={2} style={{ width: '90px' }}>
-                  Method<br/>Measuring Method
+                  Method<br />Measuring Method
                 </th>
                 <th className="border border-slate-900 p-1 bg-slate-100 font-extrabold text-slate-900 text-center text-[10px] align-middle" colSpan={3} style={{ width: '60px' }}>
                   FREQ
@@ -883,11 +877,11 @@ export default function DailyChecksheet({ machine, onClose }) {
 
         {/* Legend instructions strip */}
         <div className="p-2 px-3.5 bg-slate-50 border-b-[1.5px] border-slate-900 text-[10px] text-slate-700 leading-relaxed">
-          <strong>* Checking Frequency of daily /Shift:</strong> Shift Start &nbsp;|&nbsp; 
-          <strong>* Checking Frequency of Weekly:</strong> First day of week<br/>
-          <strong>[LEGANDS]:</strong> 1) PUT (√) FOR OK CONDITION &nbsp;|&nbsp; 
-          2) PUT (X) FOR NOT OK CONDITION &nbsp;|&nbsp; 
-          3) PUT VALUE WHERE VALUE IS MENTION &nbsp;|&nbsp; 
+          <strong>* Checking Frequency of daily /Shift:</strong> Shift Start &nbsp;|&nbsp;
+          <strong>* Checking Frequency of Weekly:</strong> First day of week<br />
+          <strong>[LEGANDS]:</strong> 1) PUT (√) FOR OK CONDITION &nbsp;|&nbsp;
+          2) PUT (X) FOR NOT OK CONDITION &nbsp;|&nbsp;
+          3) PUT VALUE WHERE VALUE IS MENTION &nbsp;|&nbsp;
           4) TAKE NECESSARY ACTION AND ENCIRCLE ON THE CROSS MARK (⊗) AND FILL THE COUNTERACTION SHEET.
         </div>
 
@@ -899,7 +893,7 @@ export default function DailyChecksheet({ machine, onClose }) {
             <h4 className="text-sm font-black tracking-wider text-slate-900 m-0 uppercase">
               Abnormality Observation & Action Sheet
             </h4>
-            <button 
+            <button
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-600"
               onClick={handleAddAbnormalityRow}
             >

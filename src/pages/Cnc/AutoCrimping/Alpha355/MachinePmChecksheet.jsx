@@ -1,17 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Save,
-  RotateCcw,
-  Wrench,
-  Camera,
-  X,
-  Eye,
-  Trash2,
-  Printer,
-  CheckCircle2,
-  Maximize2,
-  ArrowLeft
-} from 'lucide-react';
+import { Save, RotateCcw, Wrench, Camera, X, Eye, Printer, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 // Master sections directly from FURUKAWA MINDA ELECTRIC PVT. LTD. sheet
 const INITIAL_PM_SECTIONS = [
@@ -1214,4 +1202,3 @@ export default function MachinePmChecksheet({ machine, onClose }) {
     </div>
   );
 }
-

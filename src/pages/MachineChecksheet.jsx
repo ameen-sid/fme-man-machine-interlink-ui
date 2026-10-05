@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import MachinePmChecksheet from './Cnc/AutoCrimping/Alpha355/MachinePmChecksheet';
 import InspectionReportSheet from './Cnc/AutoCrimping/Alpha355/InspectionReportSheet';
 import PokayokeChecksheet from './Cnc/AutoCrimping/Alpha355/PokayokeChecksheet';
@@ -17,32 +17,14 @@ import HeadSinkingOverview from './Cnc/HeadSinking/HeadSinkingOverview';
 import AssemblyOverview from './Assembly/AssemblyOverview';
 import SrcOverview from './Src/SrcOverview';
 import { getMachineModel } from './Cnc/AutoCrimping/machineModels';
-import {
-  ChevronDown,
-  ChevronRight,
-  Cpu,
-  Boxes,
-  Building2,
-  MapPin,
-  Factory,
-  CheckCircle2,
-  BarChart3,
-  AlertOctagon,
-  Lock,
-  ShieldCheck,
-  X,
-  CreditCard,
-  Users,
-  Clock,
-  ArrowLeft
-} from 'lucide-react';
+import { ChevronDown, ChevronRight, Cpu, Boxes, Building2, MapPin, Factory, CheckCircle2, BarChart3, AlertOctagon, Lock, ShieldCheck, X, CreditCard, Users, Clock, ArrowLeft } from 'lucide-react';
 
 export default function MachineChecksheet({ onChecksheetStateChange }) {
   const [activeTab, setActiveTab] = useState('Auto Crimping');
-  const [selectedUnitLocation, setSelectedUnitLocation] = useState(''); // Initial unselected so Select Unit UI is shown first
-  const [selectedSubDept, setSelectedSubDept] = useState(''); // Initial unselected so sections are shown after unit selection
-  const [selectedMachine, setSelectedMachine] = useState(null); // null | { id: number, name: string }
-  const [selectedChecksheet, setSelectedChecksheetState] = useState(null); // null | string
+  const [selectedUnitLocation, setSelectedUnitLocation] = useState('');
+  const [selectedSubDept, setSelectedSubDept] = useState('');
+  const [selectedMachine, setSelectedMachine] = useState(null);
+  const [selectedChecksheet, setSelectedChecksheetState] = useState(null);
 
   const setSelectedChecksheet = (val) => {
     setSelectedChecksheetState(val);
@@ -51,22 +33,19 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
     }
   };
 
-  // Login Modal State for Operator & Quality Inspector Card Numbers
   const [pendingMachine, setPendingMachine] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [operatorCardNo, setOperatorCardNo] = useState('');
   const [inspectorCardNo, setInspectorCardNo] = useState('');
   const [loginError, setLoginError] = useState('');
-  const [activeSession, setActiveSession] = useState(null); // { operatorCardNo, inspectorCardNo }
+  const [activeSession, setActiveSession] = useState(null);
 
   const handleMachineCardClick = (machine) => {
-    // If session is already active for this checksheet session, directly open machine
     if (activeSession) {
       setSelectedMachine(machine);
       setSelectedChecksheet(null);
       return;
     }
-    // Otherwise, open authentication modal first
     setPendingMachine(machine);
     setOperatorCardNo('');
     setInspectorCardNo('');
@@ -85,12 +64,10 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
       return;
     }
 
-    // Set authenticated session and open the requested machine
     setActiveSession({
       operatorCardNo: operatorCardNo.trim(),
       inspectorCardNo: inspectorCardNo.trim()
     });
-    // Auto-fill into C&C Excel sheet meta if available
     setCcSheetData(prev => ({
       ...prev,
       operatorName: operatorCardNo.trim(),
@@ -110,7 +87,7 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
     setSelectedMachine(null);
     setSelectedChecksheet(null);
   };
-  // State for editable C&C Production Status Excel sheet
+
   const [ccSheetData, setCcSheetData] = useState({
     date: new Date().toISOString().split('T')[0],
     shift: 'Shift A',
@@ -161,17 +138,12 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
     setCcSheetData(prev => ({ ...prev, [field]: val }));
   };
 
-
-
-  // Sub sidebar items definition: 3 Links - CNC, Assembly, SRC
   const subSidebarItems = [
     {
       id: 'CNC',
       label: 'CNC',
       fullName: 'CNC Machining Section',
       icon: Cpu,
-      count: selectedUnitLocation === 'Bawal' ? 680 : 440,
-      activeCount: selectedUnitLocation === 'Bawal' ? 658 : 426,
       color: '#0284c7'
     },
     {
@@ -179,8 +151,6 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
       label: 'Assembly',
       fullName: 'Assembly Line Section',
       icon: Boxes,
-      count: selectedUnitLocation === 'Bawal' ? 890 : 560,
-      activeCount: selectedUnitLocation === 'Bawal' ? 852 : 540,
       color: '#10b981'
     },
     {
@@ -188,8 +158,6 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
       label: 'SRC',
       fullName: 'SRC Inspection & Quality',
       icon: Building2,
-      count: selectedUnitLocation === 'Bawal' ? 510 : 335,
-      activeCount: selectedUnitLocation === 'Bawal' ? 468 : 297,
       color: '#8b5cf6'
     }
   ];
@@ -213,7 +181,7 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
                 value={selectedUnitLocation}
                 onChange={(e) => {
                   setSelectedUnitLocation(e.target.value);
-                  setSelectedSubDept(''); // keep pages unselected until clicked
+                  setSelectedSubDept('');
                 }}
               >
                 <option value="">-- Choose Unit --</option>
@@ -258,10 +226,7 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="text-[11.5px] font-bold text-slate-500 bg-slate-100 py-0.5 px-1.5 rounded-md">
-                          {item.count}
-                        </span>
+                      <div className="flex items-center shrink-0">
                         <ChevronRight size={14} className="text-slate-400" />
                       </div>
                     </button>
@@ -412,8 +377,8 @@ export default function MachineChecksheet({ onChecksheetStateChange }) {
                   <button
                     key={tabName}
                     className={`border-none py-2 px-4 rounded-full text-xs font-semibold cursor-pointer inline-flex items-center gap-2 whitespace-nowrap transition-all ${activeTab === tabName
-                        ? 'bg-white text-slate-900 shadow-sm font-bold'
-                        : 'bg-transparent text-slate-500 hover:text-slate-900'
+                      ? 'bg-white text-slate-900 shadow-sm font-bold'
+                      : 'bg-transparent text-slate-500 hover:text-slate-900'
                       }`}
                     onClick={() => {
                       setActiveTab(tabName);

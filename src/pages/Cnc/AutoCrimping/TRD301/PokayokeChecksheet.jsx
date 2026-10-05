@@ -1,18 +1,5 @@
 import React, { useState } from 'react';
-import {
-  ShieldAlert,
-  Save,
-  RotateCcw,
-  Plus,
-  Eye,
-  Camera,
-  Cpu,
-  Layers,
-  Upload,
-  X,
-  Trash2,
-  Image as ImageIcon
-} from 'lucide-react';
+import { ShieldAlert, Save, RotateCcw, Plus, Eye, Camera, X, Image as ImageIcon } from 'lucide-react';
 
 // Master initial items directly from user's provided Poka-Yoke format
 const INITIAL_POKAYOKE_ITEMS = [
@@ -664,11 +651,11 @@ export default function PokayokeChecksheet({ machine, onClose }) {
       </div>
       {/* Photo Preview Modal */}
       {photoPreview && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={() => setPhotoPreview(null)}
         >
-          <div 
+          <div
             className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200"
             onClick={(e) => e.stopPropagation()}
           >
@@ -677,7 +664,7 @@ export default function PokayokeChecksheet({ machine, onClose }) {
                 <h4 className="font-extrabold text-sm text-slate-900 m-0">{photoPreview.title}</h4>
                 <p className="text-xs text-slate-500 m-0">{photoPreview.process}</p>
               </div>
-              <button 
+              <button
                 onClick={() => setPhotoPreview(null)}
                 className="p-1 rounded-lg hover:bg-slate-200 text-slate-500 bg-transparent border-none cursor-pointer"
               >

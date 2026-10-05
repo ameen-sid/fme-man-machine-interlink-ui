@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Gauge,
-  Save,
-  RotateCcw
-} from 'lucide-react';
+import { Gauge, Save, RotateCcw } from 'lucide-react';
 
 // Instrument 1: Plunger Micrometer (7 points)
 const INITIAL_PLUNGER_POINTS = [

@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  ClipboardCheck,
-  Save,
-  RotateCcw,
-  Eye,
-  PenTool,
-  Sparkles,
-  Scissors,
-  ArrowLeft
-} from 'lucide-react';
+import { ClipboardCheck, Save, RotateCcw, Eye, PenTool, Sparkles, Scissors, ArrowLeft } from 'lucide-react';
 
 // Master 5S Rows according to provided sheets
 const INITIAL_FIVE_S_ITEMS = [

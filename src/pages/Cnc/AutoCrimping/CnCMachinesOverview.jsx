@@ -1,11 +1,7 @@
-import React from 'react';
 import { Cpu } from 'lucide-react';
 import { getMachineModel } from './machineModels';
 
-export default function CnCMachinesOverview({
-  selectedUnitLocation = 'Bawal',
-  onSelectMachine
-}) {
+export default function CnCMachinesOverview({ selectedUnitLocation = 'Bawal', onSelectMachine }) {
   return (
     <div className="flex flex-col gap-4 w-full">
       {/* Top Banner: C&C Machines Overview */}
@@ -49,20 +45,20 @@ export default function CnCMachinesOverview({
             const statusText = isMaintenance
               ? 'Maintenance'
               : isIdleOrStopped
-              ? 'Idle / Stopped'
-              : 'Running';
+                ? 'Idle / Stopped'
+                : 'Running';
 
             const theme = isMaintenance
               ? {
-                  cardBg: 'bg-amber-50 hover:bg-amber-100/70 border-amber-300',
-                  badge: 'bg-amber-200/80 text-amber-900 border border-amber-400',
-                  iconBg: 'bg-amber-200/80 text-amber-900',
-                  pill: 'bg-amber-200 text-amber-950 border border-amber-400',
-                  dot: 'bg-amber-600',
-                  divider: 'border-amber-200/80'
-                }
+                cardBg: 'bg-amber-50 hover:bg-amber-100/70 border-amber-300',
+                badge: 'bg-amber-200/80 text-amber-900 border border-amber-400',
+                iconBg: 'bg-amber-200/80 text-amber-900',
+                pill: 'bg-amber-200 text-amber-950 border border-amber-400',
+                dot: 'bg-amber-600',
+                divider: 'border-amber-200/80'
+              }
               : isIdleOrStopped
-              ? {
+                ? {
                   cardBg: 'bg-rose-50 hover:bg-rose-100/70 border-rose-300',
                   badge: 'bg-rose-200/80 text-rose-900 border border-rose-400',
                   iconBg: 'bg-rose-200/80 text-rose-900',
@@ -70,7 +66,7 @@ export default function CnCMachinesOverview({
                   dot: 'bg-rose-600',
                   divider: 'border-rose-200/80'
                 }
-              : {
+                : {
                   cardBg: 'bg-emerald-50 hover:bg-emerald-100/70 border-emerald-300',
                   badge: 'bg-emerald-200/80 text-emerald-900 border border-emerald-400',
                   iconBg: 'bg-emerald-200/80 text-emerald-900',
@@ -97,13 +93,13 @@ export default function CnCMachinesOverview({
                 title={`Click to open checksheets for ${machineName}`}
               >
                 <div className="flex items-start justify-between">
-                  <div>
-                    <div className="text-base font-extrabold text-slate-900 tracking-tight">
+                  <div className="flex items-baseline gap-2 flex-wrap">
+                    <span className="text-base font-extrabold text-slate-900 tracking-tight">
                       {machineName}
-                    </div>
-                    <div className="text-xs font-bold text-slate-600 mt-0.5">
+                    </span>
+                    <span className="text-xs font-bold text-slate-600">
                       ({modelName})
-                    </div>
+                    </span>
                   </div>
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center ${theme.iconBg}`}

@@ -7,6 +7,7 @@
 // G_252: 20, 21, 22
 // JAN: 25
 // G_448: 26, 27, 28, 30, 31, 32
+
 export const MACHINE_MODEL_MAP = {
   1: 'Alpha_355',
   3: 'Alpha_355',

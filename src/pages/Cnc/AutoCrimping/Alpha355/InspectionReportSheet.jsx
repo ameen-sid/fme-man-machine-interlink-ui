@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Save,
-  RotateCcw,
-  Plus,
-  Trash2,
-  Printer,
-  FileSpreadsheet,
-  CheckCircle2,
-  ArrowLeft
-} from 'lucide-react';
+import { Save, RotateCcw, Plus, Printer, FileSpreadsheet, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 const createEmptyRecord = (id) => ({
   id,
@@ -1140,4 +1131,3 @@ export default function InspectionReportSheet({ machine, onClose }) {
     </div>
   );
 }
-
