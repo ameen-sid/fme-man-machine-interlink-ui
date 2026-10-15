@@ -76,7 +76,7 @@ export const OPERATIONAL_CHECKSHEETS = [
   {
     id: 'breakdown_summary',
     name: 'Machine Breakdown Summary',
-    shortDesc: 'Downtime logs, MTTR / MTBF analysis & root cause breakdown summary',
+    shortDesc: 'Daily Maintenance Log book & 5M Change record (FRM-WH-QA-241 Rev 02)',
     icon: AlertOctagon,
     color: '#e11d48',
     bg: '#ffe4e6'
