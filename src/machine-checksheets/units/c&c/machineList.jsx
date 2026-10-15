@@ -1,11 +1,18 @@
 import React from 'react';
 import { Cpu } from 'lucide-react';
 import { getMachineModel } from '../../../utils/machineModels';
+import GujratEmptyCncPage from './GujratEmptyCncPage';
 
 export default function MachineList({
   selectedUnitLocation = 'Bawal',
   onSelectMachine
 }) {
+  const isGujrat = selectedUnitLocation?.toLowerCase() === 'gujrat';
+
+  if (isGujrat) {
+    return <GujratEmptyCncPage />;
+  }
+
   return (
     <div className="flex flex-col gap-4 w-full">
       {/* Top Banner: C&C Machines Overview */}

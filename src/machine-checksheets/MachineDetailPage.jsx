@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import OperationalChecksheets from './shared/OperationalChecksheets';
+import GujratEmptyCncPage from './units/c&c/GujratEmptyCncPage';
 import { getMachineModel } from '../utils/machineModels';
 import { useAuth } from '../context/AuthContext';
 
@@ -12,6 +13,10 @@ export default function MachineDetailPage() {
 
   const currentUnit = unit || 'Bawal';
   const currentOpUnit = operationalUnit || 'CNC';
+
+  if (currentUnit.toLowerCase() === 'gujrat' && (currentOpUnit.toUpperCase() === 'CNC' || currentOpUnit.toUpperCase() === 'C&C')) {
+    return <GujratEmptyCncPage />;
+  }
 
   const path = (location.pathname || '').toLowerCase();
   let defaultMachine = 'TRD_411F';

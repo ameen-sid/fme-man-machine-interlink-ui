@@ -74,6 +74,7 @@ export default function OperationalUnitSelectionPage() {
               value={selectedUnitLocation}
               onChange={(e) => handleUnitChange(e.target.value)}
             >
+              <option value="">-- Choose Unit --</option>
               <option value="Bawal">Bawal Unit</option>
               <option value="Gujrat">Gujrat Unit</option>
             </select>
@@ -90,6 +91,12 @@ export default function OperationalUnitSelectionPage() {
         <div className="flex flex-col gap-2">
           {SUB_SIDEBAR_ITEMS.map((item) => {
             const ItemIcon = item.icon;
+            const isCnc = item.id === 'CNC';
+            const isGujrat = selectedUnitLocation.toLowerCase() === 'gujrat';
+            const description = isCnc && isGujrat
+              ? '0 machines added (All 31 machines in Bawal Unit)'
+              : item.description;
+
             return (
               <button
                 key={item.id}
@@ -107,8 +114,21 @@ export default function OperationalUnitSelectionPage() {
                     <ItemIcon size={16} />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[13.5px] font-bold text-slate-800 whitespace-nowrap">{item.label}</span>
-                    <span className="text-[11px] text-slate-500 whitespace-nowrap overflow-hidden text-ellipsis">{item.fullName}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[13.5px] font-bold text-slate-800 whitespace-nowrap">{item.label}</span>
+                      {isCnc && (
+                        <span
+                          className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full border ${
+                            isGujrat
+                              ? 'bg-amber-50 text-amber-700 border-amber-200'
+                              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          }`}
+                        >
+                          {isGujrat ? '0 Machines' : '31 Machines'}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[11px] text-slate-500 whitespace-nowrap overflow-hidden text-ellipsis">{description}</span>
                   </div>
                 </div>
                 <div className="flex items-center shrink-0">

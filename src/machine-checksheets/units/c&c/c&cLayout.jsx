@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import ProcessFilters, { CNC_PROCESSES } from './processFilters';
 import MachineList from './machineList';
+import GujratEmptyCncPage from './GujratEmptyCncPage';
 import { useAuth } from '../../../context/AuthContext';
 
 export default function CnCLayout() {
@@ -11,6 +12,11 @@ export default function CnCLayout() {
   const { requestAuth } = useAuth();
   const [activeProcess, setActiveProcess] = useState('Auto Crimping');
   const currentUnit = unit || 'Bawal';
+  const isGujrat = currentUnit.toLowerCase() === 'gujrat';
+
+  if (isGujrat) {
+    return <GujratEmptyCncPage />;
+  }
 
   const handleMachineSelect = (machine) => {
     requestAuth(machine, () => {

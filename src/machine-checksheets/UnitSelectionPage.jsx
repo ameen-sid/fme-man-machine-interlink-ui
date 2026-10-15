@@ -36,7 +36,7 @@ export default function UnitSelectionPage() {
       name: "Gujrat Unit",
       location: "Gujarat, India",
       sections: [
-        "CNC Wire Harnessing",
+        "CNC Machining (0 Machines)",
         "Sub-Assembly Cells",
         "Inspection Labs",
       ],
