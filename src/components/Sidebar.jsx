@@ -47,21 +47,16 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }) {
               <PanelLeftOpen size={18} />
             </button>
             <div
-              className="flex items-center justify-center w-11 h-8 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 rounded-lg shadow-sm"
+              className="flex items-center justify-center p-1.5 bg-slate-50 border border-slate-200 rounded-lg shadow-xs"
               title="Furukawa Minda Electric"
             >
-              <span className="text-white font-extrabold tracking-wider text-xs">FME</span>
+              <img src="/fme-logo.png" alt="FME" className="h-4 w-auto object-contain" />
             </div>
           </div>
         ) : (
           <div className="flex items-center justify-between p-4 border-b border-slate-100">
-            <div className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 rounded-lg shadow-sm">
-              <span className="text-white font-extrabold tracking-wider text-sm flex items-center">
-                <span className="text-white">F</span>
-                <span className="text-blue-200">m</span>
-                <span className="text-amber-300">e</span>
-              </span>
-              <span className="text-[10px] font-bold text-blue-100 tracking-wider uppercase ml-1">MMI</span>
+            <div className="flex items-center gap-2" title="Furukawa Minda Electric">
+              <img src="/fme-logo.png" alt="Furukawa Minda" className="h-8 w-auto object-contain" />
             </div>
             <button
               onClick={() => onToggleCollapse(true)}

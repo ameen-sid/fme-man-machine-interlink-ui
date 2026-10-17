@@ -1,5 +1,6 @@
 import React from 'react';
-import { Users, Clock, AlertOctagon, Boxes, ArrowLeft } from 'lucide-react';
+import { Users, Clock, AlertOctagon, Boxes } from 'lucide-react';
+import ChecksheetHeaderNav from './ChecksheetHeaderNav';
 
 export default function OperatorMachineSummary({
   machine = { name: 'C&C 01', model: 'Alpha_355' },
@@ -9,31 +10,20 @@ export default function OperatorMachineSummary({
 }) {
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-5 shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
-        <div className="flex items-center gap-3">
-          <Users size={22} className="text-emerald-600 bg-emerald-50 p-2 rounded-xl w-10 h-10" />
-          <div>
-            <h3 className="text-base font-black text-slate-900 m-0">Operator & Machine Summary</h3>
-            <p className="text-xs text-slate-500 m-0">
-              Consolidated telemetry and operator shift login audit for {machine?.name || 'Machine'} ({activeTab})
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-slate-600 bg-slate-100 py-1.5 px-3 rounded-full">
+      <ChecksheetHeaderNav
+        title="OPERATOR & MACHINE SUMMARY"
+        subtitle={<>Consolidated telemetry and operator shift login audit for <strong className="text-slate-800">{machine?.name || 'Machine'}</strong> ({activeTab})</>}
+        icon={Users}
+        iconBgClass="bg-emerald-100 text-emerald-700"
+        onClose={onClose}
+        showSave={false}
+        showReset={false}
+        extraActions={
+          <span className="text-xs font-bold text-slate-600 bg-slate-100 py-2 px-3 rounded-lg border border-slate-200">
             Today: {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
           </span>
-          {onClose && (
-            <button
-              className="text-xs font-bold py-1.5 px-3 rounded-full bg-red-50 text-red-600 hover:bg-red-100 cursor-pointer border-none transition-all flex items-center gap-1"
-              onClick={onClose}
-            >
-              <ArrowLeft size={13} />
-              <span>Close Summary</span>
-            </button>
-          )}
-        </div>
-      </div>
+        }
+      />
 
       {/* Overall Machine Telemetry KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -91,6 +91,49 @@ export const OPERATIONAL_CHECKSHEETS = [
   }
 ];
 
+export const RESISTANCE_WELDING_CHECKSHEETS = [
+  {
+    id: '5s',
+    name: 'Machine 5S checksheet',
+    shortDesc: '5S Check Point - Sort, Set, Shine, Standardize & Sustain (CHK-5S-03 Rev 01)',
+    icon: ClipboardCheck,
+    color: '#0284c7',
+    bg: '#e0f2fe'
+  },
+  {
+    id: 'daily',
+    name: 'Machine Daily checksheet',
+    shortDesc: 'Daily Machine Check Sheet & Abnormality Action (CHK-WH-MT-003 Rev 07)',
+    icon: CalendarCheck2,
+    color: '#10b981',
+    bg: '#d1fae5'
+  },
+  {
+    id: 'instrument',
+    name: 'Machine Instrument checksheet',
+    shortDesc: 'Instrument Check Sheet - Plunger, Blade Micrometer & Scale (FRM-WH-QA-046 Shifts A,B,C)',
+    icon: Gauge,
+    color: '#f59e0b',
+    bg: '#fef3c7'
+  },
+  {
+    id: 'pokayoke',
+    name: 'Machine Pokayoke checksheet',
+    shortDesc: 'Poka-Yoke Daily Verification & Inspection Sheet (FFM-WH-QA-096 Shift A & B)',
+    icon: ShieldAlert,
+    color: '#ef4444',
+    bg: '#fee2e2'
+  },
+  {
+    id: 'pm',
+    name: 'Machine PM checksheet',
+    shortDesc: 'Monthly & Periodic PM Check Sheet (Furukawa Minda Electric CHK-WH-MT-043 Rev 19)',
+    icon: Wrench,
+    color: '#8b5cf6',
+    bg: '#ede9fe'
+  }
+];
+
 export default function OperationalChecksheets({
   selectedMachine,
   machineModel,
@@ -102,6 +145,19 @@ export default function OperationalChecksheets({
   onLogout,
   onBack
 }) {
+  const isResistanceWelding =
+    activeTab === 'Registance Welding' ||
+    selectedMachine?.process === 'Registance Welding' ||
+    (selectedMachine?.name && (
+      selectedMachine.name.includes('R/SW') ||
+      selectedMachine.name.includes('R-SW') ||
+      selectedMachine.name.includes('RSW')
+    )) ||
+    (selectedMachine?.model && selectedMachine.model.startsWith('Machine'));
+
+  const checksheetsList = isResistanceWelding
+    ? RESISTANCE_WELDING_CHECKSHEETS
+    : OPERATIONAL_CHECKSHEETS;
   return (
     <div className="flex flex-col gap-5 w-full">
       {/* Header Bar */}
@@ -162,9 +218,9 @@ export default function OperationalChecksheets({
         </div>
       </div>
 
-      {/* Checksheets Cards Grid - 4 cards in single row on desktop */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {OPERATIONAL_CHECKSHEETS.map((cs, idx) => {
+      {/* Checksheets Cards Grid */}
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${isResistanceWelding ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4'} gap-4`}>
+        {checksheetsList.map((cs, idx) => {
           const CsIcon = cs.icon;
           const isSelected = selectedChecksheet === cs.name;
           return (

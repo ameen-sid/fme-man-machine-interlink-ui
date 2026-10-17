@@ -34,14 +34,28 @@ export default function MachineDetailPage() {
     defaultMachine = 'Alpha_355';
   }
   const rawMachineId = machineId || defaultMachine;
+  const decodedMachineId = decodeURIComponent(rawMachineId);
 
   // Parse machine id number & model
-  const cleanId = rawMachineId.trim().toUpperCase().replace(/[-_\s]/g, '');
+  const cleanId = decodedMachineId.trim().toUpperCase().replace(/[-_\s]/g, '');
   let idNum = 1;
   let modelName = '';
   let machineName = '';
+  let activeProcess = 'Auto Crimping';
 
-  if (rawMachineId.startsWith('C&C')) {
+  const isResistanceWelding =
+    decodedMachineId.includes('R/SW') ||
+    cleanId.includes('RSW') ||
+    decodedMachineId.startsWith('R/SW') ||
+    decodedMachineId.startsWith('RSW');
+
+  if (isResistanceWelding) {
+    const numMatch = decodedMachineId.match(/\d+/);
+    idNum = numMatch ? Number(numMatch[0]) : 1;
+    machineName = `R/SW ${String(idNum).padStart(2, '0')}`;
+    modelName = `Machine ${idNum}`;
+    activeProcess = 'Registance Welding';
+  } else if (rawMachineId.startsWith('C&C')) {
     const numMatch = rawMachineId.match(/\d+/);
     idNum = numMatch ? Number(numMatch[0]) : 1;
     machineName = `C&C ${String(idNum).padStart(2, '0')}`;
@@ -84,20 +98,26 @@ export default function MachineDetailPage() {
   const selectedMachine = {
     id: idNum,
     name: machineName,
-    model: modelName
+    model: modelName,
+    process: activeProcess
   };
 
   const handleSelectChecksheet = (csName) => {
-    navigate(`/machine-checksheet/${currentUnit}/${currentOpUnit}/${encodeURIComponent(machineName)}/${encodeURIComponent(csName)}`);
+    const machineSlug = machineName.includes('/') ? machineName.replace(/\//g, '-') : machineName;
+    navigate(`/machine-checksheet/${currentUnit}/${currentOpUnit}/${machineSlug}/${encodeURIComponent(csName)}`);
   };
 
   const handleBack = () => {
-    navigate(`/machine-checksheet/${currentUnit}/${currentOpUnit}`);
+    navigate(`/machine-checksheet/${currentUnit}/${currentOpUnit}`, {
+      state: { activeProcess }
+    });
   };
 
   const handleLogout = () => {
     logout();
-    navigate(`/machine-checksheet/${currentUnit}/${currentOpUnit}`);
+    navigate(`/machine-checksheet/${currentUnit}/${currentOpUnit}`, {
+      state: { activeProcess }
+    });
   };
 
   return (
@@ -105,7 +125,7 @@ export default function MachineDetailPage() {
       <OperationalChecksheets
         selectedMachine={selectedMachine}
         machineModel={modelName}
-        activeTab="Auto Crimping"
+        activeTab={activeProcess}
         selectedUnitLocation={currentUnit}
         activeSession={activeSession}
         onSelectChecksheet={handleSelectChecksheet}

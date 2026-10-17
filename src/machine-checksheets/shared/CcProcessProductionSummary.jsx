@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { BarChart3, ArrowLeft } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
+import ChecksheetHeaderNav from './ChecksheetHeaderNav';
 
 export default function CcProcessProductionSummary({
   machine = { name: 'C&C 01' },
@@ -58,34 +59,15 @@ export default function CcProcessProductionSummary({
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-5 shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
-        <div className="flex items-center gap-3">
-          <BarChart3 size={22} className="text-teal-600 bg-teal-50 p-2 rounded-xl w-10 h-10" />
-          <div>
-            <h3 className="text-base font-black text-slate-900 m-0">C&C Process Production Status Summary</h3>
-            <p className="text-xs text-slate-500 m-0">
-              Excel Checksheet format for {machine?.name || 'Machine'} &bull; FRM-PR-201 (Rev No. 03)
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            className="text-xs font-bold py-1.5 px-3.5 rounded-full bg-teal-600 text-white hover:bg-teal-700 cursor-pointer border-none shadow-sm transition-all"
-            onClick={() => alert(`C&C Production Status saved for ${machine?.name}!`)}
-          >
-            Save Record
-          </button>
-          {onClose && (
-            <button
-              className="text-xs font-bold py-1.5 px-3 rounded-full bg-red-50 text-red-600 hover:bg-red-100 cursor-pointer border-none transition-all flex items-center gap-1"
-              onClick={onClose}
-            >
-              <ArrowLeft size={13} />
-              <span>Close Checksheet</span>
-            </button>
-          )}
-        </div>
-      </div>
+      <ChecksheetHeaderNav
+        title="C&C PROCESS PRODUCTION STATUS SUMMARY"
+        subtitle={<>Format: <strong className="text-slate-800">FRM-PR-201 (Rev No. 03)</strong> • Machine: <strong className="text-slate-800">{machine?.name || 'Machine'}</strong></>}
+        icon={BarChart3}
+        iconBgClass="bg-teal-100 text-teal-700"
+        onClose={onClose}
+        onSave={() => alert(`C&C Production Status saved for ${machine?.name}!`)}
+        showReset={false}
+      />
 
       {/* Excel Sheet Outer Container */}
       <div className="bg-white border-[1.5px] border-black p-3 font-sans shadow-sm rounded">

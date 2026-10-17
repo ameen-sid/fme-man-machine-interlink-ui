@@ -8,62 +8,63 @@ import OperatorMachineSummary from './shared/OperatorMachineSummary';
 import CcProcessProductionSummary from './shared/CcProcessProductionSummary';
 import BreakdownSummary from './shared/BreakdownSummary';
 import ChecksheetNotAdded from './shared/ChecksheetNotAdded';
+import ResistanceWeldingBlankSheet from './units/c&c/resistanceWelding/ResistanceWeldingBlankSheet';
 
 // Alpha 355 checksheets
-import Alpha355FiveS from './units/c&c/alpha355/FiveSChecksheet';
-import Alpha355Daily from './units/c&c/alpha355/DailyChecksheet';
-import Alpha355Instrument from './units/c&c/alpha355/InstrumentChecksheet';
-import Alpha355Pokayoke from './units/c&c/alpha355/PokayokeChecksheet';
-import Alpha355InspectionReport from './units/c&c/alpha355/InspectionReportSheet';
-import Alpha355MachinePm from './units/c&c/alpha355/MachinePmChecksheet';
+import Alpha355FiveS from './units/c&c/autoCrimping/alpha355/FiveSChecksheet';
+import Alpha355Daily from './units/c&c/autoCrimping/alpha355/DailyChecksheet';
+import Alpha355Instrument from './units/c&c/autoCrimping/alpha355/InstrumentChecksheet';
+import Alpha355Pokayoke from './units/c&c/autoCrimping/alpha355/PokayokeChecksheet';
+import Alpha355InspectionReport from './units/c&c/autoCrimping/alpha355/InspectionReportSheet';
+import Alpha355MachinePm from './units/c&c/autoCrimping/alpha355/MachinePmChecksheet';
 
 // TRD 301 checksheets
-import Trd301FiveS from './units/c&c/trd301/FiveSChecksheet';
-import Trd301Daily from './units/c&c/trd301/DailyChecksheet';
-import Trd301Instrument from './units/c&c/trd301/InstrumentChecksheet';
-import Trd301Pokayoke from './units/c&c/trd301/PokayokeChecksheet';
-import Trd301InspectionReport from './units/c&c/trd301/InspectionReportSheet';
-import Trd301MachinePm from './units/c&c/trd301/MachinePmChecksheet';
+import Trd301FiveS from './units/c&c/autoCrimping/trd301/FiveSChecksheet';
+import Trd301Daily from './units/c&c/autoCrimping/trd301/DailyChecksheet';
+import Trd301Instrument from './units/c&c/autoCrimping/trd301/InstrumentChecksheet';
+import Trd301Pokayoke from './units/c&c/autoCrimping/trd301/PokayokeChecksheet';
+import Trd301InspectionReport from './units/c&c/autoCrimping/trd301/InspectionReportSheet';
+import Trd301MachinePm from './units/c&c/autoCrimping/trd301/MachinePmChecksheet';
 
 // TRD 411F checksheets
-import Trd411fFiveS from './units/c&c/trd411f/FiveSChecksheet';
-import Trd411fDaily from './units/c&c/trd411f/DailyChecksheet';
-import Trd411fInstrument from './units/c&c/trd411f/InstrumentChecksheet';
-import Trd411fPokayoke from './units/c&c/trd411f/PokayokeChecksheet';
-import Trd411fInspectionReport from './units/c&c/trd411f/InspectionReportSheet';
-import Trd411fMachinePm from './units/c&c/trd411f/MachinePmChecksheet';
+import Trd411fFiveS from './units/c&c/autoCrimping/trd411f/FiveSChecksheet';
+import Trd411fDaily from './units/c&c/autoCrimping/trd411f/DailyChecksheet';
+import Trd411fInstrument from './units/c&c/autoCrimping/trd411f/InstrumentChecksheet';
+import Trd411fPokayoke from './units/c&c/autoCrimping/trd411f/PokayokeChecksheet';
+import Trd411fInspectionReport from './units/c&c/autoCrimping/trd411f/InspectionReportSheet';
+import Trd411fMachinePm from './units/c&c/autoCrimping/trd411f/MachinePmChecksheet';
 
 // G448 checksheets
-import G448FiveS from './units/c&c/g448/FiveSChecksheet';
-import G448Daily from './units/c&c/g448/DailyChecksheet';
-import G448Instrument from './units/c&c/g448/InstrumentChecksheet';
-import G448Pokayoke from './units/c&c/g448/PokayokeChecksheet';
-import G448InspectionReport from './units/c&c/g448/InspectionReportSheet';
-import G448MachinePm from './units/c&c/g448/MachinePmChecksheet';
+import G448FiveS from './units/c&c/autoCrimping/g448/FiveSChecksheet';
+import G448Daily from './units/c&c/autoCrimping/g448/DailyChecksheet';
+import G448Instrument from './units/c&c/autoCrimping/g448/InstrumentChecksheet';
+import G448Pokayoke from './units/c&c/autoCrimping/g448/PokayokeChecksheet';
+import G448InspectionReport from './units/c&c/autoCrimping/g448/InspectionReportSheet';
+import G448MachinePm from './units/c&c/autoCrimping/g448/MachinePmChecksheet';
 
 // G252 checksheets
-import G252FiveS from './units/c&c/g252/FiveSChecksheet';
-import G252Daily from './units/c&c/g252/DailyChecksheet';
-import G252Instrument from './units/c&c/g252/InstrumentChecksheet';
-import G252Pokayoke from './units/c&c/g252/PokayokeChecksheet';
-import G252InspectionReport from './units/c&c/g252/InspectionReportSheet';
-import G252MachinePm from './units/c&c/g252/MachinePmChecksheet';
+import G252FiveS from './units/c&c/autoCrimping/g252/FiveSChecksheet';
+import G252Daily from './units/c&c/autoCrimping/g252/DailyChecksheet';
+import G252Instrument from './units/c&c/autoCrimping/g252/InstrumentChecksheet';
+import G252Pokayoke from './units/c&c/autoCrimping/g252/PokayokeChecksheet';
+import G252InspectionReport from './units/c&c/autoCrimping/g252/InspectionReportSheet';
+import G252MachinePm from './units/c&c/autoCrimping/g252/MachinePmChecksheet';
 
 // G253 checksheets
-import G253FiveS from './units/c&c/g253/FiveSChecksheet';
-import G253Daily from './units/c&c/g253/DailyChecksheet';
-import G253Instrument from './units/c&c/g253/InstrumentChecksheet';
-import G253Pokayoke from './units/c&c/g253/PokayokeChecksheet';
-import G253InspectionReport from './units/c&c/g253/InspectionReportSheet';
-import G253MachinePm from './units/c&c/g253/MachinePmChecksheet';
+import G253FiveS from './units/c&c/autoCrimping/g253/FiveSChecksheet';
+import G253Daily from './units/c&c/autoCrimping/g253/DailyChecksheet';
+import G253Instrument from './units/c&c/autoCrimping/g253/InstrumentChecksheet';
+import G253Pokayoke from './units/c&c/autoCrimping/g253/PokayokeChecksheet';
+import G253InspectionReport from './units/c&c/autoCrimping/g253/InspectionReportSheet';
+import G253MachinePm from './units/c&c/autoCrimping/g253/MachinePmChecksheet';
 
 // JAM checksheets
-import JamFiveS from './units/c&c/jam/FiveSChecksheet';
-import JamDaily from './units/c&c/jam/DailyChecksheet';
-import JamInstrument from './units/c&c/jam/InstrumentChecksheet';
-import JamPokayoke from './units/c&c/jam/PokayokeChecksheet';
-import JamInspectionReport from './units/c&c/jam/InspectionReportSheet';
-import JamMachinePm from './units/c&c/jam/MachinePmChecksheet';
+import JamFiveS from './units/c&c/autoCrimping/jam/FiveSChecksheet';
+import JamDaily from './units/c&c/autoCrimping/jam/DailyChecksheet';
+import JamInstrument from './units/c&c/autoCrimping/jam/InstrumentChecksheet';
+import JamPokayoke from './units/c&c/autoCrimping/jam/PokayokeChecksheet';
+import JamInspectionReport from './units/c&c/autoCrimping/jam/InspectionReportSheet';
+import JamMachinePm from './units/c&c/autoCrimping/jam/MachinePmChecksheet';
 
 export default function ChecksheetDetailPage() {
   const { unit, operationalUnit, machineId, checksheetId } = useParams();
@@ -90,15 +91,27 @@ export default function ChecksheetDetailPage() {
     defaultMachine = 'Alpha_355';
   }
   const rawMachineId = machineId || defaultMachine;
+  const decodedMachineId = decodeURIComponent(rawMachineId);
   const decodedChecksheetId = checksheetId ? decodeURIComponent(checksheetId) : '';
 
   // Parse machine id number & model
-  const cleanId = rawMachineId.trim().toUpperCase().replace(/[-_\s]/g, '');
+  const cleanId = decodedMachineId.trim().toUpperCase().replace(/[-_\s]/g, '');
   let idNum = 1;
   let modelName = '';
   let machineName = '';
 
-  if (rawMachineId.startsWith('C&C')) {
+  const isResistanceWelding =
+    decodedMachineId.includes('R/SW') ||
+    cleanId.includes('RSW') ||
+    decodedMachineId.startsWith('R/SW') ||
+    decodedMachineId.startsWith('RSW');
+
+  if (isResistanceWelding) {
+    const numMatch = decodedMachineId.match(/\d+/);
+    idNum = numMatch ? Number(numMatch[0]) : 1;
+    machineName = `R/SW ${String(idNum).padStart(2, '0')}`;
+    modelName = `Machine ${idNum}`;
+  } else if (rawMachineId.startsWith('C&C')) {
     const numMatch = rawMachineId.match(/\d+/);
     idNum = numMatch ? Number(numMatch[0]) : 1;
     machineName = `C&C ${String(idNum).padStart(2, '0')}`;
@@ -146,7 +159,8 @@ export default function ChecksheetDetailPage() {
 
   const handleClose = () => {
     if (machineId) {
-      navigate(`/machine-checksheet/${currentUnit}/${currentOpUnit}/${encodeURIComponent(machineName)}`);
+      const machineSlug = machineName.includes('/') ? machineName.replace(/\//g, '-') : machineName;
+      navigate(`/machine-checksheet/${currentUnit}/${currentOpUnit}/${machineSlug}`);
     } else {
       if (path.includes('g448')) {
         navigate(path.startsWith('/machine-checksheet') ? '/machine-checksheet/g448' : '/g448');
@@ -165,6 +179,18 @@ export default function ChecksheetDetailPage() {
       }
     }
   };
+
+  // Resistance Welding checksheets: render blank checksheet with standardized header
+  if (isResistanceWelding) {
+    return (
+      <ResistanceWeldingBlankSheet
+        key={`${selectedMachine.name}_${decodedChecksheetId}`}
+        machine={selectedMachine}
+        checksheetName={decodedChecksheetId}
+        onClose={handleClose}
+      />
+    );
+  }
 
   // Helper matching checksheet name or id
   const isMatch = (targetName, targetId) => {

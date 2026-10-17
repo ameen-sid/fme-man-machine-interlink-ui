@@ -48,9 +48,24 @@ export const MACHINE_MODEL_MAP = {
   32: 'G_448'
 };
 
-export function getMachineModel(machineId) {
+export const RESISTANCE_WELDING_MODEL_MAP = {
+  1: 'Machine 1',
+  2: 'Machine 2',
+  3: 'Machine 3',
+  4: 'Machine 4',
+  5: 'Machine 5',
+  6: 'Machine 6',
+  7: 'Machine 7'
+};
+
+export function getMachineModel(machineId, process = '') {
   if (typeof machineId === 'string') {
     const clean = machineId.trim().toUpperCase().replace(/[-_\s]/g, '');
+    if (clean.includes('RSW') || clean.includes('R/SW') || clean.includes('R_SW') || process === 'Registance Welding') {
+      const numMatch = machineId.match(/\d+/);
+      const num = numMatch ? Number(numMatch[0]) : 1;
+      return RESISTANCE_WELDING_MODEL_MAP[num] || `Machine ${num}`;
+    }
     if (clean.includes('TRD411F') || clean.includes('TRD411')) return 'TRD_411F';
     if (clean.includes('TRD301')) return 'TRD_301';
     if (clean.includes('ALPHA355')) return 'Alpha_355';
@@ -60,5 +75,8 @@ export function getMachineModel(machineId) {
     if (clean.includes('JAM') || clean.includes('JAN')) return 'JAM';
   }
   const idNum = Number(machineId);
+  if (process === 'Registance Welding') {
+    return RESISTANCE_WELDING_MODEL_MAP[idNum] || `Machine ${idNum}`;
+  }
   return MACHINE_MODEL_MAP[idNum] || `Model ${machineId}`;
 }

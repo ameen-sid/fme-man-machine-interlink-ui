@@ -1,16 +1,37 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import ProcessFilters, { CNC_PROCESSES } from './processFilters';
-import MachineList from './machineList';
 import GujratEmptyCncPage from './GujratEmptyCncPage';
 import { useAuth } from '../../../context/AuthContext';
+
+// Filter views managed in dedicated folders
+import AutoCrimpingView from './autoCrimping';
+import ManualCrimpingView from './manualCrimping';
+import JointCrimpingView from './jointCrimping';
+import ResistanceWeldingView from './resistanceWelding';
+import TwistingView from './twisting';
+import BlueTapingView from './blueTaping';
+import HeadSinkingView from './headSinking';
+
+const PROCESS_VIEWS = {
+  'Auto Crimping': AutoCrimpingView,
+  'Manual Crimping': ManualCrimpingView,
+  'Joint Crimping': JointCrimpingView,
+  'Registance Welding': ResistanceWeldingView,
+  'Twisting': TwistingView,
+  'Blue Taping': BlueTapingView,
+  'Head Sinking': HeadSinkingView
+};
 
 export default function CnCLayout() {
   const { unit } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { requestAuth } = useAuth();
-  const [activeProcess, setActiveProcess] = useState('Auto Crimping');
+  const [activeProcess, setActiveProcess] = useState(
+    location.state?.activeProcess || 'Auto Crimping'
+  );
   const currentUnit = unit || 'Bawal';
   const isGujrat = currentUnit.toLowerCase() === 'gujrat';
 
@@ -20,9 +41,14 @@ export default function CnCLayout() {
 
   const handleMachineSelect = (machine) => {
     requestAuth(machine, () => {
-      navigate(`/machine-checksheet/${currentUnit}/CNC/${machine.name}`);
+      const machineSlug = machine.name.includes('/')
+        ? machine.name.replace(/\//g, '-')
+        : machine.name;
+      navigate(`/machine-checksheet/${currentUnit}/CNC/${machineSlug}`);
     });
   };
+
+  const ActiveProcessView = PROCESS_VIEWS[activeProcess] || AutoCrimpingView;
 
   return (
     <div className="flex flex-col gap-5 w-full">
@@ -60,31 +86,11 @@ export default function CnCLayout() {
         onSelectProcess={setActiveProcess}
       />
 
-      {/* Content based on Active Process */}
-      {activeProcess === 'Auto Crimping' ? (
-        <MachineList
-          selectedUnitLocation={currentUnit}
-          onSelectMachine={handleMachineSelect}
-        />
-      ) : (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-10 shadow-sm">
-          <div className="flex flex-col gap-3">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold text-blue-600 bg-blue-50/80 py-1.5 px-3.5 rounded-full w-max">
-              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-              <span>{currentUnit} Unit</span>
-              <span className="text-blue-300">•</span>
-              <span>CNC Section</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight m-0">
-              {activeProcess}
-            </h2>
-            <p className="text-sm text-slate-500 m-0 max-w-3xl leading-relaxed">
-              Machine Checksheet parameters, real-time inspection criteria and operational logs for{' '}
-              <strong className="text-slate-700 font-semibold">{activeProcess}</strong> in CNC Section ({currentUnit} Plant).
-            </p>
-          </div>
-        </div>
-      )}
+      {/* Content based on Active Process Folder Component */}
+      <ActiveProcessView
+        selectedUnitLocation={currentUnit}
+        onSelectMachine={handleMachineSelect}
+      />
     </div>
   );
 }

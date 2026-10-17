@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Printer, Save, RotateCcw, Plus } from 'lucide-react';
+import { Plus, Wrench } from 'lucide-react';
+import ChecksheetHeaderNav from './ChecksheetHeaderNav';
 
 const createEmptyIncident = (id) => ({
   id,
@@ -132,12 +133,7 @@ export default function BreakdownSummary({ machine, onClose }) {
     setSavedToast(true);
     setTimeout(() => setSavedToast(false), 3000);
   };
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleReset = () => {
+const handleReset = () => {
     if (window.confirm('Reset all values to blank spreadsheet?')) {
       setIncidents(INITIAL_INCIDENTS());
     }
@@ -145,59 +141,29 @@ export default function BreakdownSummary({ machine, onClose }) {
 
   return (
     <div className="w-full bg-white text-black font-sans text-[10px] p-2 leading-none">
-      {/* Top Action Toolbar (Hidden in Print) */}
-      <div className="print:hidden flex items-center justify-between bg-slate-100 border border-slate-300 p-2 px-3 rounded mb-2">
-        <div className="flex items-center gap-2">
-          {onClose && (
+      {/* Top Floating Control Bar */}
+      <div className="mb-3">
+        <ChecksheetHeaderNav
+          title="DAILY MAINTENANCE LOG BOOK & 5M CHANGE RECORD"
+          subtitle={<>Machine: <strong className="text-slate-800">{machineName}</strong></>}
+          icon={Wrench}
+          iconBgClass="bg-amber-100 text-amber-700"
+          onClose={onClose}
+          onSave={handleSave}
+          onReset={handleReset}
+          savedToast={savedToast ? 'Checksheet saved successfully!' : null}
+          extraActions={
             <button
               type="button"
-              onClick={onClose}
-              className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 cursor-pointer rounded"
+              onClick={handleAddRow}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 cursor-pointer shadow-sm transition-colors"
             >
-              <ArrowLeft size={14} /> Back
+              <Plus size={14} />
+              <span>Add Incident</span>
             </button>
-          )}
-          <span className="font-bold text-xs">
-            Daily Maintenance Log book & 5M Change record ({machineName})
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleAddRow}
-            className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 bg-blue-50 border border-blue-300 text-blue-700 hover:bg-blue-100 cursor-pointer rounded"
-          >
-            <Plus size={14} /> Add Incident
-          </button>
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 cursor-pointer rounded"
-          >
-            <Printer size={14} /> Print
-          </button>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 cursor-pointer rounded"
-          >
-            <RotateCcw size={14} /> Reset
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            className="inline-flex items-center gap-1 text-xs font-bold px-4 py-1.5 bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer rounded"
-          >
-            <Save size={14} /> Save
-          </button>
-        </div>
+          }
+        />
       </div>
-
-      {savedToast && (
-        <div className="print:hidden bg-emerald-100 border border-emerald-400 text-emerald-800 text-xs px-3 py-1.5 rounded mb-2 font-bold">
-          Checksheet saved successfully!
-        </div>
-      )}
 
       {/* Main Table Scroll Area */}
       <div className="w-full overflow-x-auto">
