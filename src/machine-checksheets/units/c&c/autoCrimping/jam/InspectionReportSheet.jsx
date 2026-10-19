@@ -166,14 +166,7 @@ export default function InspectionReportSheet({ machine, onClose }) {
             <Plus size={14} />
             <span>Add Circuit</span>
           </button>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold py-1.5 px-3 rounded-lg border-none cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-sm"
-            onClick={handleSave}
-          >
-            <Save size={14} />
-            <span>Save Report</span>
-          </button>
+          
           <button
             type="button"
             className="inline-flex items-center gap-1.5 text-xs font-semibold py-1.5 px-3 rounded-lg border border-slate-300 cursor-pointer bg-white text-slate-700 hover:bg-slate-50 transition-all shadow-sm"

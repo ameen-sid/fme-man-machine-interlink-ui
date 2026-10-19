@@ -321,13 +321,7 @@ export default function PokayokeChecksheet({ machine, onClose }) {
                             {savedToast}
                         </div>
                     )}
-                    <button
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-                        onClick={handleSave}
-                    >
-                        <Save size={15} />
-                        <span>Save Record</span>
-                    </button>
+                    
                     <button
                         className="inline-flex items-center gap-1.5 p-2 rounded-lg text-xs font-bold cursor-pointer transition-all bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-600"
                         onClick={handleReset}

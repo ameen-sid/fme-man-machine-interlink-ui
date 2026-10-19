@@ -13,6 +13,7 @@ import {
   FileSpreadsheet,
   AlertOctagon,
   Wrench,
+  Activity,
   ArrowLeft
 } from 'lucide-react';
 
@@ -117,12 +118,12 @@ export const RESISTANCE_WELDING_CHECKSHEETS = [
     bg: '#fef3c7'
   },
   {
-    id: 'pokayoke',
-    name: 'Machine Pokayoke checksheet',
-    shortDesc: 'Poka-Yoke Daily Verification & Inspection Sheet (FFM-WH-QA-096 Shift A & B)',
-    icon: ShieldAlert,
-    color: '#ef4444',
-    bg: '#fee2e2'
+    id: 'inspection_report',
+    name: 'Inspection report',
+    shortDesc: 'Daily Record of Cutting and Crimping Operation (FRM-QC-PS-244 Rev 01.07.2024)',
+    icon: FileSpreadsheet,
+    color: '#6366f1',
+    bg: '#e0e7ff'
   },
   {
     id: 'pm',
@@ -131,6 +132,14 @@ export const RESISTANCE_WELDING_CHECKSHEETS = [
     icon: Wrench,
     color: '#8b5cf6',
     bg: '#ede9fe'
+  },
+  {
+    id: 'predictive',
+    name: 'Predictive Maintenance checksheet',
+    shortDesc: 'Predictive Maintenance Check Sheet (Furukawa Minda Electric CHK-WH-MT-101 Rev 00)',
+    icon: Activity,
+    color: '#0d9488',
+    bg: '#ccfbf1'
   }
 ];
 
@@ -175,20 +184,6 @@ export default function OperationalChecksheets({
             </button>
           )}
           <div className="flex flex-col gap-1">
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 bg-blue-50 py-1 px-3 rounded-full w-max flex-wrap">
-              <Cpu size={15} />
-              <span>{selectedMachine?.name || 'Machine'}</span>
-              {machineModel && (
-                <>
-                  <span className="text-slate-300">•</span>
-                  <span>{machineModel}</span>
-                </>
-              )}
-              <span className="text-slate-300">•</span>
-              <span>{activeTab}</span>
-              <span className="text-slate-300">•</span>
-              <span>{selectedUnitLocation} Unit</span>
-            </div>
             <h2 className="text-xl font-black text-slate-900 m-0 mt-1">Operational Checksheets</h2>
             <p className="text-xs text-slate-500 m-0">
               Select a checksheet below to open and record inspection values for <strong>{selectedMachine?.name}</strong> in full screen.
@@ -219,16 +214,15 @@ export default function OperationalChecksheets({
       </div>
 
       {/* Checksheets Cards Grid */}
-      <div className={`grid grid-cols-1 sm:grid-cols-2 ${isResistanceWelding ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4'} gap-4`}>
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${isResistanceWelding ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3' : 'lg:grid-cols-4'} gap-4`}>
         {checksheetsList.map((cs, idx) => {
           const CsIcon = cs.icon;
           const isSelected = selectedChecksheet === cs.name;
           return (
             <div
               key={cs.id}
-              className={`bg-white border rounded-2xl p-4 sm:p-5 flex flex-col justify-between cursor-pointer transition-all hover:-translate-y-1 hover:shadow-md ${
-                isSelected ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200 shadow-sm'
-              }`}
+              className={`bg-white border rounded-2xl p-4 sm:p-5 flex flex-col justify-between cursor-pointer transition-all hover:-translate-y-1 hover:shadow-md ${isSelected ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200 shadow-sm'
+                }`}
               onClick={() => onSelectChecksheet && onSelectChecksheet(cs.name)}
             >
               <div className="flex items-center justify-between mb-4">

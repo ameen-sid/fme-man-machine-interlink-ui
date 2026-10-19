@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeft, Save, RotateCcw, ClipboardCheck } from 'lucide-react';
+import PmObservationSwitcher from './PmObservationSwitcher';
 
 export default function ChecksheetHeaderNav({
   title,
@@ -16,6 +17,9 @@ export default function ChecksheetHeaderNav({
   showSave = true,
   showReset = true,
   showClose = true,
+  showSwitcher = false,
+  activeTab = 'pm',
+  onSelectTab,
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm gap-3 print:hidden">
@@ -45,12 +49,10 @@ export default function ChecksheetHeaderNav({
       </div>
 
       <div className="flex items-center gap-2.5">
-        {/* {savedToast && (
-          <div className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-md text-xs font-semibold">
-            {typeof savedToast === 'string' ? savedToast : 'Record saved successfully!'}
-          </div>
-        )} */}
-        {/* {extraActions} */}
+        {showSwitcher && (
+          <PmObservationSwitcher activeTab={activeTab} onSelectTab={onSelectTab} />
+        )}
+        {extraActions}
         {/* {showSave && onSave && (
           <button
             type="button"

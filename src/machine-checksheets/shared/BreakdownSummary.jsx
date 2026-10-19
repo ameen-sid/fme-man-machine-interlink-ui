@@ -133,7 +133,7 @@ export default function BreakdownSummary({ machine, onClose }) {
     setSavedToast(true);
     setTimeout(() => setSavedToast(false), 3000);
   };
-const handleReset = () => {
+  const handleReset = () => {
     if (window.confirm('Reset all values to blank spreadsheet?')) {
       setIncidents(INITIAL_INCIDENTS());
     }
@@ -190,28 +190,28 @@ const handleReset = () => {
             <thead>
               {/* Header Row 1: High Level Group Sections */}
               <tr className="bg-white font-bold h-7">
-                <th colSpan={7} className="border border-black p-0.5 text-[10.5px]">
+                <th colSpan={7} className="border border-black p-0.5 text-[10.5px] text-center align-middle">
                   (To be filled by operator)
                 </th>
-                <th colSpan={9} className="border border-black p-0.5 text-[10.5px]">
+                <th colSpan={9} className="border border-black p-0.5 text-[10.5px] text-center align-middle">
                   (To be filled by PE/Maint. IT)
                 </th>
-                <th colSpan={7} className="border border-black p-0.5 text-[10.5px]">
+                <th colSpan={9} className="border border-black p-0.5 text-[10.5px] text-center align-middle">
                   Retroactive Inspection (To be filled by operator during breakdown time)
                 </th>
-                <th rowSpan={3} className="border border-black p-0.5 align-middle text-[10px] whitespace-normal">
-                  Inspector name
+                <th rowSpan={3} className="border border-black p-1 align-middle text-center text-[10px] leading-tight whitespace-normal">
+                  Inspector<br />name
                 </th>
-                <th colSpan={6} className="border border-black p-0.5 text-[10.5px]">
+                <th colSpan={7} className="border border-black p-0.5 text-[10.5px] text-center align-middle">
                   Set up Approval(To be filled by Quality dept., Pick 5 samples for judgement)
                 </th>
-                <th colSpan={2} className="border border-black p-0.5 text-[10px] leading-tight">
+                <th colSpan={2} className="border border-black p-0.5 text-[10px] leading-tight text-center align-middle">
                   Containment Action<br />(Add Monitoring sheet if required)
                 </th>
-                <th rowSpan={3} className="border border-black p-0.5 align-middle text-[10px] leading-tight whitespace-normal">
+                <th rowSpan={3} className="border border-black p-0.5 align-middle text-center text-[10px] leading-tight whitespace-normal">
                   Verification<br />By Process<br />Owner
                 </th>
-                <th rowSpan={3} className="border border-black p-0.5 align-middle text-[10px] leading-tight whitespace-normal">
+                <th rowSpan={3} className="border border-black p-0.5 align-middle text-center text-[10px] leading-tight whitespace-normal">
                   Approved<br />By<br />(QA Incharge)
                 </th>
               </tr>
@@ -219,13 +219,13 @@ const handleReset = () => {
               {/* Header Row 2: Sub-Column Titles */}
               <tr className="bg-white font-bold align-middle h-8">
                 {/* Operator Columns */}
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight">Sr.<br />No.</th>
-                <th rowSpan={2} className="border border-black p-0.5">Date</th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight">M/C No.</th>
-                <th rowSpan={2} className="border border-black p-0.5">Shift</th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight">Start time</th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight">Operator<br />Name</th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8px]">
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-center align-middle">Sr.<br />No.</th>
+                <th rowSpan={2} className="border border-black p-0.5 text-center align-middle">Date</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-center align-middle">M/C No.</th>
+                <th rowSpan={2} className="border border-black p-0.5 text-center align-middle">Shift</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-center align-middle">Start time</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-center align-middle">Operator<br />Name</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8px] text-center align-middle">
                   Problem Description<br />
                   <span className="font-normal">
                     (Breakdown/PM/<br />Calibration/Abnormal<br />Condition)
@@ -233,64 +233,64 @@ const handleReset = () => {
                 </th>
 
                 {/* PE / Maint. IT Columns */}
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   Breakdown<br />stand Time
                 </th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   During set up /<br />Running
                 </th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8px]">
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8px] text-center align-middle">
                   Type of problem<br />
                   <span className="font-normal">
                     (Electrical/Mech-<br />anical/IT/Others)
                   </span>
                 </th>
-                <th rowSpan={2} className="border border-black p-0.5">Reason</th>
-                <th rowSpan={2} className="border border-black p-0.5">Action taken</th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th rowSpan={2} className="border border-black p-0.5 text-center align-middle">Reason</th>
+                <th rowSpan={2} className="border border-black p-0.5 text-center align-middle">Action taken</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   Spare part<br />used
                 </th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight">Close time</th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight">Total time</th>
-                <th rowSpan={2} className="border border-black p-0.5">Sign</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-center align-middle">Close time</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-center align-middle">Total time</th>
+                <th rowSpan={2} className="border border-black p-0.5 text-center align-middle">Sign</th>
 
                 {/* Retroactive Inspection Columns */}
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight">Part No.</th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight">Lot No.</th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight">Circuit<br />No.</th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-center align-middle">Part No.</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-center align-middle">Lot No.</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-center align-middle">Circuit<br />No.</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   Last Produced<br />Part Status<br />(Parameters)
                 </th>
-                <th colSpan={2} className="border border-black p-0.5">Standard</th>
-                <th colSpan={2} className="border border-black p-0.5">Result</th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th colSpan={2} className="border border-black p-0.5 text-center align-middle">Standard</th>
+                <th colSpan={2} className="border border-black p-0.5 text-center align-middle">Result</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   Status<br />
                   <span className="font-normal text-[7.5px]">Prod Supr Sign</span>
                 </th>
 
                 {/* Set up Approval Columns */}
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   Part No./Lot<br />No./Circuit<br />No.
                 </th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   Process parameter
                 </th>
-                <th rowSpan={2} className="border border-black p-0.5">Result</th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th rowSpan={2} className="border border-black p-0.5 text-center align-middle">Result</th>
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   Set up<br />Verification<br />(Parameters)
                 </th>
-                <th colSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th colSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   Result<br />(After breakdown)
                 </th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   QA Shift In-<br />charge name
                 </th>
 
                 {/* Containment Action Columns */}
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   Visual<br />Insp(100%)
                 </th>
-                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px]">
+                <th rowSpan={2} className="border border-black p-0.5 leading-tight text-[8.5px] text-center align-middle">
                   Dimension<br />(2 Hourly)
                 </th>
               </tr>
@@ -298,14 +298,14 @@ const handleReset = () => {
               {/* Header Row 3: Sub-Headers (F, R) */}
               <tr className="bg-white font-bold h-5">
                 {/* Under Retroactive Standard */}
-                <th className="border border-black p-0.5">F</th>
-                <th className="border border-black p-0.5">R</th>
+                <th className="border border-black p-0.5 text-center align-middle">F</th>
+                <th className="border border-black p-0.5 text-center align-middle">R</th>
                 {/* Under Retroactive Result */}
-                <th className="border border-black p-0.5">F</th>
-                <th className="border border-black p-0.5">R</th>
+                <th className="border border-black p-0.5 text-center align-middle">F</th>
+                <th className="border border-black p-0.5 text-center align-middle">R</th>
                 {/* Under Setup Approval Result (After breakdown) */}
-                <th className="border border-black p-0.5">F</th>
-                <th className="border border-black p-0.5">R</th>
+                <th className="border border-black p-0.5 text-center align-middle">F</th>
+                <th className="border border-black p-0.5 text-center align-middle">R</th>
               </tr>
             </thead>
 
@@ -315,10 +315,10 @@ const handleReset = () => {
                   {/* SUB-ROW 1: C/H W/H | CFM/CFA | C/H */}
                   <tr className="h-6">
                     {/* Operator Fields (rowSpan 5) */}
-                    <td rowSpan={5} className="border border-black p-0.5 font-bold">
+                    <td rowSpan={5} className="border border-black p-0.5 font-bold align-middle text-center">
                       {row.srNo}
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.date}
@@ -326,7 +326,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5 font-bold">
+                    <td rowSpan={5} className="border border-black p-0.5 font-bold align-middle text-center">
                       <input
                         type="text"
                         value={row.mcNo}
@@ -334,7 +334,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.shift}
@@ -342,7 +342,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.startTime}
@@ -350,7 +350,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5 text-left">
+                    <td rowSpan={5} className="border border-black p-0.5 text-left align-middle">
                       <textarea
                         rows={6}
                         value={row.operatorName}
@@ -358,7 +358,7 @@ const handleReset = () => {
                         className="w-full h-full bg-transparent border-0 outline-none p-0 resize-none text-[9px]"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5 text-left">
+                    <td rowSpan={5} className="border border-black p-0.5 text-left align-middle">
                       <textarea
                         rows={6}
                         value={row.problemDescription}
@@ -368,7 +368,7 @@ const handleReset = () => {
                     </td>
 
                     {/* PE / Maint. IT Fields (rowSpan 5) */}
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.breakdownStandTime}
@@ -376,7 +376,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.duringSetupOrRunning}
@@ -384,7 +384,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.typeOfProblem}
@@ -392,7 +392,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5 text-left">
+                    <td rowSpan={5} className="border border-black p-0.5 text-left align-middle">
                       <textarea
                         rows={6}
                         value={row.reason}
@@ -400,7 +400,7 @@ const handleReset = () => {
                         className="w-full h-full bg-transparent border-0 outline-none p-0 resize-none text-[8.5px] leading-tight"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5 text-left">
+                    <td rowSpan={5} className="border border-black p-0.5 text-left align-middle">
                       <textarea
                         rows={6}
                         value={row.actionTaken}
@@ -408,7 +408,7 @@ const handleReset = () => {
                         className="w-full h-full bg-transparent border-0 outline-none p-0 resize-none text-[8.5px] leading-tight"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.sparePartUsed}
@@ -416,7 +416,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0 text-[9px]"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.closeTime}
@@ -424,7 +424,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.totalTime}
@@ -432,7 +432,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.sign}
@@ -442,7 +442,7 @@ const handleReset = () => {
                     </td>
 
                     {/* Retroactive Part/Lot/Circuit (rowSpan 5) */}
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.partNo}
@@ -450,7 +450,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0 text-[9px]"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.lotNo}
@@ -458,7 +458,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0 text-[9px]"
                       />
                     </td>
-                    <td rowSpan={5} className="border border-black p-0.5">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.circuitNo}
@@ -468,8 +468,8 @@ const handleReset = () => {
                     </td>
 
                     {/* Parameter 1: C/H W/H */}
-                    <td className="border border-black p-0.5 font-bold leading-tight">C/H<br />W/H</td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold leading-tight text-center align-middle">C/H<br />W/H</td>
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.chWh.stdF}
@@ -477,7 +477,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.chWh.stdR}
@@ -485,7 +485,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.chWh.resF}
@@ -493,7 +493,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.chWh.resR}
@@ -508,7 +508,7 @@ const handleReset = () => {
                     </td>
 
                     {/* Inspector name (rowSpan 5) */}
-                    <td rowSpan={5} className="border border-black p-0.5 align-middle">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.inspectorName}
@@ -518,7 +518,7 @@ const handleReset = () => {
                     </td>
 
                     {/* Set up Approval: Part No./Lot No./Circuit No. (rowSpan 5) */}
-                    <td rowSpan={5} className="border border-black p-0.5 text-left">
+                    <td rowSpan={5} className="border border-black p-0.5 text-left align-middle">
                       <textarea
                         rows={6}
                         value={row.setupPartLotCircuit}
@@ -528,8 +528,8 @@ const handleReset = () => {
                     </td>
 
                     {/* Process parameter 1: CFM/CFA */}
-                    <td className="border border-black p-0.5 font-bold">CFM/CFA</td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold text-center align-middle">CFM/CFA</td>
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.cfmcfa}
@@ -539,8 +539,8 @@ const handleReset = () => {
                     </td>
 
                     {/* Set up Verification 1: C/H */}
-                    <td className="border border-black p-0.5 font-bold">C/H</td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold text-center align-middle">C/H</td>
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.setupCh.resF}
@@ -548,7 +548,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.setupCh.resR}
@@ -558,7 +558,7 @@ const handleReset = () => {
                     </td>
 
                     {/* QA Shift In-charge name (rowSpan 5) */}
-                    <td rowSpan={5} className="border border-black p-0.5 align-middle">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.qaShiftIncharge}
@@ -610,7 +610,7 @@ const handleReset = () => {
                     </td>
 
                     {/* Verification By Process Owner (rowSpan 5) */}
-                    <td rowSpan={5} className="border border-black p-0.5 align-middle">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.verificationProcessOwner}
@@ -620,7 +620,7 @@ const handleReset = () => {
                     </td>
 
                     {/* Approved By (QA Incharge) (rowSpan 5) */}
-                    <td rowSpan={5} className="border border-black p-0.5 align-middle">
+                    <td rowSpan={5} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.approvedByQaIncharge}
@@ -632,8 +632,8 @@ const handleReset = () => {
 
                   {/* SUB-ROW 2: I/H W/W | Main Air Pressure | I/H */}
                   <tr className="h-6">
-                    <td className="border border-black p-0.5 font-bold leading-tight">I/H<br />W/W</td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold leading-tight text-center align-middle">I/H<br />W/W</td>
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.ihWw.stdF}
@@ -641,7 +641,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.ihWw.stdR}
@@ -649,7 +649,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.ihWw.resF}
@@ -657,7 +657,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.ihWw.resR}
@@ -667,8 +667,8 @@ const handleReset = () => {
                     </td>
 
                     {/* Process parameter 2: Main Air Pressure */}
-                    <td className="border border-black p-0.5 font-bold leading-tight text-[8px]">Main Air Pressure</td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold leading-tight text-[8px] text-center align-middle">Main Air Pressure</td>
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.mainAirPressure}
@@ -678,8 +678,8 @@ const handleReset = () => {
                     </td>
 
                     {/* Set up Verification 2: I/H */}
-                    <td className="border border-black p-0.5 font-bold">I/H</td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold text-center align-middle">I/H</td>
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.setupIh.resF}
@@ -687,7 +687,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.setupIh.resR}
@@ -699,8 +699,8 @@ const handleReset = () => {
 
                   {/* SUB-ROW 3: Strength | Poka Yoke | Strength */}
                   <tr className="h-6">
-                    <td className="border border-black p-0.5 font-bold">Strength</td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold text-center align-middle">Strength</td>
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.strength.stdF}
@@ -708,7 +708,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.strength.stdR}
@@ -716,7 +716,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.strength.resF}
@@ -724,7 +724,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.strength.resR}
@@ -734,8 +734,8 @@ const handleReset = () => {
                     </td>
 
                     {/* Process parameter 3: Poka Yoke */}
-                    <td className="border border-black p-0.5 font-bold text-[8.5px]">Poka Yoke</td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold text-[8.5px] text-center align-middle">Poka Yoke</td>
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.pokaYoke}
@@ -745,8 +745,8 @@ const handleReset = () => {
                     </td>
 
                     {/* Set up Verification 3: Strength */}
-                    <td className="border border-black p-0.5 font-bold">Strength</td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold text-center align-middle">Strength</td>
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.setupStrength.resF}
@@ -754,7 +754,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.setupStrength.resR}
@@ -766,8 +766,8 @@ const handleReset = () => {
 
                   {/* SUB-ROW 4: Length | Other (if applicable) | Length */}
                   <tr className="h-6">
-                    <td className="border border-black p-0.5 font-bold">Length</td>
-                    <td colSpan={2} className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold text-center align-middle">Length</td>
+                    <td colSpan={2} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.length.std}
@@ -775,7 +775,7 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td colSpan={2} className="border border-black p-0.5">
+                    <td colSpan={2} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.length.res}
@@ -785,10 +785,10 @@ const handleReset = () => {
                     </td>
 
                     {/* Process parameter 4: Other (if applicable) */}
-                    <td className="border border-black p-0.5 font-bold leading-tight text-[8px]">
+                    <td className="border border-black p-0.5 font-bold leading-tight text-[8px] text-center align-middle">
                       Other (if<br />applicable)
                     </td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.otherParam}
@@ -798,8 +798,8 @@ const handleReset = () => {
                     </td>
 
                     {/* Set up Verification 4: Length */}
-                    <td className="border border-black p-0.5 font-bold">Length</td>
-                    <td colSpan={2} className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold text-center align-middle">Length</td>
+                    <td colSpan={2} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.setupLength}
@@ -811,11 +811,11 @@ const handleReset = () => {
 
                   {/* SUB-ROW 5: Visual (Last bunch) with Total Qty & NG Qty | Visual */}
                   <tr className="h-6">
-                    <td className="border border-black p-0.5 font-bold leading-tight text-[8px]">
+                    <td className="border border-black p-0.5 font-bold leading-tight text-[8px] text-center align-middle">
                       Visual<br />(Last bunch)
                     </td>
-                    <td className="border border-black p-0.5 font-bold text-[7.5px] leading-tight">Total Qty</td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold text-[7.5px] leading-tight text-center align-middle">Total Qty</td>
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.visual.totalQty}
@@ -823,8 +823,8 @@ const handleReset = () => {
                         className="w-full h-full text-center bg-transparent border-0 outline-none p-0"
                       />
                     </td>
-                    <td className="border border-black p-0.5 font-bold text-[7.5px] leading-tight">NG Qty</td>
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold text-[7.5px] leading-tight text-center align-middle">NG Qty</td>
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.visual.ngQty}
@@ -834,7 +834,7 @@ const handleReset = () => {
                     </td>
 
                     {/* Status cell under 5th row: Prod Supr Sign */}
-                    <td className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.prodSuprSign}
@@ -844,12 +844,12 @@ const handleReset = () => {
                     </td>
 
                     {/* Process parameter 5: Blank */}
-                    <td className="border border-black p-0.5"></td>
-                    <td className="border border-black p-0.5"></td>
+                    <td className="border border-black p-0.5 align-middle text-center"></td>
+                    <td className="border border-black p-0.5 align-middle text-center"></td>
 
                     {/* Set up Verification 5: Visual */}
-                    <td className="border border-black p-0.5 font-bold">Visual</td>
-                    <td colSpan={2} className="border border-black p-0.5">
+                    <td className="border border-black p-0.5 font-bold text-center align-middle">Visual</td>
+                    <td colSpan={2} className="border border-black p-0.5 align-middle text-center">
                       <input
                         type="text"
                         value={row.setupVisual}

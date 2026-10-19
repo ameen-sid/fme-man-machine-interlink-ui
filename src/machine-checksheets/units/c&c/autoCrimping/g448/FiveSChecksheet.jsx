@@ -1,4 +1,6 @@
 import ChecksheetHeaderNav from '../../../../shared/ChecksheetHeaderNav';
+import FiveSPhotoCell from '../../../../shared/FiveSPhotoCell';
+import FiveSHowCell from '../../../../shared/FiveSHowCell';
 import React, { useState } from 'react';
 import { ClipboardCheck, Save, RotateCcw, Eye, PenTool, Sparkles, Scissors, ArrowLeft } from 'lucide-react';
 
@@ -351,6 +353,22 @@ export default function FiveSChecksheet({ machine, onClose }) {
     reader.readAsDataURL(file);
   };
 
+  const handleRemovePhoto = (itemId) => {
+    setItemPhotos(prev => {
+      const copy = { ...prev };
+      delete copy[itemId];
+      return copy;
+    });
+  };
+
+  const handleRemoveHowPhoto = (itemId) => {
+    setHowPhotos(prev => {
+      const copy = { ...prev };
+      delete copy[itemId];
+      return copy;
+    });
+  };
+
   const handleCellChange = (itemId, day, key, val) => {
     setGridData(prev => {
       const copy = JSON.parse(JSON.stringify(prev));
@@ -480,13 +498,7 @@ export default function FiveSChecksheet({ machine, onClose }) {
               {savedToast}
             </div>
           )}
-          <button
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer"
-            onClick={handleSave}
-          >
-            <Save size={15} />
-            <span>Save Record</span>
-          </button>
+          
           <button
             className="inline-flex items-center px-2.5 py-2 rounded-lg text-xs font-bold bg-slate-50 hover:bg-slate-200 border border-slate-300 text-slate-600 transition-colors cursor-pointer"
             onClick={handleReset}
@@ -602,79 +614,22 @@ export default function FiveSChecksheet({ machine, onClose }) {
                     <td rowSpan={3} className="border border-slate-900 bg-slate-50 font-black text-center text-[11px] text-slate-900 p-1">{item.sType}</td>
                     <td rowSpan={3} className="border border-slate-900 font-extrabold text-center text-[11px] p-1">{item.sNo}</td>
                     <td rowSpan={3} className="border border-slate-900 font-bold pl-1.5 text-[10.5px]">{item.location}</td>
-                    <td rowSpan={3} className="border border-slate-900 text-center bg-slate-50/50 p-1">
-                      <div className="rounded bg-white flex flex-col items-center gap-0.5">
-                        <label
-                          className="relative w-24 h-24 mx-auto rounded flex items-center justify-center text-[8px] font-black text-white cursor-pointer overflow-hidden group shadow-sm transition-all hover:brightness-105"
-                          style={{ backgroundColor: itemPhotos[item.id] ? '#0f172a' : item.photoBg }}
-                          title={itemPhotos[item.id] ? 'Click to change photo' : 'Click to choose photo from gallery'}
-                        >
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => handlePhotoUpload(item.id, e)}
-                          />
-                          {itemPhotos[item.id] ? (
-                            <>
-                              <img
-                                src={itemPhotos[item.id]}
-                                alt={item.what || '5S Photo'}
-                                className="w-full h-full object-cover rounded"
-                              />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[8px] font-bold text-white transition-opacity">
-                                Change
-                              </div>
-                            </>
-                          ) : (
-                            <span className="p-0.5 text-center select-none">Photo</span>
-                          )}
-                        </label>
-                        <textarea
-                          rows={2}
-                          className="w-full resize-none text-center text-[7px] font-extrabold px-1 py-0.5 rounded border border-slate-300 bg-slate-100 text-slate-900 uppercase outline-none focus:border-blue-500 focus:bg-white leading-tight"
-                          placeholder="Enter text"
-                          title="Click to edit text below photo"
-                          value={badgeTexts[item.id] ?? ''}
-                          onChange={(e) => setBadgeTexts(prev => ({ ...prev, [item.id]: e.target.value }))}
-                        />
-                      </div>
+                    <td rowSpan={3} className="border border-slate-900 p-1 align-middle text-center bg-white">
+                      <FiveSPhotoCell
+                        item={item}
+                        uploadedPhoto={itemPhotos[item.id]}
+                        onPhotoUpload={(e) => handlePhotoUpload(item.id, e)}
+                        onRemovePhoto={() => handleRemovePhoto(item.id)}
+                      />
                     </td>
                     <td rowSpan={3} className="border border-slate-900 text-[10px] font-bold text-slate-800 whitespace-pre-line p-1.5 leading-snug">{item.what}</td>
-                    <td
-                      rowSpan={3}
-                      className="border border-slate-900 text-center bg-white align-middle h-20 p-0 relative overflow-hidden"
-                    >
-                      <label
-                        className="w-full h-full flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden select-none"
-                        title={howPhotos[item.id] ? 'Click to change HOW photo' : 'Click to add photo from gallery'}
-                      >
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleHowPhotoUpload(item.id, e)}
-                        />
-                        {howPhotos[item.id] ? (
-                          <div className="w-full h-full relative">
-                            <img
-                              src={howPhotos[item.id]}
-                              alt="HOW method"
-                              className="w-full h-full object-cover block"
-                            />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[8.5px] font-bold text-white transition-opacity">
-                              Change
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center gap-0.5 p-1 w-full h-full group-hover:scale-105 transition-transform">
-                            {renderHowIcon(item.how)}
-                            <span className="text-[7.5px] font-semibold text-slate-400 group-hover:text-blue-600 transition-colors">
-                              + Photo
-                            </span>
-                          </div>
-                        )}
-                      </label>
+                    <td rowSpan={3} className="border border-slate-900 p-1 align-middle text-center bg-white">
+                      <FiveSHowCell
+                        item={item}
+                        uploadedPhoto={howPhotos[item.id]}
+                        onHowPhotoUpload={(e) => handleHowPhotoUpload(item.id, e)}
+                        onRemoveHowPhoto={() => handleRemoveHowPhoto(item.id)}
+                      />
                     </td>
                     <td rowSpan={3} className="border border-slate-900 text-center text-[9.5px] font-bold p-1">{item.who}</td>
                     <td rowSpan={3} className="border border-slate-900 text-center text-[9px] font-extrabold p-1">{item.freq}</td>

@@ -9,6 +9,13 @@ import CcProcessProductionSummary from './shared/CcProcessProductionSummary';
 import BreakdownSummary from './shared/BreakdownSummary';
 import ChecksheetNotAdded from './shared/ChecksheetNotAdded';
 import ResistanceWeldingBlankSheet from './units/c&c/resistanceWelding/ResistanceWeldingBlankSheet';
+import ResistanceWeldingFiveS from './units/c&c/resistanceWelding/FiveSChecksheet';
+import ResistanceWeldingDaily from './units/c&c/resistanceWelding/DailyChecksheet';
+import ResistanceWeldingInstrument from './units/c&c/resistanceWelding/InstrumentChecksheet';
+import ResistanceWeldingInspectionReport from './units/c&c/resistanceWelding/InspectionReportSheet';
+import ResistanceWeldingPM from './units/c&c/resistanceWelding/MachinePmChecksheet';
+import PredictiveMaintainanceChecksheet from './units/c&c/resistanceWelding/PredictiveMaintainanceChecksheet';
+import AutoCrimpingPmContainer from './shared/AutoCrimpingPmContainer';
 
 // Alpha 355 checksheets
 import Alpha355FiveS from './units/c&c/autoCrimping/alpha355/FiveSChecksheet';
@@ -103,6 +110,9 @@ export default function ChecksheetDetailPage() {
   const isResistanceWelding =
     decodedMachineId.includes('R/SW') ||
     cleanId.includes('RSW') ||
+    cleanId.includes('RESISTANCE') ||
+    (path && path.toLowerCase().includes('resistance')) ||
+    (currentOpUnit && currentOpUnit.toLowerCase().includes('resistance')) ||
     decodedMachineId.startsWith('R/SW') ||
     decodedMachineId.startsWith('RSW');
 
@@ -180,8 +190,75 @@ export default function ChecksheetDetailPage() {
     }
   };
 
-  // Resistance Welding checksheets: render blank checksheet with standardized header
+  // Helper matching checksheet name or id
+  const isMatch = (targetName, targetId) => {
+    return decodedChecksheetId === targetName || decodedChecksheetId === targetId;
+  };
+
+    // Resistance Welding checksheets
   if (isResistanceWelding) {
+    if (isMatch('Machine 5S checksheet', '5s') || decodedChecksheetId.toLowerCase().includes('5s')) {
+      return (
+        <ResistanceWeldingFiveS
+          key={`${selectedMachine.name}_5s`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (isMatch('Machine Daily checksheet', 'daily') || decodedChecksheetId.toLowerCase().includes('daily')) {
+      return (
+        <ResistanceWeldingDaily
+          key={`${selectedMachine.name}_daily`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (isMatch('Machine Instrument checksheet', 'instrument') || decodedChecksheetId.toLowerCase().includes('instrument')) {
+      return (
+        <ResistanceWeldingInstrument
+          key={`${selectedMachine.name}_instrument`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Inspection report', 'inspection_report') ||
+      isMatch('Machine Pokayoke checksheet', 'pokayoke') ||
+      decodedChecksheetId.toLowerCase().includes('inspection')
+    ) {
+      return (
+        <ResistanceWeldingInspectionReport
+          key={`${selectedMachine.name}_inspection`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (isMatch('Machine PM checksheet', 'pm') || decodedChecksheetId.toLowerCase().includes('pm')) {
+      return (
+        <ResistanceWeldingPM
+          key={`${selectedMachine.name}_pm`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Predictive Maintenance checksheet', 'predictive') ||
+      isMatch('Predictive Maintainance checksheet', 'predictive_maintenance') ||
+      decodedChecksheetId.toLowerCase().includes('predictive')
+    ) {
+      return (
+        <PredictiveMaintainanceChecksheet
+          key={`${selectedMachine.name}_predictive`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
     return (
       <ResistanceWeldingBlankSheet
         key={`${selectedMachine.name}_${decodedChecksheetId}`}
@@ -191,11 +268,6 @@ export default function ChecksheetDetailPage() {
       />
     );
   }
-
-  // Helper matching checksheet name or id
-  const isMatch = (targetName, targetId) => {
-    return decodedChecksheetId === targetName || decodedChecksheetId === targetId;
-  };
 
   // 1. Operator & Machine Summary
   if (isMatch('Operator & Machine Summary', 'op_machine_summary')) {
@@ -226,6 +298,32 @@ export default function ChecksheetDetailPage() {
       <BreakdownSummary
         machine={selectedMachine}
         activeSession={activeSession}
+        onClose={handleClose}
+      />
+    );
+  }
+
+  // Check if requested checksheet is PM Checksheet or Observation Checksheet
+  const isObservationMatch = () => {
+    const lower = (decodedChecksheetId || '').toLowerCase();
+    return (
+      lower.includes('observation') ||
+      lower === 'obs' ||
+      lower === 'pm_observation'
+    );
+  };
+  const isPmMatch = () => {
+    return isMatch('Machine PM checksheet', 'pm');
+  };
+
+  // Autocrimping PM & Observation Checksheet Container (for all Autocrimping machines)
+  if (isPmMatch() || isObservationMatch()) {
+    return (
+      <AutoCrimpingPmContainer
+        key={`${selectedMachine.name}_pm_obs`}
+        machine={selectedMachine}
+        modelName={modelName}
+        initialTab={isObservationMatch() ? 'observation' : 'pm'}
         onClose={handleClose}
       />
     );

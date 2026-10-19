@@ -1,4 +1,5 @@
 import ChecksheetHeaderNav from '../../../../shared/ChecksheetHeaderNav';
+import PmObservationSwitcher from '../../../../shared/PmObservationSwitcher';
 import React, { useState } from 'react';
 import { Save, RotateCcw, Printer, Camera, Trash2, Replace, CheckCircle2 } from 'lucide-react';
 
@@ -154,7 +155,7 @@ const BAND = '#c4d79b';
 const td = 'border border-black px-1 py-[3px] text-[12.5px] leading-tight align-middle text-black';
 
 /* ------------------------------------------------------------------ */
-export default function MachinePmChecksheet({ machine, onClose }) {
+export default function MachinePmChecksheet({ machine, onClose, onSwitchToObservation }) {
   const formattedModel = machine?.model ? machine.model.replace('_', ' ') : 'TRD 301';
   const initialMcName = machine?.name ? `${machine.name} (${formattedModel}) CUT & CRIMP MACHINE` : `${formattedModel} CUT & CRIMP MACHINE`;
 
@@ -299,8 +300,18 @@ export default function MachinePmChecksheet({ machine, onClose }) {
     <div className="flex flex-col gap-3 w-full font-sans pb-10">
       {/* toolbar (hidden when printing) */}
       <div className="flex flex-wrap items-center justify-between gap-2 bg-white border border-slate-300 rounded-lg px-4 py-2 print:hidden">
+        <div className="flex items-center gap-3 flex-wrap">
+          <PmObservationSwitcher
+            activeTab="pm"
+            onSelectTab={(tab) => {
+              if (tab === 'observation' && onSwitchToObservation) {
+                onSwitchToObservation();
+              }
+            }}
+          />
         <div className="text-sm font-bold text-slate-800">
           Monthly &amp; periodic maintenance check sheet — {head.docNo} Rev.{head.rev}
+        </div>
         </div>
         <div className="flex items-center gap-2">
           {msg && (

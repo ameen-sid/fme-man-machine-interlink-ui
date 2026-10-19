@@ -1,4 +1,5 @@
 import ChecksheetHeaderNav from '../../../../shared/ChecksheetHeaderNav';
+import PmObservationSwitcher from '../../../../shared/PmObservationSwitcher';
 import React, { useState } from 'react';
 import { Save, RotateCcw, Wrench, Camera, X, Eye, Printer, CheckCircle2, ArrowLeft } from 'lucide-react';
 
@@ -519,7 +520,7 @@ const INITIAL_PERIODIC_CHECKS = {
   ]
 };
 
-export default function MachinePmChecksheet({ machine, onClose }) {
+export default function MachinePmChecksheet({ machine, onClose, onSwitchToObservation }) {
   const formattedModel = machine?.model ? machine.model.replace('_', ' ') : 'G 448';
   const initialMcName = machine?.name ? `${machine.name} (${formattedModel}) CUT & CRIMP MACHINE` : `${formattedModel} CUT & CRIMP MACHINE`;
 
@@ -748,6 +749,14 @@ export default function MachinePmChecksheet({ machine, onClose }) {
               <span>Back</span>
             </button>
           )}
+          <PmObservationSwitcher
+            activeTab="pm"
+            onSelectTab={(tab) => {
+              if (tab === 'observation' && onSwitchToObservation) {
+                onSwitchToObservation();
+              }
+            }}
+          />
           <Wrench size={20} className="text-blue-700 bg-blue-50 p-2 rounded-lg w-10 h-10 shrink-0" />
           <div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -771,14 +780,7 @@ export default function MachinePmChecksheet({ machine, onClose }) {
               <span>{savedMessage}</span>
             </div>
           )}
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold py-1.5 px-3 rounded-lg border-none cursor-pointer bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-sm"
-            onClick={handleSave}
-          >
-            <Save size={14} />
-            <span>Save Record</span>
-          </button>
+          
           <button
             type="button"
             className="inline-flex items-center gap-1.5 text-xs font-semibold py-1.5 px-3 rounded-lg border border-slate-300 cursor-pointer bg-white text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
