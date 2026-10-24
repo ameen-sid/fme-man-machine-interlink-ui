@@ -18,7 +18,7 @@ const PROCESS_VIEWS = {
   'Auto Crimping': AutoCrimpingView,
   'Manual Crimping': ManualCrimpingView,
   'Joint Crimping': JointCrimpingView,
-  'Registance Welding': ResistanceWeldingView,
+  'Resistance Welding': ResistanceWeldingView,
   'Twisting': TwistingView,
   'Blue Taping': BlueTapingView,
   'Head Sinking': HeadSinkingView

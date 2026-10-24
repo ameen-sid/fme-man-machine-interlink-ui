@@ -4,7 +4,7 @@ export const CNC_PROCESSES = [
   'Auto Crimping',
   'Manual Crimping',
   'Joint Crimping',
-  'Registance Welding',
+  'Resistance Welding',
   'Twisting',
   'Blue Taping',
   'Head Sinking'
@@ -22,11 +22,10 @@ export default function ProcessFilters({
           <button
             key={tabName}
             type="button"
-            className={`border-none py-2 px-4 rounded-full text-xs font-semibold cursor-pointer inline-flex items-center gap-2 whitespace-nowrap transition-all ${
-              isActive
+            className={`border-none py-2 px-4 rounded-full text-xs font-semibold cursor-pointer inline-flex items-center gap-2 whitespace-nowrap transition-all ${isActive
                 ? 'bg-white text-slate-900 shadow-sm font-bold'
                 : 'bg-transparent text-slate-500 hover:text-slate-900'
-            }`}
+              }`}
             onClick={() => onSelectProcess && onSelectProcess(tabName)}
           >
             {tabName}

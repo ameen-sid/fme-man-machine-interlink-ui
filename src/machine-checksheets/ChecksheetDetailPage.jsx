@@ -17,6 +17,16 @@ import ResistanceWeldingPM from './units/c&c/resistanceWelding/MachinePmCheckshe
 import PredictiveMaintainanceChecksheet from './units/c&c/resistanceWelding/PredictiveMaintainanceChecksheet';
 import AutoCrimpingPmContainer from './shared/AutoCrimpingPmContainer';
 
+// Manual Crimping (MCR) checksheets
+import {
+  McrFiveS,
+  McrInspectionReport,
+  McrInstrument,
+  McrDaily,
+  Mecal05DailyChecksheet,
+  McrMachinePm
+} from './units/c&c/manualCrimping';
+
 // Alpha 355 checksheets
 import Alpha355FiveS from './units/c&c/autoCrimping/alpha355/FiveSChecksheet';
 import Alpha355Daily from './units/c&c/autoCrimping/alpha355/DailyChecksheet';
@@ -107,6 +117,12 @@ export default function ChecksheetDetailPage() {
   let modelName = '';
   let machineName = '';
 
+  const isManualCrimping =
+    cleanId === 'MCR' ||
+    cleanId.startsWith('MCR') ||
+    cleanId.includes('MANUALCRIMPING') ||
+    (path && path.toLowerCase().includes('manualcrimping'));
+
   const isResistanceWelding =
     decodedMachineId.includes('R/SW') ||
     cleanId.includes('RSW') ||
@@ -116,7 +132,11 @@ export default function ChecksheetDetailPage() {
     decodedMachineId.startsWith('R/SW') ||
     decodedMachineId.startsWith('RSW');
 
-  if (isResistanceWelding) {
+  if (isManualCrimping) {
+    idNum = 1;
+    machineName = 'MCR';
+    modelName = 'Mecal-05';
+  } else if (isResistanceWelding) {
     const numMatch = decodedMachineId.match(/\d+/);
     idNum = numMatch ? Number(numMatch[0]) : 1;
     machineName = `R/SW ${String(idNum).padStart(2, '0')}`;
@@ -195,7 +215,20 @@ export default function ChecksheetDetailPage() {
     return decodedChecksheetId === targetName || decodedChecksheetId === targetId;
   };
 
-    // Resistance Welding checksheets
+  const isObservationMatch = () => {
+    const lower = (decodedChecksheetId || '').toLowerCase();
+    return (
+      lower.includes('observation') ||
+      lower === 'obs' ||
+      lower === 'pm_observation'
+    );
+  };
+
+  const isPmMatch = () => {
+    return isMatch('Machine PM checksheet', 'pm');
+  };
+
+  // Resistance Welding checksheets
   if (isResistanceWelding) {
     if (isMatch('Machine 5S checksheet', '5s') || decodedChecksheetId.toLowerCase().includes('5s')) {
       return (
@@ -269,6 +302,99 @@ export default function ChecksheetDetailPage() {
     );
   }
 
+  // Manual Crimping (MCR) checksheets
+  if (isManualCrimping) {
+    if (isMatch('Machine 5S checksheet', '5s') || decodedChecksheetId.toLowerCase().includes('5s')) {
+      return (
+        <McrFiveS
+          key={`${selectedMachine.name}_5s`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Inspection format checksheet', 'inspection_format') ||
+      isMatch('Inspection report', 'inspection_report') ||
+      decodedChecksheetId.toLowerCase().includes('inspection')
+    ) {
+      return (
+        <McrInspectionReport
+          key={`${selectedMachine.name}_inspection`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Machine Instrument checksheet', 'instrument') ||
+      decodedChecksheetId.toLowerCase().includes('instrument')
+    ) {
+      return (
+        <McrInstrument
+          key={`${selectedMachine.name}_instrument`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Mecal-05 Daily Checksheet', 'mecal_daily') ||
+      decodedChecksheetId.toLowerCase().includes('mecal')
+    ) {
+      return (
+        <Mecal05DailyChecksheet
+          key={`${selectedMachine.name}_mecal_daily`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Machine Daily checksheet', 'daily') ||
+      decodedChecksheetId.toLowerCase().includes('daily')
+    ) {
+      return (
+        <McrDaily
+          key={`${selectedMachine.name}_daily`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Monthly and Periodic Preventive Checksheet', 'preventive_pm') ||
+      decodedChecksheetId.toLowerCase().includes('preventive') ||
+      decodedChecksheetId.toLowerCase().includes('periodic')
+    ) {
+      return (
+        <McrMachinePm
+          key={`${selectedMachine.name}_preventive_pm`}
+          machine={selectedMachine}
+          onClose={handleClose}
+          onSwitchToObservation={() =>
+            navigate(`/machine-checksheet/${currentUnit}/${currentOpUnit}/${selectedMachine.name}/Observation%20Checksheet`)
+          }
+        />
+      );
+    }
+    if (
+      isMatch('Machine PM checksheet', 'pm') ||
+      decodedChecksheetId.toLowerCase().includes('pm') ||
+      isObservationMatch()
+    ) {
+      return (
+        <AutoCrimpingPmContainer
+          key={`${selectedMachine.name}_pm_obs`}
+          machine={selectedMachine}
+          modelName={modelName}
+          initialTab={isObservationMatch() ? 'observation' : 'pm'}
+          onClose={handleClose}
+        />
+      );
+    }
+  }
+
   // 1. Operator & Machine Summary
   if (isMatch('Operator & Machine Summary', 'op_machine_summary')) {
     return (
@@ -302,19 +428,6 @@ export default function ChecksheetDetailPage() {
       />
     );
   }
-
-  // Check if requested checksheet is PM Checksheet or Observation Checksheet
-  const isObservationMatch = () => {
-    const lower = (decodedChecksheetId || '').toLowerCase();
-    return (
-      lower.includes('observation') ||
-      lower === 'obs' ||
-      lower === 'pm_observation'
-    );
-  };
-  const isPmMatch = () => {
-    return isMatch('Machine PM checksheet', 'pm');
-  };
 
   // Autocrimping PM & Observation Checksheet Container (for all Autocrimping machines)
   if (isPmMatch() || isObservationMatch()) {

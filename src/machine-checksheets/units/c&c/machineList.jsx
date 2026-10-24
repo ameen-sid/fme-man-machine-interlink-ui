@@ -7,7 +7,7 @@ export default function MachineList({
   selectedUnitLocation = 'Bawal',
   onSelectMachine
 }) {
-  if (activeProcess === 'Registance Welding') {
+  if (activeProcess === 'Resistance Welding') {
     return (
       <ResistanceWeldingView
         selectedUnitLocation={selectedUnitLocation}

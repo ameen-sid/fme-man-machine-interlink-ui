@@ -61,10 +61,13 @@ export const RESISTANCE_WELDING_MODEL_MAP = {
 export function getMachineModel(machineId, process = '') {
   if (typeof machineId === 'string') {
     const clean = machineId.trim().toUpperCase().replace(/[-_\s]/g, '');
-    if (clean.includes('RSW') || clean.includes('R/SW') || clean.includes('R_SW') || process === 'Registance Welding') {
+    if (clean.includes('RSW') || clean.includes('R/SW') || clean.includes('R_SW') || process === 'Resistance Welding') {
       const numMatch = machineId.match(/\d+/);
       const num = numMatch ? Number(numMatch[0]) : 1;
       return RESISTANCE_WELDING_MODEL_MAP[num] || `Machine ${num}`;
+    }
+    if (clean === 'MCR' || clean.startsWith('MCR') || clean.includes('MANUALCRIMPING') || process === 'Manual Crimping') {
+      return 'Mecal-05';
     }
     if (clean.includes('TRD411F') || clean.includes('TRD411')) return 'TRD_411F';
     if (clean.includes('TRD301')) return 'TRD_301';
@@ -74,8 +77,11 @@ export function getMachineModel(machineId, process = '') {
     if (clean.includes('G448')) return 'G_448';
     if (clean.includes('JAM') || clean.includes('JAN')) return 'JAM';
   }
+  if (process === 'Manual Crimping') {
+    return 'Mecal-05';
+  }
   const idNum = Number(machineId);
-  if (process === 'Registance Welding') {
+  if (process === 'Resistance Welding') {
     return RESISTANCE_WELDING_MODEL_MAP[idNum] || `Machine ${idNum}`;
   }
   return MACHINE_MODEL_MAP[idNum] || `Model ${machineId}`;

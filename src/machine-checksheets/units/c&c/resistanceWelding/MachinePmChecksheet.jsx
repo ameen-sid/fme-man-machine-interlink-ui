@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Camera, Upload, RotateCcw, Eye, X, ZoomIn, Check, Printer, Image as ImageIcon } from 'lucide-react';
 import ChecksheetHeaderNav from '../../../shared/ChecksheetHeaderNav';
-
+// 
 // 14 Standard Check Points matching the official Resistance Welding PM Sheet
 const PM_CHECK_POINTS = [
   {
@@ -480,7 +480,7 @@ export default function ResistanceWeldingPM({ machine = {}, onClose }) {
 
       {/* Main Container: 100% Width */}
       <div className="w-full bg-white border-2 border-black shadow-sm rounded-none p-2 sm:p-3 overflow-x-auto print:p-0 print:border-none print:shadow-none">
-        
+
         {/* ========================================================= */}
         {/* TOP TITLE HEADER ROW (YELLOW BANNER WITH REV & DATE BOX) */}
         {/* ========================================================= */}
@@ -836,7 +836,7 @@ export default function ResistanceWeldingPM({ machine = {}, onClose }) {
         {/* ========================================================= */}
         <div className="border-2 border-t-0 border-black p-2 bg-white">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-            
+
             {/* Left Signatures: Prepared By & Approved By */}
             <div className="md:col-span-4 flex flex-col justify-center gap-4 text-xs font-black uppercase text-slate-900 pl-2">
               <div className="flex items-center gap-2">

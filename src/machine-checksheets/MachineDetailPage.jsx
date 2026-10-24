@@ -43,18 +43,29 @@ export default function MachineDetailPage() {
   let machineName = '';
   let activeProcess = 'Auto Crimping';
 
+  const isManualCrimping =
+    cleanId === 'MCR' ||
+    cleanId.startsWith('MCR') ||
+    cleanId.includes('MANUALCRIMPING') ||
+    (path && path.toLowerCase().includes('manualcrimping'));
+
   const isResistanceWelding =
     decodedMachineId.includes('R/SW') ||
     cleanId.includes('RSW') ||
     decodedMachineId.startsWith('R/SW') ||
     decodedMachineId.startsWith('RSW');
 
-  if (isResistanceWelding) {
+  if (isManualCrimping) {
+    idNum = 1;
+    machineName = 'MCR';
+    modelName = 'Mecal-05';
+    activeProcess = 'Manual Crimping';
+  } else if (isResistanceWelding) {
     const numMatch = decodedMachineId.match(/\d+/);
     idNum = numMatch ? Number(numMatch[0]) : 1;
     machineName = `R/SW ${String(idNum).padStart(2, '0')}`;
     modelName = `Machine ${idNum}`;
-    activeProcess = 'Registance Welding';
+    activeProcess = 'Resistance Welding';
   } else if (rawMachineId.startsWith('C&C')) {
     const numMatch = rawMachineId.match(/\d+/);
     idNum = numMatch ? Number(numMatch[0]) : 1;

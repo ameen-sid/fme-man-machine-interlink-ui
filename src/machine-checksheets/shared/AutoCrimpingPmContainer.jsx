@@ -9,6 +9,7 @@ import G448MachinePm from '../units/c&c/autoCrimping/g448/MachinePmChecksheet';
 import G252MachinePm from '../units/c&c/autoCrimping/g252/MachinePmChecksheet';
 import G253MachinePm from '../units/c&c/autoCrimping/g253/MachinePmChecksheet';
 import JamMachinePm from '../units/c&c/autoCrimping/jam/MachinePmChecksheet';
+import McrMachinePm from '../units/c&c/manualCrimping/mcr/MachinePmChecksheet';
 
 /**
  * Reusable container for all Autocrimping machines to switch seamlessly between:
@@ -52,6 +53,9 @@ export default function AutoCrimpingPmContainer({
     }
     if (cleanModel.includes('JAM') || cleanModel.includes('JAN')) {
       return <JamMachinePm key={`${machine?.name}_pm`} {...commonProps} />;
+    }
+    if (cleanModel.includes('MCR') || cleanModel.includes('MECAL')) {
+      return <McrMachinePm key={`${machine?.name}_pm`} {...commonProps} />;
     }
 
     // Default fallback to TRD411F PM

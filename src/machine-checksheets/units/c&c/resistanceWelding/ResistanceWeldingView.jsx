@@ -62,30 +62,30 @@ export default function ResistanceWeldingView({
 
           const theme = isMaintenance
             ? {
-                cardBg: 'bg-amber-50 hover:bg-amber-100/70 border-amber-300',
-                badge: 'bg-amber-200/80 text-amber-900 border border-amber-400',
-                iconBg: 'bg-amber-200/80 text-amber-900',
-                pill: 'bg-amber-200 text-amber-950 border border-amber-400',
-                dot: 'bg-amber-600',
-                divider: 'border-amber-200/80'
-              }
+              cardBg: 'bg-amber-50 hover:bg-amber-100/70 border-amber-300',
+              badge: 'bg-amber-200/80 text-amber-900 border border-amber-400',
+              iconBg: 'bg-amber-200/80 text-amber-900',
+              pill: 'bg-amber-200 text-amber-950 border border-amber-400',
+              dot: 'bg-amber-600',
+              divider: 'border-amber-200/80'
+            }
             : isIdleOrStopped
               ? {
-                  cardBg: 'bg-rose-50 hover:bg-rose-100/70 border-rose-300',
-                  badge: 'bg-rose-200/80 text-rose-900 border border-rose-400',
-                  iconBg: 'bg-rose-200/80 text-rose-900',
-                  pill: 'bg-rose-200 text-rose-950 border border-rose-400',
-                  dot: 'bg-rose-600',
-                  divider: 'border-rose-200/80'
-                }
+                cardBg: 'bg-rose-50 hover:bg-rose-100/70 border-rose-300',
+                badge: 'bg-rose-200/80 text-rose-900 border border-rose-400',
+                iconBg: 'bg-rose-200/80 text-rose-900',
+                pill: 'bg-rose-200 text-rose-950 border border-rose-400',
+                dot: 'bg-rose-600',
+                divider: 'border-rose-200/80'
+              }
               : {
-                  cardBg: 'bg-emerald-50 hover:bg-emerald-100/70 border-emerald-300',
-                  badge: 'bg-emerald-200/80 text-emerald-900 border border-emerald-400',
-                  iconBg: 'bg-emerald-200/80 text-emerald-900',
-                  pill: 'bg-emerald-200 text-emerald-950 border border-emerald-400',
-                  dot: 'bg-emerald-600',
-                  divider: 'border-emerald-200/80'
-                };
+                cardBg: 'bg-emerald-50 hover:bg-emerald-100/70 border-emerald-300',
+                badge: 'bg-emerald-200/80 text-emerald-900 border border-emerald-400',
+                iconBg: 'bg-emerald-200/80 text-emerald-900',
+                pill: 'bg-emerald-200 text-emerald-950 border border-emerald-400',
+                dot: 'bg-emerald-600',
+                divider: 'border-emerald-200/80'
+              };
 
           return (
             <div
@@ -97,7 +97,7 @@ export default function ResistanceWeldingView({
                   id: machineNum,
                   name: machineName,
                   model: modelName,
-                  process: 'Registance Welding'
+                  process: 'Resistance Welding'
                 })
               }
               title={`Click to open checksheets for ${machineName}`}

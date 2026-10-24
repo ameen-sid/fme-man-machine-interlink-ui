@@ -143,6 +143,65 @@ export const RESISTANCE_WELDING_CHECKSHEETS = [
   }
 ];
 
+export const MANUAL_CRIMPING_CHECKSHEETS = [
+  {
+    id: '5s',
+    name: 'Machine 5S checksheet',
+    shortDesc: '5S Check Point - Sort, Set, Shine, Standardize & Sustain (CHK-5S-03 Rev 01)',
+    icon: ClipboardCheck,
+    color: '#0284c7',
+    bg: '#e0f2fe'
+  },
+  {
+    id: 'inspection_report',
+    name: 'Inspection format checksheet',
+    shortDesc: 'Daily Record of Terminal Fitting Operation (FRM-WH-PE-262 Rev.13)',
+    icon: FileSpreadsheet,
+    color: '#6366f1',
+    bg: '#e0e7ff'
+  },
+  {
+    id: 'instrument',
+    name: 'Machine Instrument checksheet',
+    shortDesc: 'Instrument Check Sheet - Point & Blade Micrometer, Measuring Scale (FRM-WH-QA-046)',
+    icon: Gauge,
+    color: '#f59e0b',
+    bg: '#fef3c7'
+  },
+  {
+    id: 'daily',
+    name: 'Machine Daily checksheet',
+    shortDesc: 'Daily Machine Check Sheet & Abnormality Observation (CHK-VM-MT-105 Rev 01)',
+    icon: CalendarCheck2,
+    color: '#10b981',
+    bg: '#d1fae5'
+  },
+  {
+    id: 'pm',
+    name: 'Machine PM checksheet',
+    shortDesc: 'Monthly & Periodic PM Check Sheet with Observation Switcher (CHK-WH-MT-043 Rev 19)',
+    icon: Wrench,
+    color: '#8b5cf6',
+    bg: '#ede9fe'
+  },
+  {
+    id: 'preventive_pm',
+    name: 'Monthly and Periodic Preventive Checksheet',
+    shortDesc: 'Monthly & Periodic Preventive Maintenance Check Sheet (CHK-WH-MT-043 Rev 19)',
+    icon: Activity,
+    color: '#0d9488',
+    bg: '#ccfbf1'
+  },
+  {
+    id: 'mecal_daily',
+    name: 'Mecal-05 Daily Checksheet',
+    shortDesc: 'Mecal-05 Manual Crimping Press Daily Checksheet & Abnormality Log',
+    icon: CalendarCheck2,
+    color: '#059669',
+    bg: '#d1fae5'
+  }
+];
+
 export default function OperationalChecksheets({
   selectedMachine,
   machineModel,
@@ -155,8 +214,8 @@ export default function OperationalChecksheets({
   onBack
 }) {
   const isResistanceWelding =
-    activeTab === 'Registance Welding' ||
-    selectedMachine?.process === 'Registance Welding' ||
+    activeTab === 'Resistance Welding' ||
+    selectedMachine?.process === 'Resistance Welding' ||
     (selectedMachine?.name && (
       selectedMachine.name.includes('R/SW') ||
       selectedMachine.name.includes('R-SW') ||
@@ -164,7 +223,19 @@ export default function OperationalChecksheets({
     )) ||
     (selectedMachine?.model && selectedMachine.model.startsWith('Machine'));
 
-  const checksheetsList = isResistanceWelding
+  const isManualCrimping =
+    activeTab === 'Manual Crimping' ||
+    selectedMachine?.process === 'Manual Crimping' ||
+    (selectedMachine?.name && (
+      selectedMachine.name === 'MCR' ||
+      selectedMachine.name.startsWith('MCR') ||
+      selectedMachine.name.includes('MCR')
+    )) ||
+    (selectedMachine?.model && selectedMachine.model.toLowerCase().includes('mecal'));
+
+  const checksheetsList = isManualCrimping
+    ? MANUAL_CRIMPING_CHECKSHEETS
+    : isResistanceWelding
     ? RESISTANCE_WELDING_CHECKSHEETS
     : OPERATIONAL_CHECKSHEETS;
   return (
@@ -214,7 +285,7 @@ export default function OperationalChecksheets({
       </div>
 
       {/* Checksheets Cards Grid */}
-      <div className={`grid grid-cols-1 sm:grid-cols-2 ${isResistanceWelding ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3' : 'lg:grid-cols-4'} gap-4`}>
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${isResistanceWelding ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3' : isManualCrimping ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'lg:grid-cols-4'} gap-4`}>
         {checksheetsList.map((cs, idx) => {
           const CsIcon = cs.icon;
           const isSelected = selectedChecksheet === cs.name;

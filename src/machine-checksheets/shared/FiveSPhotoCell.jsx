@@ -3,16 +3,21 @@ import { Camera, Eye, Sparkles, PenTool, Scissors, Box, Layers, Monitor, Wrench 
 
 export default function FiveSPhotoCell({
   item,
+  badge,
+  photoBg,
+  bubbleText: directBubbleText,
   uploadedPhoto,
   onPhotoUpload,
   onRemovePhoto
 }) {
+  const safeItem = item || { badge, photoBg, bubbleText: directBubbleText };
+
   // Determine callout bubble text
   const getBubbleText = () => {
-    if (item.bubbleText) return item.bubbleText;
-    const lowerHow = (item.how || '').toLowerCase();
-    const lowerBadge = (item.badge || '').toLowerCase();
-    const lowerWhat = (item.what || '').toLowerCase();
+    if (safeItem.bubbleText) return safeItem.bubbleText;
+    const lowerHow = (safeItem.how || '').toLowerCase();
+    const lowerBadge = (safeItem.badge || badge || '').toLowerCase();
+    const lowerWhat = (safeItem.what || '').toLowerCase();
 
     if (lowerHow === 'eye' || lowerHow === 'visual' || lowerBadge.includes('visual')) {
       return 'visual';
@@ -33,8 +38,8 @@ export default function FiveSPhotoCell({
 
   // Render default illustration card when no custom photo is uploaded
   const renderIllustrationCard = () => {
-    const sNoStr = String(item.sNo || item.sn || '');
-    const locationLower = (item.location || item.itemCleaned || '').toLowerCase();
+    const sNoStr = String(safeItem.sNo || safeItem.sn || '');
+    const locationLower = (safeItem.location || safeItem.itemCleaned || '').toLowerCase();
 
     // 1S: Work Place / Unwanted Items
     if (sNoStr === '1' || (locationLower.includes('work area') && sNoStr.startsWith('1'))) {
@@ -83,7 +88,7 @@ export default function FiveSPhotoCell({
     return (
       <div className="w-full h-full flex flex-col justify-between items-center bg-slate-100 p-1 rounded border border-slate-300 text-slate-800">
         <div className="text-[7px] font-bold uppercase truncate max-w-full leading-tight text-center">
-          {item.location || item.itemCleaned || '5S Item'}
+          {safeItem.location || safeItem.itemCleaned || '5S Item'}
         </div>
         <div className="flex items-center justify-center text-slate-600 my-0.5">
           <Wrench size={13} className="text-slate-600" />
@@ -118,7 +123,7 @@ export default function FiveSPhotoCell({
           <div className="w-full h-full relative">
             <img
               src={uploadedPhoto}
-              alt={item.what || '5S Photo'}
+              alt={safeItem.what || '5S Photo'}
               className="w-full h-full object-cover block"
             />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[7.5px] font-bold text-white transition-opacity">

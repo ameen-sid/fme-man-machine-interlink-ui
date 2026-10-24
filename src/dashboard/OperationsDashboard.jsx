@@ -34,7 +34,7 @@ export default function OperationsDashboard() {
         'Auto Crimping',
         'Manual Crimping',
         'Joint Crimping',
-        'Registance Welding',
+        'Resistance Welding',
         'Twisting',
         'Blue Taping',
         'Head Sinking'
@@ -292,11 +292,10 @@ export default function OperationsDashboard() {
               {[7, 15, 30].map((d) => (
                 <button
                   key={d}
-                  className={`px-3 py-1 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                    selectedDays === d
+                  className={`px-3 py-1 text-xs font-bold rounded-lg cursor-pointer transition-all ${selectedDays === d
                       ? 'bg-blue-600 text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 bg-transparent'
-                  }`}
+                    }`}
                   onClick={() => setSelectedDays(d)}
                 >
                   {d} Days ({d} Bars)
