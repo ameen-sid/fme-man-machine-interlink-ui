@@ -24,7 +24,9 @@ import {
   McrInstrument,
   McrDaily,
   Mecal05DailyChecksheet,
-  McrMachinePm
+  McrMachinePm,
+  McrPredictiveMaintenance,
+  McrPokayoke
 } from './units/c&c/manualCrimping';
 
 // Alpha 355 checksheets
@@ -363,32 +365,42 @@ export default function ChecksheetDetailPage() {
       );
     }
     if (
+      isMatch('Machine PM checksheet', 'pm') ||
       isMatch('Monthly and Periodic Preventive Checksheet', 'preventive_pm') ||
       decodedChecksheetId.toLowerCase().includes('preventive') ||
-      decodedChecksheetId.toLowerCase().includes('periodic')
+      decodedChecksheetId.toLowerCase().includes('periodic') ||
+      decodedChecksheetId.toLowerCase().includes('pm')
     ) {
       return (
         <McrMachinePm
-          key={`${selectedMachine.name}_preventive_pm`}
+          key={`${selectedMachine.name}_pm`}
           machine={selectedMachine}
           onClose={handleClose}
-          onSwitchToObservation={() =>
-            navigate(`/machine-checksheet/${currentUnit}/${currentOpUnit}/${selectedMachine.name}/Observation%20Checksheet`)
-          }
         />
       );
     }
     if (
-      isMatch('Machine PM checksheet', 'pm') ||
-      decodedChecksheetId.toLowerCase().includes('pm') ||
-      isObservationMatch()
+      isMatch('Predictive Maintenance checksheet', 'predictive') ||
+      isMatch('Predictive Maintainance checksheet', 'predictive_maintenance') ||
+      decodedChecksheetId.toLowerCase().includes('predictive')
     ) {
       return (
-        <AutoCrimpingPmContainer
-          key={`${selectedMachine.name}_pm_obs`}
+        <McrPredictiveMaintenance
+          key={`${selectedMachine.name}_predictive`}
           machine={selectedMachine}
-          modelName={modelName}
-          initialTab={isObservationMatch() ? 'observation' : 'pm'}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Machine Pokayoke checksheet', 'pokayoke') ||
+      decodedChecksheetId.toLowerCase().includes('pokayoke') ||
+      decodedChecksheetId.toLowerCase().includes('poka')
+    ) {
+      return (
+        <McrPokayoke
+          key={`${selectedMachine.name}_pokayoke`}
+          machine={selectedMachine}
           onClose={handleClose}
         />
       );

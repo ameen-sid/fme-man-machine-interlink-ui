@@ -179,18 +179,10 @@ export const MANUAL_CRIMPING_CHECKSHEETS = [
   {
     id: 'pm',
     name: 'Machine PM checksheet',
-    shortDesc: 'Monthly & Periodic PM Check Sheet with Observation Switcher (CHK-WH-MT-043 Rev 19)',
+    shortDesc: 'Monthly and Periodic Preventive Check Sheet (CHK-WH-MT-035 Rev 07)',
     icon: Wrench,
     color: '#8b5cf6',
     bg: '#ede9fe'
-  },
-  {
-    id: 'preventive_pm',
-    name: 'Monthly and Periodic Preventive Checksheet',
-    shortDesc: 'Monthly & Periodic Preventive Maintenance Check Sheet (CHK-WH-MT-043 Rev 19)',
-    icon: Activity,
-    color: '#0d9488',
-    bg: '#ccfbf1'
   },
   {
     id: 'mecal_daily',
@@ -199,6 +191,22 @@ export const MANUAL_CRIMPING_CHECKSHEETS = [
     icon: CalendarCheck2,
     color: '#059669',
     bg: '#d1fae5'
+  },
+  {
+    id: 'predictive',
+    name: 'Predictive Maintenance checksheet',
+    shortDesc: 'Predictive Maintenance Check Sheet (CHK-WH-MT-026 Rev 00)',
+    icon: Activity,
+    color: '#0d9488',
+    bg: '#ccfbf1'
+  },
+  {
+    id: 'pokayoke',
+    name: 'Machine Pokayoke checksheet',
+    shortDesc: 'Poka Yoke Verification & Inspection Sheet (CFM in Manual Process FRM-WH-QA-096)',
+    icon: ShieldAlert,
+    color: '#ef4444',
+    bg: '#fee2e2'
   }
 ];
 
