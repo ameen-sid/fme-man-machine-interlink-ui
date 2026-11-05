@@ -1,0 +1,802 @@
+================================================================================
+PROJECT WORKFLOW DOCUMENTATION: FURUKAWA MINDA MAN-MACHINE INTERLINK (FME MMI)
+================================================================================
+
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1. PROJECT OVERVIEW
+2. FOLDER AND FILE MAP
+3. HOW THE PROJECT STARTS
+4. COMPLETE WORKFLOW (FEATURE JOURNEYS)
+5. DEEP EXPLANATION OF EACH PART
+6. DATA AND DATABASE (STORAGE ARCHITECTURE)
+7. EXTERNAL SERVICES AND APIS
+8. CONFIGURATION AND ENVIRONMENT
+9. HOW TO RUN, TEST AND DEPLOY
+10. COMMON PROBLEMS AND FIXES
+11. GLOSSARY
+12. IDEAS FOR IMPROVEMENT
+
+
+================================================================================
+1. PROJECT OVERVIEW
+================================================================================
+Furukawa Minda Electric (FME) Man-Machine Interlink is a digital factory floor management application. It is built for shop floor operators, maintenance engineers, and quality assurance inspectors in automotive wire harness manufacturing plants. In traditional manufacturing setups, paper checksheets are filled by hand, leading to lost paperwork, unverified handwriting, delayed maintenance, and difficult audits. This application replaces those paper clipboards with responsive, digital checksheets for machine maintenance, quality inspection, poka-yoke (mistake-proofing) verification, 5S workplace audits, and breakdown logs. It also provides plant managers with a high-level operational telemetry dashboard to track hourly output production (HOP) and machine runtime hours across manufacturing shifts. The primary active plant modeled in the system is the Bawal Unit in Haryana, India, with expansion placeholders for the Gujrat Unit in Gujarat, India.
+
+TECH STACK BREAKDOWN:
+- JavaScript (ES Modules): The core programming language used to build application logic and reactive components.
+- React 19 (v19.2.8): The component-based user interface library used to create declarative views and manage user interaction state.
+- React DOM (v19.2.8): The React package that mounts the component tree into the web browser Document Object Model (DOM).
+- React Router DOM (v7.18.4): The client-side routing library used to handle multi-level URLs, route parameters, and full-screen screen switches without page reloads.
+- Vite (v8.3.0): The development server and production bundler that enables fast Hot Module Replacement (HMR) and bundles the project for release.
+- Tailwind CSS (v3.4.19): The utility-first CSS framework used for fast, modern responsive styling and layout arrangement across all screen sizes.
+- PostCSS (v8.5.28) & Autoprefixer (v10.6.1): Build-time CSS processing tools that inject browser compatibility prefixes into the compiled stylesheets.
+- Lucide React (v1.46.0): A clean SVG icon library providing uniform industrial icons for machines, gauges, tools, cameras, and status indicators.
+- Oxlint (v1.81.0): A high-speed Rust-based JavaScript and React linter that enforces code consistency and catches React Hook mistakes early.
+
+
+================================================================================
+2. FOLDER AND FILE MAP
+================================================================================
+Below is the structural map of the entire repository:
+
+c:\Users\Asus\Downloads\fme-checksheet
+|-- .gitignore                                    Git ignore list for build files and local tools
+|-- .oxlintrc.json                                Oxlint linter settings for React and Hook verification
+|-- index.html                                    Root HTML template hosting the single-page application
+|-- package.json                                  Node.js project manifest, dependencies, and build scripts
+|-- package-lock.json                             Exact dependency lockfile
+|-- postcss.config.js                             PostCSS plugin configuration for Tailwind and Autoprefixer
+|-- README.md                                     Default Vite React template documentation
+|-- tailwind.config.js                            Tailwind CSS content scanning configuration
+|-- vite.config.js                                Vite build setup with React plugin
+|
+|-- public/                                       Static public web assets served directly by Vite
+|   |-- favicon.svg                               Browser favicon vector
+|   |-- fme-logo.png                              Official Furukawa Minda Electric logo image
+|   |-- fme-logo.svg                              Vector logo image
+|   |-- icons.svg                                 SVG icon sprite collection
+|   |-- blade-micrometer-guide.png                Reference diagram for blade micrometer parts (1 to 6)
+|   |-- plunger-micrometer-guide.png              Reference diagram for plunger micrometer parts (1 to 7)
+|   |-- point-micrometer-guide.png                Reference diagram for point micrometer parts
+|   |-- pm-rw/                                    Reference diagrams for Resistance Welding Preventive Maintenance
+|   |   |-- image1.png to image14.png             Visual inspection guides for welding electrodes and pneumatic cylinders
+|   `-- pokayoke/                                 Reference photos for Poka-Yoke sensors
+|       |-- camera.png                            Crimp cross-section inspection camera
+|       |-- camera2.png                           Terminal presence inspection camera
+|       |-- cfm.png                               Crimp Force Monitor sensor unit
+|       |-- ferrule_sensor.png                    Ferrule and rubber seal seated position detector
+|       |-- pika.png                              Wire positioning and color guide fixture
+|       |-- sensor.png                            Optical terminal feed sensor
+|       `-- temp_controller.png                   Hot-air shrink sleeve temperature monitor
+|
+`-- src/                                          Source code of the application
+    |-- main.jsx                                  JavaScript application root entry point
+    |-- App.jsx                                   Top-level application router and route definitions
+    |-- MainLayout.jsx                            Main frame with top navigation bar and collapsible sidebar
+    |-- index.css                                 Global CSS design tokens, fonts, and scrollbar styles
+    |-- App.css                                   Empty component style sheet
+    |
+    |-- assets/                                   Bundled image assets
+    |   |-- fme-logo.png                          Furukawa Minda brand logo
+    |   |-- hero.png                              Factory banner graphic
+    |   |-- react.svg                             React logo
+    |   `-- vite.svg                              Vite logo
+    |
+    |-- components/                               Global layout chrome components
+    |   |-- Navbar.jsx                            Top header with dynamic breadcrumbs and operator badge
+    |   `-- Sidebar.jsx                           Collapsible side navigation bar with route links and logout button
+    |
+    |-- context/                                  Global state providers
+    |   `-- AuthContext.jsx                       Two-factor shop-floor authentication (Operator Card & QI Card)
+    |
+    |-- dashboard/                                Factory analytics and telemetry screens
+    |   |-- OperationsDashboard.jsx               Production dashboard with cascading filters and 3 SVG bar graphs
+    |   `-- DashboardGraphs.jsx                   Alternative/legacy prototype containing static shift comparison charts
+    |
+    |-- utils/                                    Shared helper utilities
+    |   `-- machineModels.js                      Mapping table matching C&C machine numbers to physical machine models
+    |
+    `-- machine-checksheets/                      Checksheet selection and inspection engines
+        |-- UnitSelectionPage.jsx                 Plant picker screen (Bawal Unit vs Gujrat Unit)
+        |-- OperationalUnitSelectionPage.jsx      Department picker (CNC Machining, Assembly, SRC Quality)
+        |-- OperationalUnitRouter.jsx             Section router dispatching to CNC, Assembly, or SRC layouts
+        |-- MachineDetailPage.jsx                 Machine checksheet selector menu page
+        |-- ChecksheetDetailPage.jsx              Master checksheet screen switcher that displays full forms
+        |
+        |-- shared/                               Reusable components across multiple checksheets
+        |   |-- AutoCrimpingPmContainer.jsx       Container switching between model PM and observation sheet
+        |   |-- BreakdownSummary.jsx              Form FRM-WH-QA-241: Daily machine breakdown and 5M change record
+        |   |-- CcProcessProductionSummary.jsx    Form: Hourly production targets, actuals, and downtime reasons
+        |   |-- ChecksheetHeaderNav.jsx           Uniform top action bar with Save, Print, Reset, and Back buttons
+        |   |-- ChecksheetNotAdded.jsx            Clean placeholder view when a form is not yet configured
+        |   |-- FiveSHowCell.jsx                  5S cleaning action badge renderer (Visual, Cloth, Brush, Suction, Pen)
+        |   |-- FiveSPhotoCell.jsx                5S standard reference photo and custom photo uploader
+        |   |-- MicrometerComponentGuide.jsx      Interactive micrometer inspection guide with user photo upload
+        |   |-- ObservationChecksheet.jsx         Preventive Maintenance corrective and permanent action plan sheet
+        |   |-- OperatorMachineSummary.jsx        Operator shifts, runtimes, downtime, and output summary
+        |   `-- PmObservationSwitcher.jsx         Tab button toggle between PM Checksheet and Observation Sheet
+        |
+        `-- units/                                Department-specific checksheet implementations
+            |-- assembly/                         Assembly Line operational unit
+            |   |-- assemblyLayout.jsx            Assembly line landing page
+            |   `-- allChecksheets/               Placeholder files (0 bytes each) for upcoming assembly forms
+            |       |-- 5sChecksheet.jsx
+            |       |-- breakdownSummary.jsx
+            |       |-- dailyChecksheet.jsx
+            |       |-- inspectorReport.jsx
+            |       |-- instrumentChecksheet.jsx
+            |       |-- operatior&MachineSummary.jsx
+            |       |-- pmChecksheet.jsx
+            |       |-- PokayokeChecksheet.jsx
+            |       `-- processProductionStatus.jsx
+            |
+            |-- src/                              Secondary Retention Clip / Quality Hub unit
+            |   `-- srcLayout.jsx                 SRC quality landing page
+            |
+            `-- c&c/                              Cutting & Crimping (CNC) operational unit
+                |-- c&cLayout.jsx                 Main CNC layout with 7 process filter buttons and machine grids
+                |-- index.js                      Barrel export for CNC views
+                |-- machineList.jsx               Process-based machine list selector
+                |-- processFilters.jsx            Horizontal filter bar with the 7 manufacturing process tabs
+                |-- GujratEmptyCncPage.jsx        Empty state screen shown when selecting Gujrat CNC section
+                |
+                |-- blueTaping/                   Blue Taping process
+                |   |-- BlueTapingView.jsx        Setup pending notification view
+                |   `-- index.js                  Export module
+                |
+                |-- headSinking/                  Head Sinking process
+                |   |-- HeadSinkingView.jsx       Setup pending notification view
+                |   `-- index.js                  Export module
+                |
+                |-- jointCrimping/                Joint Crimping process
+                |   |-- JointCrimpingView.jsx     Setup pending notification view
+                |   `-- index.js                  Export module
+                |
+                |-- twisting/                     Twisting process
+                |   |-- TwistingView.jsx          Setup pending notification view
+                |   `-- index.js                  Export module
+                |
+                |-- manualCrimping/               Manual Crimping (MCR) process
+                |   |-- ManualCrimpingView.jsx    Single machine card overview (MCR / Mecal-05)
+                |   |-- index.js                  Export module
+                |   `-- mcr/                      MCR checksheet forms
+                |       |-- index.js              Export barrel for MCR checksheets
+                |       |-- DailyChecksheet.jsx   Pointer re-exporting Mecal05DailyChecksheet
+                |       |-- Mecal05DailyChecksheet.jsx Form CHK-VM-MT-105: Mecal-05 Daily Machine Check Sheet
+                |       |-- FiveSChecksheet.jsx   Form CHK-5S-03: 5S weekly cleaning checksheet
+                |       |-- InspectionReportSheet.jsx Form FRM-WH-PE-262: Terminal fitting inspection record
+                |       |-- InstrumentChecksheet.jsx Form FRM-WH-QA-046: Point & blade micrometer inspection
+                |       |-- MachinePmChecksheet.jsx Form CHK-WH-MT-035: Monthly preventive maintenance checksheet
+                |       |-- PokayokeChecksheet.jsx Form FRM-WH-QA-096: CFM mistake-proofing verification
+                |       `-- PredictiveMaintenanceChecksheet.jsx Form CHK-WH-MT-026: Predictive maintenance sheet
+                |
+                |-- resistanceWelding/            Resistance Welding (R/SW) process
+                |   |-- ResistanceWeldingView.jsx 7-machine grid overview (R/SW 01 to R/SW 07)
+                |   |-- ResistanceWeldingBlankSheet.jsx Clean placeholder sheet for unconfigured forms
+                |   |-- index.js                  Export module
+                |   |-- DailyChecksheet.jsx       Form CHK-WH-MT-003: Daily welding machine checksheet
+                |   |-- FiveSChecksheet.jsx       Form CHK-5S-03: Welding station 5S audit
+                |   |-- InspectionReportSheet.jsx Form FRM-QC-PS-244: Welding sample inspection record
+                |   |-- InstrumentChecksheet.jsx  Form FRM-WH-QA-046: Welding micrometer and scale inspection
+                |   |-- MachinePmChecksheet.jsx   Form CHK-WH-MT-043: Monthly PM with 14 visual criteria
+                |   `-- PredictiveMaintainanceChecksheet.jsx Form CHK-WH-MT-101: Welding predictive maintenance
+                |
+                `-- autoCrimping/                 High-speed automated cutting, stripping, and crimping
+                    |-- AutoCrimpingView.jsx      31-machine grid overview (C&C 01 to C&C 32, skipping 13)
+                    |-- index.js                  Export module
+                    |-- alpha355/                 Komax Alpha 355 model checksheets (Machines 01, 03)
+                    |   |-- DailyChecksheet.jsx
+                    |   |-- FiveSChecksheet.jsx
+                    |   |-- InspectionReportSheet.jsx
+                    |   |-- InstrumentChecksheet.jsx
+                    |   |-- MachinePmChecksheet.jsx
+                    |   `-- PokayokeChecksheet.jsx
+                    |-- g252/                     ShinMaywa G252 model checksheets (Machines 20, 21, 22)
+                    |   |-- DailyChecksheet.jsx
+                    |   |-- FiveSChecksheet.jsx
+                    |   |-- InspectionReportSheet.jsx
+                    |   |-- InstrumentChecksheet.jsx
+                    |   |-- MachinePmChecksheet.jsx
+                    |   `-- PokayokeChecksheet.jsx
+                    |-- g253/                     ShinMaywa G253 model checksheets (Machines 02, 04, 11, 12, 15, 16, 17, 18)
+                    |   |-- DailyChecksheet.jsx
+                    |   |-- FiveSChecksheet.jsx
+                    |   |-- InspectionReportSheet.jsx
+                    |   |-- InstrumentChecksheet.jsx
+                    |   |-- MachinePmChecksheet.jsx
+                    |   `-- PokayokeChecksheet.jsx
+                    |-- g448/                     ShinMaywa G448 model checksheets (Machines 26, 27, 28, 30, 31, 32)
+                    |   |-- DailyChecksheet.jsx
+                    |   |-- FiveSChecksheet.jsx
+                    |   |-- InspectionReportSheet.jsx
+                    |   |-- InstrumentChecksheet.jsx
+                    |   |-- MachinePmChecksheet.jsx
+                    |   `-- PokayokeChecksheet.jsx
+                    |-- jam/                      JAM model checksheets (Machine 25)
+                    |   |-- DailyChecksheet.jsx
+                    |   |-- FiveSChecksheet.jsx
+                    |   |-- InspectionReportSheet.jsx
+                    |   |-- InstrumentChecksheet.jsx
+                    |   |-- MachinePmChecksheet.jsx
+                    |   `-- PokayokeChecksheet.jsx
+                    |-- trd301/                   Kodera TRD 301 model checksheets (Machines 05, 06, 07, 08, 09, 10)
+                    |   |-- DailyChecksheet.jsx
+                    |   |-- FiveSChecksheet.jsx
+                    |   |-- InspectionReportSheet.jsx
+                    |   |-- InstrumentChecksheet.jsx
+                    |   |-- MachinePmChecksheet.jsx
+                    |   `-- PokayokeChecksheet.jsx
+                    `-- trd411f/                  Kodera TRD 411F model checksheets (Machines 14, 19, 23, 24, 29)
+                        |-- DailyChecksheet.jsx
+                        |-- FiveSChecksheet.jsx
+                        |-- InspectionReportSheet.jsx
+                        |-- InstrumentChecksheet.jsx
+                        |-- MachinePmChecksheet.jsx
+                        `-- PokayokeChecksheet.jsx
+
+
+================================================================================
+3. HOW THE PROJECT STARTS
+================================================================================
+The execution life cycle from running the command to browser rendering occurs in six sequential steps:
+
+STEP 1: DEVELOPER LAUNCHES VITE
+- Command: `npm run dev`
+- Tool: Vite reads `vite.config.js`. It starts a local HTTP development server (typically on `http://localhost:5173`) and compiles JSX on the fly using `@vitejs/plugin-react`.
+
+STEP 2: BROWSER REQUESTS ROOT HTML
+- The web browser loads `index.html`.
+- The HTML loads fonts from Google Fonts (`Plus Jakarta Sans` and `JetBrains Mono`).
+- It creates an empty DOM node: `<div id="root"></div>`.
+- It executes the root entry script via `<script type="module" src="/src/main.jsx"></script>`.
+
+STEP 3: REACT ROOT INITIALIZATION (`src/main.jsx`)
+- The browser downloads and executes `src/main.jsx`.
+- `main.jsx` imports `createRoot` from `react-dom/client` and imports the global styles in `src/index.css`.
+- It mounts the root `<App />` component inside `<StrictMode>` into the DOM element with ID `root`.
+
+STEP 4: AUTHENTICATION PROVIDER MOUNTING (`src/context/AuthContext.jsx`)
+- `App.jsx` wraps the entire application with `<AuthProvider>`.
+- The `AuthProvider` checks the browser's `sessionStorage` under the key `fme_operator_session`.
+- If an active operator/quality session exists from an earlier login, it loads it into React state. Otherwise, it initializes as `null`.
+
+STEP 5: ROUTER INITIALIZATION (`src/App.jsx`)
+- `BrowserRouter` listens to the browser URL pathname.
+- If the user visits the root `/`, the route rule `<Route index element={<Navigate to="/dashboard" replace />} />` redirects the browser directly to `/dashboard`.
+- The parent wrapper component `MainLayout.jsx` is mounted.
+
+STEP 6: MAIN LAYOUT RENDERING (`src/MainLayout.jsx`)
+- `MainLayout` checks the current URL path.
+- If the current route is NOT a full-screen checksheet (meaning the URL does not have 5 or more segments under `/machine-checksheet/`), `MainLayout` renders:
+  1. The left-hand `<Sidebar />` with active route indicators and brand logo.
+  2. The top `<Navbar />` with breadcrumb paths and user status indicator.
+  3. The `<main>` container hosting the routed page via `<Outlet />`.
+- If the current route is a specific checksheet (e.g. `/machine-checksheet/Bawal/CNC/C&C 01/Machine 5S checksheet`), `MainLayout` automatically hides both the Sidebar and Navbar so the operator receives maximum screen real estate for wide table entry.
+
+
+================================================================================
+4. COMPLETE WORKFLOW (FEATURE JOURNEYS)
+================================================================================
+
+FEATURE 1: VIEWING OPERATIONS TELEMETRY & HOURLY OUTPUT DASHBOARD
+--------------------------------------------------------------------------------
+User Goal: A plant manager wants to examine the output rate (units per hour) and active runtime hours of C&C Machine 01 over the past 15 days.
+
+Trigger:
+User opens the app or clicks "Dashboard" in the left sidebar.
+
+Flow Diagram:
+User clicks Dashboard -> Sidebar.jsx -> NavLink to /dashboard -> App.jsx -> OperationsDashboard.jsx -> Reads selected machine/process/days -> Computes period statistics -> Renders 3 custom dual-bar SVG/HTML charts
+
+Step-by-step Execution:
+1. React Router matches `/dashboard` and loads `src/dashboard/OperationsDashboard.jsx`.
+2. The component initializes four cascading filter states:
+   - Selected Unit: defaults to "Bawal".
+   - Selected Operational Unit: defaults to "C&C".
+   - Selected Process: defaults to "Auto Crimping".
+   - Selected Machine: defaults to "C&C 01".
+   - Selected Duration: defaults to 15 days (switchable to 7 or 30 days).
+3. The component uses `useMemo` hooks to generate deterministic data:
+   - Computes base HOP (Hourly Output Production) around 140-190 units/hr based on machine ID.
+   - Generates daily runtime hours (0 to 15 hours/day) and daily unit output.
+   - Computes period totals: Average HOP, Average Runtime, Total Output, and Uptime Percentage.
+4. The user sees:
+   - Top filter toolbar with 4 dropdowns and quick reset button.
+   - Duration selector pills (7 Days, 15 Days, 30 Days).
+   - Graph 1: Combined dual-bar graph showing two color-coded vertical bars for every single day (Green for HOP, Blue for Runtime) with hover tooltips.
+   - Graph 2: Dedicated HOP trend bar chart with Min, Average, and Peak throughput badges.
+   - Graph 3: Dedicated Runtime hours bar chart with peak indicator flags and uptime efficiency badge.
+
+
+FEATURE 2: PLANT AND OPERATIONAL SECTION SELECTION
+--------------------------------------------------------------------------------
+User Goal: An operator selects the Bawal manufacturing plant, then chooses the CNC machining section.
+
+Trigger:
+User clicks "Machine Checksheet" in the sidebar navigation.
+
+Flow Diagram:
+User clicks Machine Checksheet -> /machine-checksheet -> UnitSelectionPage.jsx -> User selects Bawal -> /machine-checksheet/Bawal -> OperationalUnitSelectionPage.jsx -> User clicks CNC Section -> /machine-checksheet/Bawal/CNC -> OperationalUnitRouter.jsx -> c&cLayout.jsx
+
+Step-by-step Execution:
+1. User clicks "Machine Checksheet". Browser navigates to `/machine-checksheet`.
+2. `UnitSelectionPage.jsx` renders a sidebar dropdown with options: "Bawal Unit" and "Gujrat Unit".
+3. User picks "Bawal". The `onChange` handler calls `navigate('/machine-checksheet/Bawal')`.
+4. `OperationalUnitSelectionPage.jsx` renders three operational sections:
+   - CNC Machining Section (31 high-precision cutting, stripping & crimping machines)
+   - Assembly Line Section
+   - SRC Inspection & Quality Hub
+5. User clicks the "CNC" card. The click handler navigates to `/machine-checksheet/Bawal/CNC`.
+6. `OperationalUnitRouter.jsx` reads the URL parameter `operationalUnit="CNC"`. It evaluates the condition `normalized === 'CNC'` and renders `src/machine-checksheets/units/c&c/c&cLayout.jsx`.
+
+
+FEATURE 3: MACHINE SELECTION & OPERATOR AUTHENTICATION GATE
+--------------------------------------------------------------------------------
+User Goal: An operator wants to work on machine "C&C 01" (Alpha 355), requiring operator and quality inspector identification.
+
+Trigger:
+User clicks the "C&C 01" machine card inside the Auto Crimping section.
+
+Flow Diagram:
+User clicks C&C 01 card -> c&cLayout.jsx -> requestAuth(machine) in AuthContext.jsx -> Checks activeSession -> If null, opens modal -> Operator enters OP Card No. + QI Card No. -> Clicks Authenticate -> Session saved to sessionStorage -> Callback executes navigate() -> /machine-checksheet/Bawal/CNC/C&C 01 -> MachineDetailPage.jsx -> OperationalChecksheets.jsx
+
+Step-by-step Execution:
+1. `c&cLayout.jsx` displays the process filter bar (`ProcessFilters.jsx`) with 7 processes. "Auto Crimping" is selected by default, displaying 31 machine cards rendered by `AutoCrimpingView.jsx`.
+2. User clicks on machine card "C&C 01".
+3. `c&cLayout.jsx` executes `handleMachineSelect(machine)`.
+4. `handleMachineSelect` invokes `requestAuth(machine, callback)` from `AuthContext.jsx`.
+5. `requestAuth` checks if `activeSession` already exists in React state or `sessionStorage`:
+   - If YES: It runs the success callback immediately without prompting.
+   - If NO: It opens the modal popup `<div className="fixed inset-0 z-50 flex items-center justify-center...">`.
+6. The modal prompts for two mandatory inputs:
+   - Operator Card No. (e.g. `OP-84210`)
+   - Quality Inspector Card No. (e.g. `QI-39145`)
+7. User submits the modal form. `handleLoginSubmit` verifies both strings are non-empty, calls `login(op, qi)` which stores `{ operatorCardNo, inspectorCardNo }` in `sessionStorage` under `fme_operator_session`, and closes the modal.
+8. The success callback executes:
+   `navigate('/machine-checksheet/Bawal/CNC/C&C 01')`.
+9. `MachineDetailPage.jsx` reads the URL, normalizes the machine ID, queries `getMachineModel(1)` from `src/utils/machineModels.js`, determining the model is `Alpha_355`.
+10. `MachineDetailPage.jsx` renders `OperationalChecksheets.jsx`, showing the 9 available checksheets for Auto Crimping machines.
+
+
+FEATURE 4: FILLING AND SAVING A MACHINE 5S CHECKSHEET
+--------------------------------------------------------------------------------
+User Goal: An operator performs a 5S audit on machine C&C 01, marking items as clean, uploading an inspection photograph, and saving the sheet.
+
+Trigger:
+User clicks the "Machine 5S checksheet" card on the checksheet menu.
+
+Flow Diagram:
+User clicks Machine 5S checksheet -> onSelectChecksheet('Machine 5S checksheet') -> Navigate to /machine-checksheet/Bawal/CNC/C&C 01/Machine 5S checksheet -> ChecksheetDetailPage.jsx -> Identifies model Alpha_355 -> Loads Alpha355FiveS (FiveSChecksheet.jsx) -> Operator toggles status / uploads image -> Clicks Save Record -> Data serialized to local component state & confirmation feedback displayed
+
+Step-by-step Execution:
+1. `OperationalChecksheets.jsx` handles the click and calls `navigate('/machine-checksheet/Bawal/CNC/C&C 01/Machine 5S checksheet')`.
+2. `MainLayout.jsx` detects 5 path segments in the URL and hides the main sidebar and top navbar, giving 100% viewport width to the checksheet.
+3. `ChecksheetDetailPage.jsx` reads `machineId="C&C 01"`, resolves model `Alpha_355`, matches the title "Machine 5S checksheet", and renders `src/machine-checksheets/units/c&c/autoCrimping/alpha355/FiveSChecksheet.jsx`.
+4. `FiveSChecksheet.jsx` renders:
+   - Header with standard document reference `CHK-5S-03 Rev 01`.
+   - Plant location (Bawal Plant), machine model (Alpha 355), machine number (C&C 01), and current shift.
+   - 5S inspection table with 7 standard criteria:
+     * 1S: Work place unwanted items removal.
+     * 2S: Tool kit and parts arrangement.
+     * 3S: Wire feed table and terminal plate cleaning.
+     * 3S: Crimping unit and cutter block shine.
+     * 3S: Conveyor belt and ejector tray cleaning.
+     * 4S: Standard visual labeling.
+     * 5S: Maintenance of cleanliness standard.
+   - Interactive `FiveSHowCell.jsx` showing the method icon (Visual, Cloth, Brush, Suction, Pen).
+   - Interactive `FiveSPhotoCell.jsx` showing the reference standard diagram or allowing file upload via HTML file input.
+5. Operator inspects the machine, enters day checkmarks (Shift A/B/C), and clicks "Save Record" on `ChecksheetHeaderNav.jsx`.
+6. The component updates state and displays a confirmation message on screen.
+7. If physical hard copy is required, operator clicks "Print", triggering `window.print()` with `@media print` CSS rules hiding UI buttons.
+
+
+FEATURE 5: PREVENTIVE MAINTENANCE (PM) & OBSERVATION ACTION PLAN TOGGLE
+--------------------------------------------------------------------------------
+User Goal: A technician performs monthly PM on TRD 411F, inspects parts, and logs an abnormality into the preventive maintenance observation action plan.
+
+Trigger:
+User clicks "Machine PM checksheet" on machine C&C 14.
+
+Flow Diagram:
+User selects Machine PM checksheet -> ChecksheetDetailPage.jsx -> Matches PM / Obs -> Mounts AutoCrimpingPmContainer.jsx -> Renders Trd411fMachinePm (MachinePmChecksheet.jsx) -> Technician clicks 'Observation Checksheet' on tab switcher -> Container switches to ObservationChecksheet.jsx -> Technician adds corrective/permanent actions -> Clicks Save -> Data saved to localStorage key fme_observation_pm_C&C 14
+
+Step-by-step Execution:
+1. User opens PM checksheet for machine C&C 14 (TRD 411F).
+2. `ChecksheetDetailPage.jsx` matches `isPmMatch()`, mounting `AutoCrimpingPmContainer.jsx`.
+3. `AutoCrimpingPmContainer.jsx` checks the model name `TRD_411F` and initially renders `src/machine-checksheets/units/c&c/autoCrimping/trd411f/MachinePmChecksheet.jsx`.
+4. The technician checks mechanical wear points, sensors, air regulators, and grease levels.
+5. The technician discovers a worn terminal cutter blade. They click the "Observation Checksheet" tab rendered by `PmObservationSwitcher.jsx`.
+6. `AutoCrimpingPmContainer` toggles `activeTab` to `'observation'`.
+7. `ObservationChecksheet.jsx` mounts. It checks `localStorage` under key `fme_observation_pm_C&C 14`. If previous observations exist, it parses them into the table.
+8. The technician clicks "Add Row", entering:
+   - Month: Current month
+   - Name & Dept: Maintenance technician name and department
+   - Observations: "Terminal cutter blade edge chipped on front side"
+   - Corrective Action: "Replaced cutter blade with new spare part"
+   - Permanent Action: "Inspected wire hardness and adjusted stroke limit"
+   - Resp: Technician initials
+   - Target Date: Date string
+   - Status: "Closed"
+9. Technician clicks "Save".
+10. `ObservationChecksheet.jsx` serializes the data to JSON and saves it in `localStorage.setItem('fme_observation_pm_C&C 14', ...)`. A green success banner "Observations saved successfully!" appears.
+
+
+================================================================================
+5. DEEP EXPLANATION OF EACH PART
+================================================================================
+
+MODULE 1: ENTRY & ROUTING
+--------------------------------------------------------------------------------
+FILE: `src/main.jsx`
+- Purpose: The gateway of the React application.
+- How it works: Imports `createRoot` and injects `<App />` into the `index.html` div with id `root`.
+- Analogous to: The front door of a factory where all visitors must enter.
+- Key code: `createRoot(document.getElementById('root')).render(...)`.
+
+FILE: `src/App.jsx`
+- Purpose: The central traffic controller and route map.
+- How it works: Defines all client-side URL routes using React Router DOM. It maps URLs like `/dashboard`, `/machine-checksheet/:unit`, and nested checksheet paths to their respective page components.
+- Key routes:
+  * `/dashboard`: Shows `OperationsDashboard`.
+  * `/machine-checksheet`: Shows `UnitSelectionPage`.
+  * `/machine-checksheet/:unit`: Shows `OperationalUnitSelectionPage`.
+  * `/machine-checksheet/:unit/:operationalUnit`: Shows `OperationalUnitRouter`.
+  * `/machine-checksheet/:unit/:operationalUnit/:machineId`: Shows `MachineDetailPage`.
+  * `/machine-checksheet/:unit/:operationalUnit/:machineId/:checksheetId`: Shows `ChecksheetDetailPage`.
+  * Shorthand routes like `/trd411f/:checksheetId` or `/g448` for direct navigation.
+
+FILE: `src/MainLayout.jsx`
+- Purpose: Shell layout hosting the sidebar, top navbar, and main content window.
+- How it works: Reads `location.pathname`. If the route represents a checksheet (5 or more path segments under `/machine-checksheet/`), it suppresses the sidebar and navbar to give the operator a disturbance-free, full-screen checksheet.
+- Key functions:
+  * `isChecksheetPage`: boolean derived from `pathSegments[0] === 'machine-checksheet' && pathSegments.length >= 5`.
+  * `isSidebarCollapsed` state: allows operator to minimize the sidebar on smaller screens.
+
+
+MODULE 2: AUTHENTICATION & SECURITY
+--------------------------------------------------------------------------------
+FILE: `src/context/AuthContext.jsx`
+- Purpose: Manages two-factor shop-floor identity for operators and quality assurance inspectors.
+- How it works: In manufacturing plants, an operator cannot change critical machine configurations or start production without a Quality Inspector sign-off. This context maintains an `activeSession` object containing:
+  `{ operatorCardNo: string, inspectorCardNo: string }`.
+- Analogous to: A bank safety deposit box that requires two different physical keys turned at the same time by two different people.
+- Key functions:
+  * `AuthProvider({ children })`: Provider wrapping the application. Restores session from `sessionStorage.getItem('fme_operator_session')`.
+  * `login(opCard, qiCard)`: Stores session in state and `sessionStorage`.
+  * `logout()`: Clears session state and removes `fme_operator_session`.
+  * `requestAuth(machine, onSuccess)`: Intercepts machine clicks. If user is already logged in, executes `onSuccess` immediately. If not, displays the login modal.
+  * `useAuth()`: Custom hook providing `activeSession`, `login`, `logout`, and `requestAuth` to any component.
+
+
+MODULE 3: NAVIGATION BAR & SIDEBAR
+--------------------------------------------------------------------------------
+FILE: `src/components/Navbar.jsx`
+- Purpose: Displays live breadcrumbs, plant unit status, active operator tag, and quick tool actions.
+- How it works: Parses `location.pathname.split('/')` to reconstruct dynamic clickable breadcrumb trails (e.g. `Home > Machine Checksheet > Bawal Unit > CNC Section > C&C 01 > Machine 5S checksheet`).
+- Connections: Reads `activeSession` from `AuthContext` to display the active Operator Card number with a green status badge.
+
+FILE: `src/components/Sidebar.jsx`
+- Purpose: Persistent left navigation drawer for navigating between high-level factory screens.
+- How it works: Uses `NavLink` from `react-router-dom` to highlight the current section with a royal blue gradient.
+- Connections: Calls `logout()` from `AuthContext` when the operator clicks the red Logout button at the bottom.
+
+
+MODULE 4: TELEMETRY & DASHBOARD
+--------------------------------------------------------------------------------
+FILE: `src/dashboard/OperationsDashboard.jsx`
+- Purpose: Real-time visual monitoring of machine throughput and operational uptime.
+- How it works:
+  * Receives selection from 4 dropdowns: Unit (Bawal/Gujrat), Operational Unit (C&C, Assembly, SRC), Process, and Machine (C&C 01 to C&C 32).
+  * Computes an n-day array of daily data based on duration (7, 15, or 30 days).
+  * Calculates daily Hourly Output Production (HOP in units/hr) and active machine runtime (0 to 18 hours/day).
+  * Renders three responsive SVG/HTML bar charts:
+    1. Dual-bar chart (HOP and Runtime side-by-side for each calendar day).
+    2. Single-metric HOP analysis chart with peak highlighting.
+    3. Machine runtime hours chart with uptime ratio indicator.
+- Analogous to: The speedometer and fuel efficiency dashboard of a commercial airliner.
+
+FILE: `src/dashboard/DashboardGraphs.jsx`
+- Purpose: Static/legacy prototype showing shift-by-shift hourly production targets, OEE curves, and maintenance breakdown downtime.
+- Status in code: Standalone component file available in the repository, not currently connected to active routes in `App.jsx`.
+
+
+MODULE 5: MACHINE MODEL RESOLUTION
+--------------------------------------------------------------------------------
+FILE: `src/utils/machineModels.js`
+- Purpose: Master mapping dictionary translating numerical C&C machine IDs into actual equipment brand models.
+- How it works: Every physical machine on the shop floor has a numbered inventory tag (e.g., C&C 01, C&C 05, C&C 14) and a manufacturer model.
+- Mapping table:
+  * Alpha_355 (Komax Alpha 355): Machines 01, 03
+  * G_253 (ShinMaywa G253): Machines 02, 04, 11, 12, 15, 16, 17, 18
+  * TRD_301 (Kodera TRD 301): Machines 05, 06, 07, 08, 09, 10
+  * TRD_411F (Kodera TRD 411F): Machines 14, 19, 23, 24, 29
+  * G_252 (ShinMaywa G252): Machines 20, 21, 22
+  * JAM (Japan Automatic Machine): Machine 25
+  * G_448 (ShinMaywa G448): Machines 26, 27, 28, 30, 31, 32
+  * Manual Crimping: MCR maps to 'Mecal-05'
+  * Resistance Welding: Machines R/SW 01 to R/SW 07 map to 'Machine 1' through 'Machine 7'
+- Key function: `getMachineModel(machineId, process)` extracts numbers and returns the exact model string.
+
+
+MODULE 6: CHECKSHEET NAVIGATION & ROUTING ENGINE
+--------------------------------------------------------------------------------
+FILE: `src/machine-checksheets/UnitSelectionPage.jsx`
+- Purpose: First step in checksheet navigation; prompts user to select a manufacturing plant.
+- Options: "Bawal Unit" (Haryana) and "Gujrat Unit" (Gujarat).
+
+FILE: `src/machine-checksheets/OperationalUnitSelectionPage.jsx`
+- Purpose: Second step; prompts user to select a plant department (CNC, Assembly, or SRC).
+- Special logic: For Gujrat Unit, CNC shows "0 Machines" with an amber badge because CNC equipment is currently stationed at the Bawal plant.
+
+FILE: `src/machine-checksheets/OperationalUnitRouter.jsx`
+- Purpose: Branching point router; inspects the URL parameter `operationalUnit` and renders `CnCLayout`, `AssemblyLayout`, or `SrcLayout`.
+
+FILE: `src/machine-checksheets/MachineDetailPage.jsx`
+- Purpose: Renders the checksheet menu for a selected machine.
+- How it works: Normalizes the machine name from the URL, calls `getMachineModel()`, and mounts `OperationalChecksheets.jsx`.
+
+FILE: `src/machine-checksheets/ChecksheetDetailPage.jsx`
+- Purpose: The master switchboard that resolves and mounts the exact checksheet component matching the machine model and checksheet name.
+- How it works: Evaluates `modelName` and `checksheetId`:
+  * If Resistance Welding: routes to `ResistanceWeldingFiveS`, `ResistanceWeldingDaily`, `ResistanceWeldingInstrument`, `ResistanceWeldingInspectionReport`, `ResistanceWeldingPM`, or `PredictiveMaintainanceChecksheet`.
+  * If Manual Crimping (MCR): routes to `McrFiveS`, `McrInspectionReport`, `McrInstrument`, `McrDaily`, `McrMachinePm`, `McrPredictiveMaintenance`, or `McrPokayoke`.
+  * If PM or Observation on Auto Crimping: routes to `AutoCrimpingPmContainer`.
+  * If Auto Crimping model (Alpha 355, TRD 301, TRD 411F, G448, G252, G253, JAM): routes to that model's dedicated 5S, Daily, Instrument, Pokayoke, Inspection Report, or PM checksheet.
+  * If not implemented: gracefully falls back to `ChecksheetNotAdded.jsx`.
+
+
+MODULE 7: SHARED CHECKSHEET ENGINES
+--------------------------------------------------------------------------------
+FILE: `src/machine-checksheets/shared/ChecksheetHeaderNav.jsx`
+- Purpose: Universal top bar for every checksheet form.
+- Contains: Back button, official company title, document reference subtitle, PM/Observation switcher (optional), Reset button, and Close button.
+
+FILE: `src/machine-checksheets/shared/AutoCrimpingPmContainer.jsx`
+- Purpose: Multi-view wrapper for all Auto Crimping PM forms.
+- How it works: Manages state `activeTab` ('pm' or 'observation'). When technician clicks between tabs, it smoothly switches between the model-specific PM checksheet and the universal `ObservationChecksheet` while retaining machine properties.
+
+FILE: `src/machine-checksheets/shared/ObservationChecksheet.jsx`
+- Purpose: Records abnormalities discovered during Preventive Maintenance, along with corrective actions, permanent actions, responsible engineers, target dates, and status.
+- Persistence: Automatically loads from and saves to `localStorage` using key `fme_observation_pm_<machineName>`.
+
+FILE: `src/machine-checksheets/shared/MicrometerComponentGuide.jsx`
+- Purpose: Visual reference guide for Plunger and Blade micrometers.
+- How it works: Shows calibrated numbered badge callouts over the instrument diagram (e.g. 1: Anvil Tip, 2: Anvil Tightness, 3: Spindle, 4: Display, 5: Switch, 6: Push Button, 7: Calibration Tag). Operators can upload actual photos of their factory micrometers, which are automatically compressed into JPEG data URLs and cached in `localStorage`.
+
+FILE: `src/machine-checksheets/shared/FiveSPhotoCell.jsx` & `FiveSHowCell.jsx`
+- Purpose: Standardized table cells for 5S forms.
+- How it works: `FiveSHowCell` renders color-coded method icons (e.g. magnifying glass for Visual, bottle for Colin/Cloth, brush for Brush, suction nozzle for Suction). `FiveSPhotoCell` renders reference diagrams of clean machine areas and allows uploading verification pictures.
+
+FILE: `src/machine-checksheets/shared/BreakdownSummary.jsx`
+- Purpose: Form FRM-WH-QA-241 Rev 02. Comprehensive incident log for machine breakdowns. Tracks start time, end time, total breakdown minutes, spare parts consumed, problem description, root cause, 5M change category, and containment verification.
+
+FILE: `src/machine-checksheets/shared/CcProcessProductionSummary.jsx`
+- Purpose: Tracks hourly production target vs actual output across an 8-hour shift, together with 14 distinct downtime cause categories (wire short, terminal short, wire changeover, applicator changeover, quality problem, etc.).
+
+FILE: `src/machine-checksheets/shared/OperatorMachineSummary.jsx`
+- Purpose: Consolidated shift overview showing total runtime hours, total breakdown downtime, gross production output, and operator shift login history.
+
+
+MODULE 8: OPERATIONAL UNITS & PROCESS VIEWS
+--------------------------------------------------------------------------------
+FILE: `src/machine-checksheets/units/c&c/c&cLayout.jsx`
+- Purpose: Host view for the Cutting & Crimping section.
+- How it works: Renders the 7 process tabs (`Auto Crimping`, `Manual Crimping`, `Joint Crimping`, `Resistance Welding`, `Twisting`, `Blue Taping`, `Head Sinking`). Dynamically loads the corresponding process view.
+
+FILE: `src/machine-checksheets/units/c&c/autoCrimping/AutoCrimpingView.jsx`
+- Purpose: Shop-floor grid of 31 automatic cutting and crimping machines (C&C 01 through C&C 32, skipping C&C 13 per factory convention). Each card shows machine name, resolved model name, real-time output (pcs/hr), and color-coded status (Running [emerald], Idle/Stopped [rose], Maintenance [amber]).
+
+FILE: `src/machine-checksheets/units/c&c/manualCrimping/ManualCrimpingView.jsx`
+- Purpose: Overview for the manual crimping station (MCR / Mecal-05).
+
+FILE: `src/machine-checksheets/units/c&c/resistanceWelding/ResistanceWeldingView.jsx`
+- Purpose: 7-machine grid for Resistance Welding (R/SW 01 to R/SW 07).
+
+FILES: `TwistingView.jsx`, `BlueTapingView.jsx`, `HeadSinkingView.jsx`, `JointCrimpingView.jsx`
+- Purpose: Informative placeholder views for secondary wire processing cells that are awaiting checksheet digitization.
+
+FILES: `assemblyLayout.jsx` & `srcLayout.jsx`
+- Purpose: Department landing pages for Assembly and SRC Quality Hub. Note: Within `src/machine-checksheets/units/assembly/allChecksheets/`, there are 9 zero-byte placeholder files representing upcoming checksheet forms for the Assembly line.
+
+
+================================================================================
+6. DATA AND DATABASE (STORAGE ARCHITECTURE)
+================================================================================
+The application is currently designed as a client-side web application with local browser persistence. There is no external relational database (like PostgreSQL or MySQL) or NoSQL database connected in this code.
+
+Data persistence is managed across three distinct storage mechanisms:
+
+1. COMPONENT MEMORY (REACT `useState`)
+   - Transient data entered into table cells, daily shifts, and telemetry numbers are held in React component state.
+   - Lifetime: Exists while the component remains mounted.
+
+2. BROWSER `sessionStorage` (USER SESSION STATE)
+   - Storage Key: `fme_operator_session`
+   - Shape:
+     {
+       "operatorCardNo": "OP-84210",
+       "inspectorCardNo": "QI-39145"
+     }
+   - Lifetime: Persists while the browser tab remains open. Closing the browser tab automatically logs out the operator.
+
+3. BROWSER `localStorage` (CHECKSHEET RECORDS & UPLOADED PHOTOS)
+   Multiple checksheets automatically serialize form entries into `localStorage` as JSON strings:
+   - Observation Checksheet:
+     Key: `fme_observation_pm_<machineName>`
+     Data: `{ machineName, serialNo, rows: [...], updatedAt }`
+   - Micrometer Guide Custom Photos:
+     Key: `fme_instrument_center_photo_<machineKey>_<type>`
+     Data: Compressed Base64 JPEG data URL
+   - Manual Crimping Inspection Report:
+     Keys: `mcr_inspection_report_<machineKey>_header`, `..._records`, `..._abnormality`
+   - Manual Crimping Instrument Checksheet:
+     Keys: `mcr_instrument_checksheet_<machineKey>_point_meta`, `..._point_grid`, etc.
+   - Manual Crimping PM Checksheet:
+     Keys: `mcr_pm_checksheet_<machineName>_header`, `..._cells`, `..._footer`
+   - Mecal-05 Daily Checksheet:
+     Keys: `mecal05_daily_checksheet_<machineName>_header`, `..._grid`, `..._obs`
+   - Manual Crimping Poka-Yoke:
+     Keys: `mcr_pokayoke_<machineName>_header`, `..._machines`, `..._grid`, `..._photo`
+   - Manual Crimping Predictive Maintenance:
+     Keys: `mcr_predictive_<machineName>_header`, `..._points`, `..._grid`, `..._footer`
+   - Resistance Welding Checksheets:
+     * Daily: `rw_daily_<machineName>_meta`, `..._op_grid`, `..._mt_grid`, etc.
+     * 5S: `fme_rw_5s_<machineName>_meta`, `..._grid`, `..._photos`, etc.
+     * Inspection: `rw_inspection_report_<machineKey>_meta`, `..._blocks`
+     * Instrument: `rw_instrument_checksheet_<machineKey>_blade_grid`, `..._scale_grid`
+     * Machine PM: `rw_pm_checksheet_<machineKey>_header`, `..._cells`, `rw_pm_photos_<machineKey>`
+     * Predictive Maintenance: `rw_predictive_<machineName>_meta`, `..._grid`, `..._footer`
+
+Data Movement Flow:
+User edits input -> React onChange handler updates state -> Auto-save effect or Save button triggers `localStorage.setItem(key, JSON.stringify(data))` -> When page reloads, initial state initializer reads `localStorage.getItem(key)` and deserializes with `JSON.parse()`.
+
+
+================================================================================
+7. EXTERNAL SERVICES AND APIS
+================================================================================
+The application is self-contained and minimizes external network dependencies:
+
+1. GOOGLE FONTS CDN
+   - URL: `https://fonts.googleapis.com`
+   - Imported in `src/index.css`
+   - Fonts loaded:
+     * `Plus Jakarta Sans`: Main typography for UI text, badges, cards, and buttons.
+     * `JetBrains Mono`: Monospaced typography for machine IDs, dates, and telemetry readouts.
+   - If offline: Falls back to system sans-serif fonts (`-apple-system`, `BlinkMacSystemFont`, `Segoe UI`, `Roboto`).
+
+2. BROWSER PRINT SERVICE
+   - Standard browser API `window.print()` is invoked from checksheet navigation bars and dedicated print buttons.
+   - Controlled by CSS `@media print` rules defined in `src/index.css` and checksheet components to hide navigation chrome and format documents for standard A4 paper.
+
+3. EXTERNAL REST / GRAPHQL BACKEND APIS
+   - NOT CLEAR FROM CODE: There is currently no active remote backend endpoint, WebSocket feed, or cloud database connected.
+   - Machine telemetry in `OperationsDashboard.jsx` and machine outputs in `AutoCrimpingView.jsx` are calculated algorithmically in client-side JavaScript.
+
+
+================================================================================
+8. CONFIGURATION AND ENVIRONMENT
+================================================================================
+- Environment Files (`.env`, `.env.local`):
+  None exist in the repository root. The application does not require secret environment variables or API keys to start.
+- `package.json`:
+  Controls project naming (`"fme-mmi"`), module type (`"type": "module"`), development dependencies, and scripts.
+- `vite.config.js`:
+  Configures the Vite build engine with `@vitejs/plugin-react`.
+- `tailwind.config.js`:
+  Configures Tailwind CSS content scanning paths: `"./index.html"` and `"./src/**/*.{js,ts,jsx,tsx}"`.
+- `postcss.config.js`:
+  Enables `tailwindcss` and `autoprefixer` plugins for CSS compilation.
+- `.oxlintrc.json`:
+  Configures Oxlint with React plugins, enforcing `react/rules-of-hooks` as an error.
+
+
+================================================================================
+9. HOW TO RUN, TEST AND DEPLOY
+================================================================================
+
+PREREQUISITES:
+- Node.js (version 18.x or version 20.x recommended)
+- npm (Node Package Manager, installed with Node.js)
+
+STEP-BY-STEP COMMANDS:
+
+1. INSTALL DEPENDENCIES:
+   Open a terminal in the project root directory and run:
+   ```bash
+   npm install
+   ```
+   This downloads all packages listed in `package.json` into the `node_modules/` folder.
+
+2. RUN LOCALLY IN DEVELOPMENT MODE:
+   ```bash
+   npm run dev
+   ```
+   Output will display the local development URL, usually:
+   `http://localhost:5173/`
+   Open this URL in Google Chrome or Microsoft Edge.
+
+3. RUN CODE LINTER:
+   ```bash
+   npm run lint
+   ```
+   Runs Oxlint to check for syntax errors or invalid React Hook usage.
+
+4. BUILD PRODUCTION ARTIFACTS:
+   ```bash
+   npm run build
+   ```
+   Vite compiles and minifies all JavaScript, SVG, and CSS into static distribution files inside the `dist/` directory.
+
+5. PREVIEW THE PRODUCTION BUILD LOCALLY:
+   ```bash
+   npm run preview
+   ```
+   Starts a lightweight local web server serving the `dist/` production bundle to test performance before deploying.
+
+6. DEPLOY TO PRODUCTION WEB SERVER:
+   Because this is a pure client-side Single Page Application (SPA), the contents of the `dist/` folder can be copied to any static web host, such as:
+   - Nginx or Apache HTTP Server
+   - AWS S3 + CloudFront
+   - Vercel or Netlify
+   - Internal factory on-premises web server
+   CRITICAL SERVER CONFIGURATION: The web server must have URL rewriting enabled (fallback to `index.html` for all non-file routes) so that deep URLs like `/machine-checksheet/Bawal/CNC/C&C 01` do not trigger HTTP 404 errors.
+
+
+================================================================================
+10. COMMON PROBLEMS AND FIXES
+================================================================================
+
+PROBLEM 1: 404 NOT FOUND ON BROWSER REFRESH WHEN VIEWING A CHECKSHEET
+- Cause: React Router handles routing in the browser. When the page is reloaded at a deep URL like `/machine-checksheet/Bawal/CNC/C&C 01/Machine 5S checksheet`, a static web server without rewrite rules searches for a literal folder or file matching that path and fails.
+- Fix: Configure the production web server (Nginx/Apache) to redirect all unknown routes to `index.html`. In development mode, Vite handles this automatically.
+
+PROBLEM 2: BROWSER FAILS TO SAVE CHECKSHEET PHOTO (STORAGE QUOTA ERROR)
+- Cause: Uploading very large raw smartphone camera images (5 MB to 10 MB) directly into `localStorage` exceeds the browser quota limit (usually ~5 MB per domain).
+- Fix: The component `MicrometerComponentGuide.jsx` already includes a Canvas-based compression helper (`compressImage`) scaling images down to 1200px max dimensions and 0.85 JPEG quality before storing. Make sure other image upload cells use similar compression.
+
+PROBLEM 3: SESSION LOST AFTER CLOSING THE BROWSER TAB
+- Cause: Operator login credentials are intentionally stored in `sessionStorage` (`fme_operator_session`), which clears itself when the tab is closed.
+- Fix: This is a designed security feature for shared factory workstations. If persistence across days is desired, change `sessionStorage` in `src/context/AuthContext.jsx` to `localStorage`.
+
+PROBLEM 4: MACHINE NUMBER 13 DOES NOT APPEAR IN AUTO CRIMPING
+- Cause: In `AutoCrimpingView.jsx` and `OperationsDashboard.jsx`, the array generator explicitly excludes 13: `.filter((num) => num !== 13)`.
+- Explanation: This matches real-world manufacturing plant floor numbering where machine number 13 was skipped due to facility naming conventions. It is intentional, not a bug.
+
+
+================================================================================
+11. GLOSSARY
+================================================================================
+- C&C: Cutting & Crimping. The automated wire manufacturing process where electrical cables are cut to exact length, stripped of insulation, and crimped onto metal terminal contacts.
+- MMI: Man-Machine Interlink. The interface connecting human factory operators with industrial machinery protocols, checks, and logs.
+- HOP: Hourly Output Production. The count of finished wire harness circuits manufactured per hour.
+- POKA-YOKE: Japanese manufacturing term meaning "mistake-proofing". Automated sensors, cameras, or mechanical pins that prevent defective parts from advancing.
+- 5S: Japanese workplace organization methodology consisting of five steps: Sort (Seiri), Set in order (Seiton), Shine (Seiso), Standardize (Seiketsu), and Sustain (Shitsuke).
+- PM: Preventive Maintenance. Scheduled, routine service tasks (lubrication, inspection, calibration) performed to prevent unexpected equipment breakdown.
+- CFM: Crimp Force Monitor. A piezoelectric sensor mounted on a crimping press measuring the exact mechanical pressure curve of every crimping stroke to detect missing wire strands.
+- MCR: Manual Crimping Machine (specifically the Mecal-05 desktop electric bench press).
+- R/SW: Resistance Welding machine. Joins wires or terminals using heat generated by electrical resistance.
+- APPLICATOR: The heavy, precision interchangeable tooling die installed inside a crimping press to shape a specific terminal type.
+- TERMINAL: The small metal connector crimped onto the end of an automotive wire to allow it to plug into a vehicle electrical connector block.
+
+
+================================================================================
+12. IDEAS FOR IMPROVEMENT
+================================================================================
+1. CONNECT A REAL BACKEND DATABASE
+   Currently, all checksheets save locally to browser `localStorage`. If an operator switches to a different tablet or computer, their past records are not visible. Connecting a centralized Node.js/PostgreSQL or Python/FastAPI backend API would allow checksheet records to sync across the entire plant.
+
+2. FINISH ASSEMBLY SECTION IMPLEMENTATION
+   The 9 files under `src/machine-checksheets/units/assembly/allChecksheets/` (5sChecksheet, breakdownSummary, dailyChecksheet, inspectorReport, instrumentChecksheet, operatior&MachineSummary, pmChecksheet, PokayokeChecksheet, processProductionStatus) are currently 0-byte placeholders. They should be implemented with real assembly conveyor criteria matching the CNC standards.
+
+3. DEDUPLICATE AUTO CRIMPING MODEL CHECKSHEETS
+   Inside `src/machine-checksheets/units/c&c/autoCrimping/`, seven separate folders (`alpha355`, `g252`, `g253`, `g448`, `jam`, `trd301`, `trd411f`) contain nearly identical checksheets with minor string replacements. Refactoring these into unified shared checksheets that take `model` as a prop would eliminate over 20,000 lines of duplicate code.
+
+4. IMPLEMENT LIVE MACHINE TELEMETRY WEBSOCKETS
+   The dashboard metrics in `OperationsDashboard.jsx` and `AutoCrimpingView.jsx` currently use deterministic mathematical algorithms for simulation. Connecting the front-end to industrial IoT protocols (like MQTT or OPC-UA via WebSockets) would turn this into a live factory floor monitor.
+
+5. EXPORT CHECKSHEETS TO EXCEL (XLSX / CSV)
+   While `window.print()` allows printing paper and PDF copies, quality departments frequently require raw Excel records for statistical process control (SPC) and automotive ISO/TS audits. Adding an export to CSV or XLSX button on `ChecksheetHeaderNav.jsx` would greatly streamline quality reporting.
+================================================================================
+END OF PROJECT WORKFLOW DOCUMENTATION
+================================================================================

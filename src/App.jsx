@@ -8,6 +8,7 @@ import OperationalUnitSelectionPage from './machine-checksheets/OperationalUnitS
 import OperationalUnitRouter from './machine-checksheets/OperationalUnitRouter';
 import MachineDetailPage from './machine-checksheets/MachineDetailPage';
 import ChecksheetDetailPage from './machine-checksheets/ChecksheetDetailPage';
+import MachineDailyStatusPage from './machine-checksheets/MachineDailyStatusPage';
 
 export default function App() {
   return (
@@ -20,6 +21,11 @@ export default function App() {
 
             {/* Dashboard Route */}
             <Route path="dashboard" element={<OperationsDashboard />} />
+
+            {/* Daily Machine Report Routes */}
+            <Route path="daily-machine-report" element={<MachineDailyStatusPage />} />
+            <Route path="machine-daily-status" element={<Navigate to="/daily-machine-report" replace />} />
+            <Route path="machine-daily-summary" element={<Navigate to="/daily-machine-report" replace />} />
 
             {/* Machine Checksheets Nested Routes */}
             <Route path="machine-checksheet">
