@@ -140,8 +140,6 @@ export default function MachineDailyStatusPage() {
               <h1 className="text-xl font-bold text-slate-900 tracking-tight">Machine Daily Summary & Status Checksheet</h1>
             </div>
           </div>
-
-
         </div>
       </div>
 
