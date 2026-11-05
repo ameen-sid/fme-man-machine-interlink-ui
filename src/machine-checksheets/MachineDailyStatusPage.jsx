@@ -137,77 +137,11 @@ export default function MachineDailyStatusPage() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded">C&C SHOP</span>
               <h1 className="text-xl font-bold text-slate-900 tracking-tight">Machine Daily Summary & Status Checksheet</h1>
             </div>
-            <p className="text-xs text-slate-500 mt-1">C&C Process Production Status Summary • Shift A & Shift B Telemetry & Consolidated Machine Report</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            {/* View Selector Tabs */}
-            <div className="inline-flex rounded-md shadow-sm border border-slate-300 bg-slate-50 p-0.5 text-xs font-medium">
-              <button
-                type="button"
-                onClick={() => setActiveShift('ALL')}
-                className={`px-3 py-1.5 rounded ${activeShift === 'ALL' ? 'bg-blue-600 text-white shadow-xs font-semibold' : 'text-slate-700 hover:bg-slate-200'}`}
-              >
-                All Data (A + B + Summary)
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveShift('A')}
-                className={`px-3 py-1.5 rounded ${activeShift === 'A' ? 'bg-blue-600 text-white shadow-xs font-semibold' : 'text-slate-700 hover:bg-slate-200'}`}
-              >
-                Shift A Only
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveShift('B')}
-                className={`px-3 py-1.5 rounded ${activeShift === 'B' ? 'bg-blue-600 text-white shadow-xs font-semibold' : 'text-slate-700 hover:bg-slate-200'}`}
-              >
-                Shift B Only
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveShift('SUMMARY')}
-                className={`px-3 py-1.5 rounded ${activeShift === 'SUMMARY' ? 'bg-amber-500 text-white shadow-xs font-semibold' : 'text-slate-700 hover:bg-slate-200'}`}
-              >
-                Consolidated Summary Only
-              </button>
-            </div>
 
-            {/* Date Picker */}
-            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded px-2.5 py-1 text-xs">
-              <Calendar className="w-3.5 h-3.5 text-slate-500" />
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="bg-transparent border-none text-xs focus:outline-none"
-              />
-            </div>
-
-            {/* Search Box */}
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search machine..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 pr-3 py-1 border border-slate-300 rounded text-xs w-36 sm:w-44 focus:outline-blue-500 bg-slate-50"
-              />
-            </div>
-
-            {/* Print Button */}
-            <button
-              onClick={() => window.print()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded shadow-xs transition-colors"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>Print Checksheet</span>
-            </button>
-          </div>
         </div>
       </div>
 
