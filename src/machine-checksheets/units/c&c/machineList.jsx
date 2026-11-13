@@ -1,6 +1,8 @@
 import React from 'react';
 import AutoCrimpingView from './autoCrimping';
 import ResistanceWeldingView from './resistanceWelding';
+import ManualCrimpingView from './manualCrimping';
+import JointCrimpingView from './jointCrimping';
 
 export default function MachineList({
   activeProcess = 'Auto Crimping',
@@ -10,6 +12,24 @@ export default function MachineList({
   if (activeProcess === 'Resistance Welding') {
     return (
       <ResistanceWeldingView
+        selectedUnitLocation={selectedUnitLocation}
+        onSelectMachine={onSelectMachine}
+      />
+    );
+  }
+
+  if (activeProcess === 'Manual Crimping') {
+    return (
+      <ManualCrimpingView
+        selectedUnitLocation={selectedUnitLocation}
+        onSelectMachine={onSelectMachine}
+      />
+    );
+  }
+
+  if (activeProcess === 'Joint Crimping') {
+    return (
+      <JointCrimpingView
         selectedUnitLocation={selectedUnitLocation}
         onSelectMachine={onSelectMachine}
       />

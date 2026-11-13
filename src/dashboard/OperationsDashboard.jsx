@@ -49,6 +49,15 @@ export default function OperationsDashboard() {
   // Available Machines based on Operational Unit & Process
   const machinesList = useMemo(() => {
     if (selectedOpUnit === 'C&C') {
+      if (selectedProcess === 'Joint Crimping') {
+        return ['JCR 01'];
+      }
+      if (selectedProcess === 'Manual Crimping') {
+        return ['MCR'];
+      }
+      if (selectedProcess === 'Resistance Welding') {
+        return Array.from({ length: 7 }, (_, i) => `R/SW ${String(i + 1).padStart(2, '0')}`);
+      }
       return Array.from({ length: 32 }, (_, i) => i + 1)
         .filter((num) => num !== 13)
         .map((num) => `C&C ${String(num).padStart(2, '0')}`);
@@ -57,7 +66,7 @@ export default function OperationsDashboard() {
     } else {
       return ['SRC Tester 01', 'SRC Tester 02', 'SRC Tester 03'];
     }
-  }, [selectedOpUnit]);
+  }, [selectedOpUnit, selectedProcess]);
 
   // Machine number extracted for seed
   const machineNum = useMemo(() => {
@@ -66,8 +75,11 @@ export default function OperationsDashboard() {
   }, [selectedMachine]);
 
   const machineModel = useMemo(() => {
+    if (selectedMachine.startsWith('JCR')) return 'JCR-01';
+    if (selectedMachine.startsWith('MCR')) return 'Mecal-05';
+    if (selectedMachine.startsWith('R/SW')) return `Machine ${machineNum}`;
     return MACHINE_MODEL_MAP[machineNum] || 'Standard Series';
-  }, [machineNum]);
+  }, [machineNum, selectedMachine]);
 
   // Generate deterministic n-day telemetry data for (HOP & Runtime) matching reference style
   const daysData = useMemo(() => {
@@ -255,7 +267,19 @@ export default function OperationsDashboard() {
             <select
               className="w-full px-3 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white cursor-pointer shadow-2xs"
               value={selectedProcess}
-              onChange={(e) => setSelectedProcess(e.target.value)}
+              onChange={(e) => {
+                const nextProc = e.target.value;
+                setSelectedProcess(nextProc);
+                if (nextProc === 'Joint Crimping') {
+                  setSelectedMachine('JCR 01');
+                } else if (nextProc === 'Manual Crimping') {
+                  setSelectedMachine('MCR');
+                } else if (nextProc === 'Resistance Welding') {
+                  setSelectedMachine('R/SW 01');
+                } else if (selectedOpUnit === 'C&C') {
+                  setSelectedMachine('C&C 01');
+                }
+              }}
             >
               {processesForOpUnit.map((p) => (
                 <option key={p} value={p}>

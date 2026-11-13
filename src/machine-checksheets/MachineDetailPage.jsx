@@ -43,6 +43,12 @@ export default function MachineDetailPage() {
   let machineName = '';
   let activeProcess = 'Auto Crimping';
 
+  const isJointCrimping =
+    cleanId === 'JCR' ||
+    cleanId.startsWith('JCR') ||
+    cleanId.includes('JOINTCRIMPING') ||
+    (path && path.toLowerCase().includes('jointcrimping'));
+
   const isManualCrimping =
     cleanId === 'MCR' ||
     cleanId.startsWith('MCR') ||
@@ -55,7 +61,12 @@ export default function MachineDetailPage() {
     decodedMachineId.startsWith('R/SW') ||
     decodedMachineId.startsWith('RSW');
 
-  if (isManualCrimping) {
+  if (isJointCrimping) {
+    idNum = 1;
+    machineName = 'JCR 01';
+    modelName = 'JCR-01';
+    activeProcess = 'Joint Crimping';
+  } else if (isManualCrimping) {
     idNum = 1;
     machineName = 'MCR';
     modelName = 'Mecal-05';

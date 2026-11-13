@@ -188,11 +188,21 @@ const WEEKLY_MAINT_ITEMS = [
   }
 ];
 
-const INITIAL_OBSERVATION_ROWS = [
-  { id: 1, date: '', shift: '', area: '', specificArea: '', abnormality: '', immediateAction: '', resp: '', targetDate: '' },
-  { id: 2, date: '', shift: '', area: '', specificArea: '', abnormality: '', immediateAction: '', resp: '', targetDate: '' },
-  { id: 3, date: '', shift: '', area: '', specificArea: '', abnormality: '', immediateAction: '', resp: '', targetDate: '' }
-];
+const INITIAL_OBSERVATION_ROWS = Array.from({ length: 6 }, (_, i) => ({
+  id: i + 1,
+  date: '',
+  shift: '',
+  area: '',
+  specificArea: '',
+  abnormality: '',
+  immediateAction: '',
+  resp: '',
+  targetDate: '',
+  status: '',
+  operatorFeedback: '',
+  maintSupervisor: '',
+  prodSupervisor: ''
+}));
 
 export default function Mecal05DailyChecksheet({ machine, onClose }) {
   const machineName = machine?.name || 'MCR';
@@ -270,7 +280,11 @@ export default function Mecal05DailyChecksheet({ machine, onClose }) {
         abnormality: '',
         immediateAction: '',
         resp: '',
-        targetDate: ''
+        targetDate: '',
+        status: '',
+        operatorFeedback: '',
+        maintSupervisor: '',
+        prodSupervisor: ''
       }
     ]);
   };
@@ -716,121 +730,183 @@ export default function Mecal05DailyChecksheet({ machine, onClose }) {
             </div>
           </div>
 
-          {/* Abnormality Observation & Action Sheet Table */}
-          <div className="mt-4 border-2 border-black">
-            <div className="p-2 border-b-2 border-black bg-slate-50 flex items-center justify-between">
-              <h2 className="text-base font-black text-black m-0 tracking-wide">
-                Abnormality Observation & Action Sheet
-              </h2>
+          {/* ABNORMALITY OBSERVATION & ACTION SHEET (Exact 1:1 match to Screenshot) */}
+          <div className="mt-6">
+            <div className="flex items-center justify-end mb-1 print:hidden gap-2">
               <button
                 type="button"
                 onClick={handleAddObservation}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer print:hidden shadow-sm"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer shadow-sm"
               >
                 <Plus size={14} />
                 <span>Add Abnormality Row</span>
               </button>
             </div>
 
-            <table className="w-full border-collapse text-xs">
+            <table className="w-full border-collapse border-2 border-black text-xs bg-white">
               <thead>
-                <tr className="border-b border-black text-center font-bold text-[11px] bg-slate-100">
-                  <th className="border-r border-black p-1.5 w-24">Date</th>
-                  <th className="border-r border-black p-1.5 w-20">Shift</th>
-                  <th className="border-r border-black p-1.5 w-32">Area</th>
-                  <th className="border-r border-black p-1.5 w-36">Specific Area</th>
-                  <th className="border-r border-black p-1.5">Abnormality</th>
-                  <th className="border-r border-black p-1.5 w-72">Immediate Action Req.</th>
-                  <th className="border-r border-black p-1.5 w-28">Resp.</th>
-                  <th className="border-r border-black p-1.5 w-28">Target Date</th>
-                  <th className="p-1.5 w-12 print:hidden">Action</th>
+                {/* Title Row */}
+                <tr className="border-b-2 border-black">
+                  <th
+                    colSpan={12}
+                    className="py-1 px-3 text-center font-normal text-sm md:text-base text-black bg-white tracking-normal font-sans"
+                  >
+                    Abnormality Observation &amp; Action Sheet
+                  </th>
+                </tr>
+
+                {/* Column Headers */}
+                <tr className="border-b-2 border-black text-center font-normal text-[11px] text-black bg-white">
+                  <th className="border-r border-black p-1 align-middle w-20 font-normal">
+                    Date
+                  </th>
+                  <th className="border-r border-black p-1 align-middle w-16 font-normal">
+                    Shift
+                  </th>
+                  <th className="border-r border-black p-1 align-middle w-20 font-normal">
+                    Area
+                  </th>
+                  <th className="border-r border-black p-1 align-middle w-24 font-normal leading-tight">
+                    Specific<br />Area
+                  </th>
+                  <th className="border-r-2 border-black p-1 align-middle w-64 font-normal">
+                    Abnormailaity
+                  </th>
+                  <th className="border-r border-slate-300 p-1 align-middle w-52 font-normal">
+                    Immediate Action Req.
+                  </th>
+                  <th className="border-r border-slate-300 p-1 align-middle w-20 font-normal">
+                    Resp.
+                  </th>
+                  <th className="border-r-2 border-black p-1 align-middle w-28 font-normal leading-tight">
+                    Target<br />Date /Time
+                  </th>
+                  <th className="border-r border-slate-300 p-1 align-middle w-24 font-normal">
+                    Status
+                  </th>
+                  <th className="border-r-2 border-black p-1 align-middle w-40 font-normal">
+                    Operator Feedback
+                  </th>
+                  <th className="border-r border-slate-300 p-1 align-middle w-28 font-normal leading-tight">
+                    Maint.<br />Supervisor
+                  </th>
+                  <th className="p-1 align-middle w-28 font-normal leading-tight">
+                    Production<br />Supervisor
+                  </th>
                 </tr>
               </thead>
+
               <tbody>
                 {observations.map((row) => (
-                  <tr key={row.id} className="border-b border-black hover:bg-yellow-50/30">
-                    <td className="border-r border-black p-0">
+                  <tr
+                    key={row.id}
+                    className="border-b-2 border-black h-12 hover:bg-yellow-50/20 transition-colors group"
+                  >
+                    <td className="border-r border-black p-0 h-12 text-center align-middle">
                       <input
-                        type="date"
+                        type="text"
                         value={row.date}
                         onChange={(e) => handleObservationChange(row.id, 'date', e.target.value)}
-                        className="w-full h-8 px-1 text-center text-xs border-0 outline-none bg-transparent"
+                        className="w-full h-full text-center text-[11px] font-sans border-0 outline-none bg-transparent"
                       />
                     </td>
-                    <td className="border-r border-black p-0">
-                      <select
+                    <td className="border-r border-black p-0 h-12 text-center align-middle">
+                      <input
+                        type="text"
                         value={row.shift}
                         onChange={(e) => handleObservationChange(row.id, 'shift', e.target.value)}
-                        className="w-full h-8 px-1 text-center text-xs border-0 outline-none bg-transparent font-semibold"
-                      >
-                        <option value="">-</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                      </select>
+                        className="w-full h-full text-center text-[11px] font-sans border-0 outline-none bg-transparent"
+                      />
                     </td>
-                    <td className="border-r border-black p-0">
+                    <td className="border-r border-black p-0 h-12 text-center align-middle">
                       <input
                         type="text"
-                        placeholder="Area"
                         value={row.area}
                         onChange={(e) => handleObservationChange(row.id, 'area', e.target.value)}
-                        className="w-full h-8 px-2 text-xs border-0 outline-none bg-transparent"
+                        className="w-full h-full px-1 text-left text-[11px] font-sans border-0 outline-none bg-transparent"
                       />
                     </td>
-                    <td className="border-r border-black p-0">
+                    <td className="border-r border-black p-0 h-12 text-center align-middle">
                       <input
                         type="text"
-                        placeholder="Specific Area"
                         value={row.specificArea}
                         onChange={(e) => handleObservationChange(row.id, 'specificArea', e.target.value)}
-                        className="w-full h-8 px-2 text-xs border-0 outline-none bg-transparent"
+                        className="w-full h-full px-1 text-left text-[11px] font-sans border-0 outline-none bg-transparent"
                       />
                     </td>
-                    <td className="border-r border-black p-0">
+                    <td className="border-r-2 border-black p-0 h-12 align-middle">
                       <input
                         type="text"
-                        placeholder="Describe abnormality..."
                         value={row.abnormality}
                         onChange={(e) => handleObservationChange(row.id, 'abnormality', e.target.value)}
-                        className="w-full h-8 px-2 text-xs border-0 outline-none bg-transparent font-medium"
+                        className="w-full h-full px-2 text-left text-[11px] font-sans border-0 outline-none bg-transparent"
                       />
                     </td>
-                    <td className="border-r border-black p-0">
+                    <td className="border-r border-slate-300 p-0 h-12 align-middle">
                       <input
                         type="text"
-                        placeholder="Action required..."
                         value={row.immediateAction}
                         onChange={(e) => handleObservationChange(row.id, 'immediateAction', e.target.value)}
-                        className="w-full h-8 px-2 text-xs border-0 outline-none bg-transparent"
+                        className="w-full h-full px-2 text-left text-[11px] font-sans border-0 outline-none bg-transparent"
                       />
                     </td>
-                    <td className="border-r border-black p-0">
+                    <td className="border-r border-slate-300 p-0 h-12 text-center align-middle">
                       <input
                         type="text"
-                        placeholder="Responsible"
                         value={row.resp}
                         onChange={(e) => handleObservationChange(row.id, 'resp', e.target.value)}
-                        className="w-full h-8 px-2 text-center text-xs border-0 outline-none bg-transparent font-semibold"
+                        className="w-full h-full text-center text-[11px] font-sans border-0 outline-none bg-transparent"
                       />
                     </td>
-                    <td className="border-r border-black p-0">
+                    <td className="border-r-2 border-black p-0 h-12 text-center align-middle">
                       <input
-                        type="date"
+                        type="text"
                         value={row.targetDate}
                         onChange={(e) => handleObservationChange(row.id, 'targetDate', e.target.value)}
-                        className="w-full h-8 px-1 text-center text-xs border-0 outline-none bg-transparent"
+                        className="w-full h-full text-center text-[11px] font-sans border-0 outline-none bg-transparent"
                       />
                     </td>
-                    <td className="p-0 text-center print:hidden">
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveObservation(row.id)}
-                        className="text-slate-400 hover:text-rose-600 transition-colors p-1.5 cursor-pointer"
-                        title="Remove observation row"
-                      >
-                        <Trash2 size={15} />
-                      </button>
+                    <td className="border-r border-slate-300 p-0 h-12 text-center align-middle">
+                      <input
+                        type="text"
+                        value={row.status}
+                        onChange={(e) => handleObservationChange(row.id, 'status', e.target.value)}
+                        className="w-full h-full text-center text-[11px] font-sans border-0 outline-none bg-transparent"
+                      />
+                    </td>
+                    <td className="border-r-2 border-black p-0 h-12 align-middle">
+                      <input
+                        type="text"
+                        value={row.operatorFeedback}
+                        onChange={(e) => handleObservationChange(row.id, 'operatorFeedback', e.target.value)}
+                        className="w-full h-full px-2 text-left text-[11px] font-sans border-0 outline-none bg-transparent"
+                      />
+                    </td>
+                    <td className="border-r border-slate-300 p-0 h-12 text-center align-middle">
+                      <input
+                        type="text"
+                        value={row.maintSupervisor}
+                        onChange={(e) => handleObservationChange(row.id, 'maintSupervisor', e.target.value)}
+                        className="w-full h-full text-center text-[11px] font-sans border-0 outline-none bg-transparent"
+                      />
+                    </td>
+                    <td className="p-0 h-12 text-center align-middle relative">
+                      <input
+                        type="text"
+                        value={row.prodSupervisor}
+                        onChange={(e) => handleObservationChange(row.id, 'prodSupervisor', e.target.value)}
+                        className="w-full h-full text-center text-[11px] font-sans border-0 outline-none bg-transparent"
+                      />
+                      {observations.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveObservation(row.id)}
+                          className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 rounded transition-opacity print:hidden cursor-pointer"
+                          title="Delete row"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

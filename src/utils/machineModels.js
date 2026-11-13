@@ -69,6 +69,9 @@ export function getMachineModel(machineId, process = '') {
     if (clean === 'MCR' || clean.startsWith('MCR') || clean.includes('MANUALCRIMPING') || process === 'Manual Crimping') {
       return 'Mecal-05';
     }
+    if (clean === 'JCR' || clean.startsWith('JCR') || clean.includes('JOINTCRIMPING') || process === 'Joint Crimping') {
+      return 'JCR-01';
+    }
     if (clean.includes('TRD411F') || clean.includes('TRD411')) return 'TRD_411F';
     if (clean.includes('TRD301')) return 'TRD_301';
     if (clean.includes('ALPHA355')) return 'Alpha_355';

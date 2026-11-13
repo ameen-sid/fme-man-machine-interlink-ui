@@ -25,7 +25,7 @@ export default function ChecksheetNotAdded({
         </div>
 
         <h3 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight m-0 mb-2">
-          Checksheets are not added
+          Checksheet not added yet
         </h3>
 
         <p className="text-sm text-slate-500 m-0 max-w-md leading-relaxed">

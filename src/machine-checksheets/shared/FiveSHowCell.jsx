@@ -41,7 +41,7 @@ export default function FiveSHowCell({
       );
     }
 
-    if (lower === 'brush') {
+    if (lower === 'brush' || lower === 'broom') {
       return (
         <div className="flex flex-col items-center justify-center">
           <div className="w-7 h-9 flex flex-col items-center justify-center relative">
@@ -50,7 +50,9 @@ export default function FiveSHowCell({
               <span className="w-4 h-1 bg-amber-200 rounded-full"></span>
             </div>
           </div>
-          <span className="text-[7.5px] font-black text-black uppercase mt-0.5 tracking-tight leading-none">BRUSH</span>
+          <span className="text-[7.5px] font-black text-black uppercase mt-0.5 tracking-tight leading-none">
+            {lower === 'broom' ? 'BROOM' : 'BRUSH'}
+          </span>
         </div>
       );
     }

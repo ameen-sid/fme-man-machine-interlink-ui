@@ -241,7 +241,43 @@ export default function OperationalChecksheets({
     )) ||
     (selectedMachine?.model && selectedMachine.model.toLowerCase().includes('mecal'));
 
-  const checksheetsList = isManualCrimping
+  const isJointCrimping =
+    activeTab === 'Joint Crimping' ||
+    selectedMachine?.process === 'Joint Crimping' ||
+    (selectedMachine?.name && (
+      selectedMachine.name === 'JCR' ||
+      selectedMachine.name.startsWith('JCR') ||
+      selectedMachine.name.includes('JCR')
+    )) ||
+    (selectedMachine?.model && selectedMachine.model.toLowerCase().includes('jcr'));
+
+  const JCR_MADE_IDS = ['5s', 'daily', 'instrument', 'pm'];
+
+  const checksheetsList = isJointCrimping
+    ? OPERATIONAL_CHECKSHEETS.filter(
+        (cs) => cs.id !== 'op_machine_summary' && cs.name !== 'Operator & Machine Summary'
+      ).map((cs) => {
+        const isMade = JCR_MADE_IDS.includes(cs.id);
+        if (cs.id === 'pm') {
+          return {
+            ...cs,
+            shortDesc: 'Predictive Maintenance Check Sheet (CHK-WH-MT-026 Rev 00)',
+            isNotAdded: false
+          };
+        }
+        if (!isMade) {
+          return {
+            ...cs,
+            shortDesc: 'Checksheet not added yet',
+            isNotAdded: true
+          };
+        }
+        return {
+          ...cs,
+          isNotAdded: false
+        };
+      })
+    : isManualCrimping
     ? MANUAL_CRIMPING_CHECKSHEETS
     : isResistanceWelding
     ? RESISTANCE_WELDING_CHECKSHEETS
@@ -317,35 +353,43 @@ export default function OperationalChecksheets({
               <div className="flex flex-col gap-1.5 mb-4">
                 <div className="flex items-start justify-between gap-1.5 flex-wrap">
                   <h4 className="text-sm font-bold text-slate-900 m-0 leading-snug">{cs.name}</h4>
-                  {cs.id === 'pm' && (
-                    <span className="text-[10px] font-extrabold text-purple-700 bg-purple-50 py-0.5 px-1.5 rounded border border-purple-200">
-                      CHK-WH-MT-043
+                  {cs.isNotAdded ? (
+                    <span className="text-[10px] font-extrabold text-amber-700 bg-amber-50 py-0.5 px-1.5 rounded border border-amber-300">
+                      Not Added
                     </span>
-                  )}
-                  {cs.id === 'inspection_report' && (
-                    <span className="text-[10px] font-extrabold text-indigo-700 bg-indigo-50 py-0.5 px-1.5 rounded border border-indigo-200">
-                      FRM-QC-PS-244
-                    </span>
-                  )}
-                  {cs.id === 'pokayoke' && (
-                    <span className="text-[10px] font-extrabold text-red-700 bg-red-50 py-0.5 px-1.5 rounded border border-red-200">
-                      FFM-WH-QA-096
-                    </span>
-                  )}
-                  {cs.id === 'instrument' && (
-                    <span className="text-[10px] font-extrabold text-amber-700 bg-amber-50 py-0.5 px-1.5 rounded border border-amber-200">
-                      FRM-WH-QA-046
-                    </span>
-                  )}
-                  {cs.id === 'daily' && (
-                    <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 py-0.5 px-1.5 rounded border border-emerald-200">
-                      CHK-WH-MT-003
-                    </span>
-                  )}
-                  {cs.id === '5s' && (
-                    <span className="text-[10px] font-extrabold text-sky-700 bg-sky-50 py-0.5 px-1.5 rounded border border-sky-200">
-                      CHK-5S-03
-                    </span>
+                  ) : (
+                    <>
+                      {cs.id === 'pm' && (
+                        <span className="text-[10px] font-extrabold text-purple-700 bg-purple-50 py-0.5 px-1.5 rounded border border-purple-200">
+                          CHK-WH-MT-043
+                        </span>
+                      )}
+                      {cs.id === 'inspection_report' && (
+                        <span className="text-[10px] font-extrabold text-indigo-700 bg-indigo-50 py-0.5 px-1.5 rounded border border-indigo-200">
+                          FRM-QC-PS-244
+                        </span>
+                      )}
+                      {cs.id === 'pokayoke' && (
+                        <span className="text-[10px] font-extrabold text-red-700 bg-red-50 py-0.5 px-1.5 rounded border border-red-200">
+                          FFM-WH-QA-096
+                        </span>
+                      )}
+                      {cs.id === 'instrument' && (
+                        <span className="text-[10px] font-extrabold text-amber-700 bg-amber-50 py-0.5 px-1.5 rounded border border-amber-200">
+                          FRM-WH-QA-046
+                        </span>
+                      )}
+                      {cs.id === 'daily' && (
+                        <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 py-0.5 px-1.5 rounded border border-emerald-200">
+                          CHK-WH-MT-003
+                        </span>
+                      )}
+                      {cs.id === '5s' && (
+                        <span className="text-[10px] font-extrabold text-sky-700 bg-sky-50 py-0.5 px-1.5 rounded border border-sky-200">
+                          CHK-5S-03
+                        </span>
+                      )}
+                    </>
                   )}
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed m-0">
@@ -353,9 +397,11 @@ export default function OperationalChecksheets({
                 </p>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-bold text-blue-600">
-                <span>Open Checksheet</span>
-                <ChevronRight size={16} />
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-bold">
+                <span className={cs.isNotAdded ? 'text-amber-700 font-bold' : 'text-blue-600'}>
+                  {cs.isNotAdded ? 'Checksheet not added yet' : 'Open Checksheet'}
+                </span>
+                <ChevronRight size={16} className={cs.isNotAdded ? 'text-amber-500' : 'text-blue-600'} />
               </div>
             </div>
           );

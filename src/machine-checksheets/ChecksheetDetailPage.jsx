@@ -29,6 +29,9 @@ import {
   McrPokayoke
 } from './units/c&c/manualCrimping';
 
+// Joint Crimping (JCR) checksheets
+import { JcrFiveS, JcrDaily, JcrMachinePm, JcrInstrument } from './units/c&c/jointCrimping';
+
 // Alpha 355 checksheets
 import Alpha355FiveS from './units/c&c/autoCrimping/alpha355/FiveSChecksheet';
 import Alpha355Daily from './units/c&c/autoCrimping/alpha355/DailyChecksheet';
@@ -119,6 +122,12 @@ export default function ChecksheetDetailPage() {
   let modelName = '';
   let machineName = '';
 
+  const isJointCrimping =
+    cleanId === 'JCR' ||
+    cleanId.startsWith('JCR') ||
+    cleanId.includes('JOINTCRIMPING') ||
+    (path && path.toLowerCase().includes('jointcrimping'));
+
   const isManualCrimping =
     cleanId === 'MCR' ||
     cleanId.startsWith('MCR') ||
@@ -134,7 +143,11 @@ export default function ChecksheetDetailPage() {
     decodedMachineId.startsWith('R/SW') ||
     decodedMachineId.startsWith('RSW');
 
-  if (isManualCrimping) {
+  if (isJointCrimping) {
+    idNum = 1;
+    machineName = 'JCR 01';
+    modelName = 'JCR-01';
+  } else if (isManualCrimping) {
     idNum = 1;
     machineName = 'MCR';
     modelName = 'Mecal-05';
@@ -407,6 +420,60 @@ export default function ChecksheetDetailPage() {
     }
   }
 
+  // Joint Crimping (JCR) checksheets
+  if (isJointCrimping || modelName === 'JCR-01') {
+    if (isMatch('Machine 5S checksheet', '5s') || decodedChecksheetId.toLowerCase().includes('5s')) {
+      return (
+        <JcrFiveS
+          key={`${selectedMachine.name}_5s`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (isMatch('Machine Daily checksheet', 'daily') || decodedChecksheetId.toLowerCase().includes('daily')) {
+      return (
+        <JcrDaily
+          key={`${selectedMachine.name}_daily`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (isMatch('Machine Instrument checksheet', 'instrument') || decodedChecksheetId.toLowerCase().includes('instrument')) {
+      return (
+        <JcrInstrument
+          key={`${selectedMachine.name}_inst`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Machine PM checksheet', 'pm') ||
+      isMatch('Predictive Maintenance checksheet', 'predictive') ||
+      isMatch('Predictive Maintainance checksheet', 'predictive_maintenance') ||
+      decodedChecksheetId.toLowerCase().includes('pm') ||
+      decodedChecksheetId.toLowerCase().includes('predictive')
+    ) {
+      return (
+        <JcrMachinePm
+          key={`${selectedMachine.name}_pm`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    // Rest of checksheets that are not made yet for JCR show "Checksheet not added yet"
+    return (
+      <ChecksheetNotAdded
+        machine={selectedMachine}
+        checksheetName={decodedChecksheetId || 'Checksheet'}
+        onClose={handleClose}
+      />
+    );
+  }
+
   // 1. Operator & Machine Summary
   if (isMatch('Operator & Machine Summary', 'op_machine_summary')) {
     return (
@@ -607,6 +674,7 @@ export default function ChecksheetDetailPage() {
       return <JamMachinePm key={`${selectedMachine.name}_pm`} machine={selectedMachine} onClose={handleClose} />;
     }
   }
+
 
   // 11. Other models or unconfigured checksheets: show ChecksheetNotAdded UI!
   return (
