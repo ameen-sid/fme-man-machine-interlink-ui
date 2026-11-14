@@ -30,7 +30,16 @@ import {
 } from './units/c&c/manualCrimping';
 
 // Joint Crimping (JCR) checksheets
-import { JcrFiveS, JcrDaily, JcrMachinePm, JcrInstrument } from './units/c&c/jointCrimping';
+import {
+  JcrFiveS,
+  JcrDaily,
+  JcrDaily01,
+  JcrMachinePm,
+  JcrMonthlyPeriodicPreventive,
+  JcrInstrument,
+  JcrPokayoke,
+  JcrInspectionReport
+} from './units/c&c/jointCrimping';
 
 // Alpha 355 checksheets
 import Alpha355FiveS from './units/c&c/autoCrimping/alpha355/FiveSChecksheet';
@@ -431,7 +440,24 @@ export default function ChecksheetDetailPage() {
         />
       );
     }
-    if (isMatch('Machine Daily checksheet', 'daily') || decodedChecksheetId.toLowerCase().includes('daily')) {
+    if (
+      isMatch('Machine daily checksheet 01', 'daily_01') ||
+      decodedChecksheetId.toLowerCase().includes('daily_01') ||
+      decodedChecksheetId.toLowerCase().includes('daily01')
+    ) {
+      return (
+        <JcrDaily01
+          key={`${selectedMachine.name}_daily01`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Machine daily checksheet 13', 'daily_13') ||
+      isMatch('Machine Daily checksheet', 'daily') ||
+      decodedChecksheetId.toLowerCase().includes('daily')
+    ) {
       return (
         <JcrDaily
           key={`${selectedMachine.name}_daily`}
@@ -450,15 +476,54 @@ export default function ChecksheetDetailPage() {
       );
     }
     if (
-      isMatch('Machine PM checksheet', 'pm') ||
       isMatch('Predictive Maintenance checksheet', 'predictive') ||
       isMatch('Predictive Maintainance checksheet', 'predictive_maintenance') ||
-      decodedChecksheetId.toLowerCase().includes('pm') ||
       decodedChecksheetId.toLowerCase().includes('predictive')
     ) {
       return (
         <JcrMachinePm
-          key={`${selectedMachine.name}_pm`}
+          key={`${selectedMachine.name}_predictive`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Monthly and Periodic Preventive Checksheet', 'preventive_pm') ||
+      isMatch('Monthly & Periodic Preventive Checksheet', 'monthly_periodic_preventive') ||
+      isMatch('Machine PM checksheet', 'pm') ||
+      decodedChecksheetId.toLowerCase().includes('preventive') ||
+      decodedChecksheetId.toLowerCase().includes('periodic') ||
+      decodedChecksheetId.toLowerCase().includes('pm')
+    ) {
+      return (
+        <JcrMonthlyPeriodicPreventive
+          key={`${selectedMachine.name}_preventive_pm`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Machine Pokayoke checksheet', 'pokayoke') ||
+      decodedChecksheetId.toLowerCase().includes('pokayoke') ||
+      decodedChecksheetId.toLowerCase().includes('poka')
+    ) {
+      return (
+        <JcrPokayoke
+          key={`${selectedMachine.name}_pokayoke`}
+          machine={selectedMachine}
+          onClose={handleClose}
+        />
+      );
+    }
+    if (
+      isMatch('Inspection report', 'inspection_report') ||
+      decodedChecksheetId.toLowerCase().includes('inspection')
+    ) {
+      return (
+        <JcrInspectionReport
+          key={`${selectedMachine.name}_inspection`}
           machine={selectedMachine}
           onClose={handleClose}
         />

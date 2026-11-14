@@ -251,32 +251,95 @@ export default function OperationalChecksheets({
     )) ||
     (selectedMachine?.model && selectedMachine.model.toLowerCase().includes('jcr'));
 
-  const JCR_MADE_IDS = ['5s', 'daily', 'instrument', 'pm'];
+  const JCR_MADE_IDS = ['5s', 'daily', 'daily_01', 'instrument', 'pm', 'predictive', 'pokayoke', 'inspection_report'];
 
-  const checksheetsList = isJointCrimping
-    ? OPERATIONAL_CHECKSHEETS.filter(
-        (cs) => cs.id !== 'op_machine_summary' && cs.name !== 'Operator & Machine Summary'
-      ).map((cs) => {
+  const jcrBaseList = [];
+  if (isJointCrimping) {
+    OPERATIONAL_CHECKSHEETS.filter(
+      (cs) =>
+        cs.id !== 'op_machine_summary' &&
+        cs.name !== 'Operator & Machine Summary' &&
+        cs.id !== 'cc_summary' &&
+        cs.name !== 'C&C process production status summary' &&
+        cs.id !== 'breakdown_summary' &&
+        cs.name !== 'Machine Breakdown Summary'
+    ).forEach((cs) => {
+      if (cs.id === 'daily') {
+        // Daily Checksheet 13 (Rev 13)
+        jcrBaseList.push({
+          ...cs,
+          id: 'daily',
+          name: 'Machine daily checksheet 13',
+          shortDesc: 'Daily Machine Check Sheet & Abnormality Action (CHK-WH-MT-007 Rev 13)',
+          badge: 'CHK-WH-MT-007',
+          isNotAdded: false
+        });
+        // Daily Checksheet 01 (Rev 01)
+        jcrBaseList.push({
+          id: 'daily_01',
+          name: 'Machine daily checksheet 01',
+          shortDesc: 'Daily Machine Check Sheet - Regento (CHK-WH-MT-003 Rev 01)',
+          icon: CalendarCheck2,
+          color: '#0284c7',
+          bg: '#e0f2fe',
+          badge: 'CHK-WH-MT-003',
+          isNotAdded: false
+        });
+      } else if (cs.id === 'pm') {
+        // Monthly and Periodic Preventive Checksheet (CHK-WH-MT-035 Rev 07)
+        jcrBaseList.push({
+          ...cs,
+          id: 'pm',
+          name: 'Monthly and Periodic Preventive Checksheet',
+          shortDesc: 'Monthly & Periodic PM Check Sheet - Semi Auto Crimping (CHK-WH-MT-035 Rev 07)',
+          badge: 'CHK-WH-MT-035',
+          isNotAdded: false
+        });
+        // Predictive Maintenance Checksheet (CHK-WH-MT-026 Rev 00)
+        jcrBaseList.push({
+          id: 'predictive',
+          name: 'Predictive Maintenance checksheet',
+          shortDesc: 'Predictive Maintenance Check Sheet (CHK-WH-MT-026 Rev 00)',
+          icon: Activity,
+          color: '#0d9488',
+          bg: '#ccfbf1',
+          badge: 'CHK-WH-MT-026',
+          isNotAdded: false
+        });
+      } else {
         const isMade = JCR_MADE_IDS.includes(cs.id);
-        if (cs.id === 'pm') {
-          return {
+        if (cs.id === 'pokayoke') {
+          jcrBaseList.push({
             ...cs,
-            shortDesc: 'Predictive Maintenance Check Sheet (CHK-WH-MT-026 Rev 00)',
+            shortDesc: 'Poka Yoke Checked By QA (FRM-WH-QA-096 Rev 01 Timing: Shift Start / 1st PC)',
+            badge: 'FRM-WH-QA-096',
             isNotAdded: false
-          };
-        }
-        if (!isMade) {
-          return {
+          });
+        } else if (cs.id === 'inspection_report') {
+          jcrBaseList.push({
+            ...cs,
+            shortDesc: 'Daily record of joint fitting operation (FRM-WH-PE-263 Rev 00)',
+            badge: 'FRM-WH-PE-263',
+            isNotAdded: false
+          });
+        } else if (!isMade) {
+          jcrBaseList.push({
             ...cs,
             shortDesc: 'Checksheet not added yet',
             isNotAdded: true
-          };
+          });
+        } else {
+          jcrBaseList.push({
+            ...cs,
+            isNotAdded: false
+          });
         }
-        return {
-          ...cs,
-          isNotAdded: false
-        };
-      })
+      }
+    });
+  }
+
+  const checksheetsList = isJointCrimping
+    ? jcrBaseList
     : isManualCrimping
     ? MANUAL_CRIMPING_CHECKSHEETS
     : isResistanceWelding
@@ -356,6 +419,10 @@ export default function OperationalChecksheets({
                   {cs.isNotAdded ? (
                     <span className="text-[10px] font-extrabold text-amber-700 bg-amber-50 py-0.5 px-1.5 rounded border border-amber-300">
                       Not Added
+                    </span>
+                  ) : cs.badge ? (
+                    <span className="text-[10px] font-extrabold text-emerald-800 bg-emerald-50 py-0.5 px-1.5 rounded border border-emerald-300">
+                      {cs.badge}
                     </span>
                   ) : (
                     <>

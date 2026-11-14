@@ -461,8 +461,8 @@ export default function JcrDailyChecksheet({ machine, onClose }) {
     <div className="flex flex-col gap-4 w-full text-slate-900 pb-12">
       {/* Top Navigation */}
       <ChecksheetHeaderNav
-        title="DAILY CHECK SHEET"
-        subtitle={`${displayMachine} — 2T & 4T Mecal Press Daily Inspection & Abnormality Log`}
+        title="MACHINE DAILY CHECKSHEET 13"
+        subtitle={`${displayMachine} — 2T & 4T Mecal Press Daily Inspection & Abnormality Log (CHK-WH-MT-007 Rev 13)`}
         icon={CalendarCheck2}
         iconBgClass="bg-blue-100 text-blue-800"
         onClose={onClose}
