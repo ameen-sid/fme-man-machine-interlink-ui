@@ -482,7 +482,7 @@ export default function MonthlyPeriodicPreventiveChecksheet({ machine, onClose }
                 </tr>
               ))}
 
-              {/* Signatures & Legend Row matching screenshot */}
+              {/* Signatures & Legend Row */}
               <tr className="border-b border-black bg-white">
                 <td className="border-r border-black p-1.5 font-bold text-xs">
                   <div className="flex items-center gap-1">
