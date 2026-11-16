@@ -338,13 +338,12 @@ export default function DailyChecksheet01({ machine, onClose }) {
               <td
                 key={d}
                 onClick={() => cycleCellValue(k)}
-                className={`border-r border-black p-0 text-center align-middle h-[24px] cursor-pointer select-none transition-colors ${
-                  isNotOk
-                    ? 'bg-rose-100 text-rose-800 font-black'
-                    : val === '✓'
+                className={`border-r border-black p-0 text-center align-middle h-[24px] cursor-pointer select-none transition-colors ${isNotOk
+                  ? 'bg-rose-100 text-rose-800 font-black'
+                  : val === '✓'
                     ? 'bg-emerald-50/70 text-emerald-800 font-black'
                     : 'hover:bg-amber-50/60'
-                }`}
+                  }`}
                 style={{ width: '22px', minWidth: '22px', maxWidth: '22px' }}
                 title={`${item.pointEn} — Day ${d}, Shift A: click to toggle`}
               >
@@ -375,13 +374,12 @@ export default function DailyChecksheet01({ machine, onClose }) {
                 <td
                   key={d}
                   onClick={() => cycleCellValue(k)}
-                  className={`border-r border-black p-0 text-center align-middle h-[24px] cursor-pointer select-none transition-colors ${
-                    isNotOk
-                      ? 'bg-rose-100 text-rose-800 font-black'
-                      : val === '✓'
+                  className={`border-r border-black p-0 text-center align-middle h-[24px] cursor-pointer select-none transition-colors ${isNotOk
+                    ? 'bg-rose-100 text-rose-800 font-black'
+                    : val === '✓'
                       ? 'bg-emerald-50/70 text-emerald-800 font-black'
                       : 'hover:bg-amber-50/60'
-                  }`}
+                    }`}
                   style={{ width: '22px', minWidth: '22px', maxWidth: '22px' }}
                   title={`${item.pointEn} — Day ${d}, Shift B: click to toggle`}
                 >
@@ -413,13 +411,12 @@ export default function DailyChecksheet01({ machine, onClose }) {
                 <td
                   key={d}
                   onClick={() => cycleCellValue(k)}
-                  className={`border-r border-black p-0 text-center align-middle h-[24px] cursor-pointer select-none transition-colors ${
-                    isNotOk
-                      ? 'bg-rose-100 text-rose-800 font-black'
-                      : val === '✓'
+                  className={`border-r border-black p-0 text-center align-middle h-[24px] cursor-pointer select-none transition-colors ${isNotOk
+                    ? 'bg-rose-100 text-rose-800 font-black'
+                    : val === '✓'
                       ? 'bg-emerald-50/70 text-emerald-800 font-black'
                       : 'hover:bg-amber-50/60'
-                  }`}
+                    }`}
                   style={{ width: '22px', minWidth: '22px', maxWidth: '22px' }}
                   title={`${item.pointEn} — Day ${d}, Shift C: click to toggle`}
                 >
@@ -482,19 +479,7 @@ export default function DailyChecksheet01({ machine, onClose }) {
         onSave={handleSave}
         savedToast={savedToast}
         showSwitcher={false}
-        extraActions={
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer shadow-sm"
-              onClick={() => window.print()}
-              title="Print Checksheet"
-            >
-              <Printer size={14} />
-              <span>Print</span>
-            </button>
-          </div>
-        }
+
       />
 
       {savedToast && (
@@ -513,52 +498,7 @@ export default function DailyChecksheet01({ machine, onClose }) {
         </div>
       )}
 
-      {/* Quick Action Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm print:hidden">
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-          <span>Active Symbol:</span>
-          {['✓', 'X', '⨂', 'N/A'].map((sym) => (
-            <button
-              key={sym}
-              type="button"
-              onClick={() => setSelectedToolSymbol(sym)}
-              className={`px-2.5 py-1 rounded border text-xs font-black cursor-pointer transition-colors ${
-                selectedToolSymbol === sym
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                  : 'bg-slate-50 text-slate-700 border-slate-300 hover:bg-slate-100'
-              }`}
-            >
-              {sym}
-            </button>
-          ))}
-          <span className="text-[11px] text-slate-500 font-normal ml-2">
-            (Click cell to cycle or enter text directly)
-          </span>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-600">Quick Fill Today:</span>
-          <select
-            defaultValue={new Date().getDate()}
-            onChange={(e) => handleQuickFillCurrentDay(Number(e.target.value))}
-            className="text-xs font-bold border border-slate-300 rounded px-2 py-1 bg-white cursor-pointer"
-          >
-            {DAYS.map((d) => (
-              <option key={d} value={d}>
-                Day {d}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={() => handleQuickFillCurrentDay(new Date().getDate())}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded cursor-pointer transition-colors shadow-sm"
-          >
-            <Sparkles size={13} />
-            <span>Fill Today</span>
-          </button>
-        </div>
-      </div>
 
       {/* Main Sheet Container */}
       <div className="bg-white border-2 border-black p-2 md:p-3 shadow-md rounded-sm overflow-x-auto">
